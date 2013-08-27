@@ -1,0 +1,3 @@
+package trackingwsn;
+
+@license(LGPL);

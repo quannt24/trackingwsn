@@ -13,19 +13,25 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+#ifndef __TRACKINGWSN_WORLDUTIL_H_
+#define __TRACKINGWSN_WORLDUTIL_H_
 
-//
-// Target to be tracked
-//
-module Target extends Entity
+#include <omnetpp.h>
+#include "mobility.h"
+
+/**
+ * Utilities about simulation world
+ */
+class WorldUtil : public cSimpleModule
 {
-    parameters:
-        double range = default(50);
-        mobility.moving = true;
-        @display("i=block/broadcast;is=vs;r=$range");
-    submodules:
-        asg: Asg {
-            ssRange = range;
-        }
-}
+    protected:
+        virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
+
+    public:
+        void arrangeNodes();
+};
+
+double distance(Mobility *mob1, Mobility *mob2);
+
+#endif

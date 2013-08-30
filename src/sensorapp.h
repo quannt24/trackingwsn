@@ -13,19 +13,26 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+#ifndef __TRACKINGWSN_SENSORAPP_H_
+#define __TRACKINGWSN_SENSORAPP_H_
 
-//
-// Target to be tracked
-//
-module Target extends Entity
+#include <omnetpp.h>
+
+/**
+ * Sensor's Application Layer
+ */
+class SensorApp : public cSimpleModule
 {
-    parameters:
-        double range = default(50);
-        mobility.moving = true;
-        @display("i=block/broadcast;is=vs;r=$range");
-    submodules:
-        asg: Asg {
-            ssRange = range;
-        }
-}
+    private:
+        cMessage *senseMsg; // Self message for start sensing
+
+    protected:
+        virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
+
+    public:
+        SensorApp();
+        ~SensorApp();
+};
+
+#endif

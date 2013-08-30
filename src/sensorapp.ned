@@ -16,16 +16,13 @@
 package trackingwsn;
 
 //
-// Target to be tracked
+// Sensor's Application Layer
 //
-module Target extends Entity
+simple SensorApp
 {
     parameters:
-        double range = default(50);
-        mobility.moving = true;
-        @display("i=block/broadcast;is=vs;r=$range");
-    submodules:
-        asg: Asg {
-            ssRange = range;
-        }
+        double senseInterval = default(0.5);
+        @display("i=block/app");
+    gates:
+        inout ssGate;
 }

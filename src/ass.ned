@@ -16,16 +16,12 @@
 package trackingwsn;
 
 //
-// Target to be tracked
+// Acoustic signal sensor
 //
-module Target extends Entity
+simple Ass
 {
-    parameters:
-        double range = default(50);
-        mobility.moving = true;
-        @display("i=block/broadcast;is=vs;r=$range");
-    submodules:
-        asg: Asg {
-            ssRange = range;
-        }
+    @display("i=block/wrx");
+    gates:
+        input sigIn @directIn; // Gate for receiving target's signal
+        inout appGate;
 }

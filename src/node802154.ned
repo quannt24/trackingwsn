@@ -15,17 +15,6 @@
 
 package trackingwsn;
 
-//
-// Target to be tracked
-//
-module Target extends Entity
+module Node802154 extends Entity
 {
-    parameters:
-        double range = default(50);
-        mobility.moving = true;
-        @display("i=block/broadcast;is=vs;r=$range");
-    submodules:
-        asg: Asg {
-            ssRange = range;
-        }
 }

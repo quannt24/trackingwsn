@@ -28,10 +28,19 @@ PROJECTRELATIVE_PATH = src
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc and .msg files
-OBJS = $O/asg.o $O/mobility.o $O/sensedsignal_m.o
+OBJS = \
+    $O/sensorapp.o \
+    $O/asg.o \
+    $O/worldutil.o \
+    $O/mobility.o \
+    $O/link802154.o \
+    $O/ass.o \
+    $O/sensereq_m.o \
+    $O/sensedsignal_m.o
 
 # Message files
 MSGFILES = \
+    sensereq.msg \
     sensedsignal.msg
 
 #------------------------------------------------------------------------------
@@ -117,9 +126,31 @@ depend:
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/asg.o: asg.cc \
 	asg.h \
-	sensedsignal_m.h
+	ass.h \
+	msgkind.h \
+	sensedsignal_m.h \
+	sensereq_m.h
+$O/ass.o: ass.cc \
+	ass.h \
+	mobility.h \
+	msgkind.h \
+	sensedsignal_m.h \
+	sensereq_m.h \
+	worldutil.h
+$O/link802154.o: link802154.cc \
+	link802154.h
 $O/mobility.o: mobility.cc \
 	mobility.h
 $O/sensedsignal_m.o: sensedsignal_m.cc \
 	sensedsignal_m.h
+$O/sensereq_m.o: sensereq_m.cc \
+	ass.h \
+	sensedsignal_m.h \
+	sensereq_m.h
+$O/sensorapp.o: sensorapp.cc \
+	msgkind.h \
+	sensorapp.h
+$O/worldutil.o: worldutil.cc \
+	mobility.h \
+	worldutil.h
 

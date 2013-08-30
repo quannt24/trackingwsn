@@ -30,5 +30,6 @@ network Wsn
 
     submodules:
         target[numTargets]: Target;
-    connections allowunconnected:
+        sensor[numSensors]: Sensor;
+        wu: WorldUtil;
 }

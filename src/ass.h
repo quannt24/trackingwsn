@@ -13,19 +13,24 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+#ifndef __TRACKINGWSN_ASS_H_
+#define __TRACKINGWSN_ASS_H_
 
-//
-// Target to be tracked
-//
-module Target extends Entity
+#include <omnetpp.h>
+#include "sensedsignal_m.h"
+
+/**
+ * Acoustic signal sensor
+ */
+class Ass : public cSimpleModule
 {
-    parameters:
-        double range = default(50);
-        mobility.moving = true;
-        @display("i=block/broadcast;is=vs;r=$range");
-    submodules:
-        asg: Asg {
-            ssRange = range;
-        }
-}
+    private:
+        void reqTargets();
+        void recvSenseData(SensedSignal *sig);
+
+    protected:
+        virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
+};
+
+#endif

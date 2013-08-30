@@ -13,19 +13,14 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+cplusplus {{
+    #include "ass.h"
+    typedef Ass *AssPtr; }} // C++ typedef
+class noncobject AssPtr; // announcement for the message compiler
 
 //
-// Target to be tracked
+// Sense request
 //
-module Target extends Entity
-{
-    parameters:
-        double range = default(50);
-        mobility.moving = true;
-        @display("i=block/broadcast;is=vs;r=$range");
-    submodules:
-        asg: Asg {
-            ssRange = range;
-        }
+message SenseReq {
+    AssPtr srcAss;
 }

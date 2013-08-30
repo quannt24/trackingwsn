@@ -16,16 +16,9 @@
 package trackingwsn;
 
 //
-// Target to be tracked
+// Utilities about simulation world
 //
-module Target extends Entity
+simple WorldUtil
 {
-    parameters:
-        double range = default(50);
-        mobility.moving = true;
-        @display("i=block/broadcast;is=vs;r=$range");
-    submodules:
-        asg: Asg {
-            ssRange = range;
-        }
+    @display("i=misc/globe;is=vs;p=-20,20");
 }

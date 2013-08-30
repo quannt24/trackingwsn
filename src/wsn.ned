@@ -18,15 +18,15 @@ package trackingwsn;
 network Wsn
 {
     parameters:
-        double width = default(500);
-        double height = default(500);
+        double width @unit(m) = default(100m);
+        double height @unit(m) = default(100m);
         int numTargets;
         int numSensors;
         int ssRows; // Number of sensor rows
         int ssCols; // Number of sensor columns
         // Note: First ssRows * ssCols sensors will be arranged, the rest is randomly distributed
 
-        @display("bgb=$width,$height");
+        @display("bgs=10,m;bgb=$width,$height;"); // 1m ~ 10px
 
     submodules:
         target[numTargets]: Target;

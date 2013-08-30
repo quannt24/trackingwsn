@@ -26,10 +26,10 @@
 class Mobility : public cSimpleModule
 {
     private:
-        int x, y; // Position
+        double x, y; // Position (coordinate in meter)
         cMessage *moveMsg; // Self message to move target to new position
-        int *xArr; // Path array storing x coordinates
-        int *yArr; // Path array storing y coordinates
+        double *xArr; // Path array storing x coordinates
+        double *yArr; // Path array storing y coordinates
         int pathLen; // Number of point in path
         int posId; // Current index in path array
         int loadPath(); // Load path from file to coordinate arrays
@@ -41,10 +41,10 @@ class Mobility : public cSimpleModule
     public:
         Mobility();
         ~Mobility();
-        int getX();
-        void setX(int x);
-        int getY();
-        void setY(int y);
+        double getX();
+        void setX(double x);
+        double getY();
+        void setY(double y);
         void updateDisplay(); // Update display of parent module in simulation
 };
 

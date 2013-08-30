@@ -58,8 +58,8 @@ void Mobility::handleMessage(cMessage *msg)
 Mobility::Mobility()
 {
     moveMsg = new cMessage("MoveMsg");
-    xArr = new int[MAX_PATH_LEN];
-    yArr = new int[MAX_PATH_LEN];
+    xArr = new double[MAX_PATH_LEN];
+    yArr = new double[MAX_PATH_LEN];
 }
 
 Mobility::~Mobility()
@@ -69,22 +69,22 @@ Mobility::~Mobility()
     delete yArr;
 }
 
-int Mobility::getX()
+double Mobility::getX()
 {
     return x;
 }
 
-void Mobility::setX(int x)
+void Mobility::setX(double x)
 {
     this->x = x;
 }
 
-int Mobility::getY()
+double Mobility::getY()
 {
     return y;
 }
 
-void Mobility::setY(int y)
+void Mobility::setY(double y)
 {
     this->y = y;
 }

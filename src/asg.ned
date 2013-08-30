@@ -21,7 +21,7 @@ package trackingwsn;
 simple Asg
 {
     parameters:
-        double ssRange;
+        double ssRange @unit(m);
         @display("i=block/wtx");
     gates:
         input reqIn @directIn; // Gate for receiving sensing request

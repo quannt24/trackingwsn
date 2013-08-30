@@ -19,7 +19,7 @@ module Sensor extends Node802154
 {
     parameters:
         mobility.moving = false;
-        @display("i=misc/node2;is=vs");
+        @display("i=misc/node2;is=s");
     submodules:
         ass: Ass;
         app: SensorApp;

@@ -35,6 +35,7 @@ OBJS = \
     $O/mobility.o \
     $O/link802154.o \
     $O/ass.o \
+    $O/channelutil.o \
     $O/sensereq_m.o \
     $O/sensedsignal_m.o
 
@@ -136,6 +137,11 @@ $O/ass.o: ass.cc \
 	msgkind.h \
 	sensedsignal_m.h \
 	sensereq_m.h \
+	worldutil.h
+$O/channelutil.o: channelutil.cc \
+	channelutil.h \
+	link802154.h \
+	mobility.h \
 	worldutil.h
 $O/link802154.o: link802154.cc \
 	link802154.h

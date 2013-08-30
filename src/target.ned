@@ -21,9 +21,10 @@ package trackingwsn;
 module Target extends Entity
 {
     parameters:
-        double range = default(50);
+        double range @unit(m) = default(8m);
         mobility.moving = true;
-        @display("i=block/broadcast;is=vs;r=$range");
+        @display("i=block/broadcast;is=s;r=$range");
+        
     submodules:
         asg: Asg {
             ssRange = range;

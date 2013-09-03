@@ -13,13 +13,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+#ifndef __TRACKINGWSN_NETEMRP_H_
+#define __TRACKINGWSN_NETEMRP_H_
 
-module Node802154 extends Entity
+#include <omnetpp.h>
+
+/**
+ * Network layer using EMRP protocol
+ */
+class NetEMRP : public cSimpleModule
 {
-    submodules:
-        net: NetEMRP;
-        link: Link802154;
-    connections:
-        net.linkGate <--> link.netGate;
-}
+  protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+};
+
+#endif

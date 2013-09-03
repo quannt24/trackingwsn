@@ -13,18 +13,18 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "sensorapp.h"
+#include "appsensor.h"
 #include "msgkind.h"
 
-Define_Module(SensorApp);
+Define_Module(AppSensor);
 
-void SensorApp::initialize()
+void AppSensor::initialize()
 {
     // TODO Test Start sensing immediately
     scheduleAt(0, senseMsg);
 }
 
-void SensorApp::handleMessage(cMessage *msg)
+void AppSensor::handleMessage(cMessage *msg)
 {
     if (msg == senseMsg) {
         // Sensing timer
@@ -39,13 +39,13 @@ void SensorApp::handleMessage(cMessage *msg)
     }
 }
 
-SensorApp::SensorApp()
+AppSensor::AppSensor()
 {
     // Create self messages for timers
     senseMsg = new cMessage("SenseMsg");
 }
 
-SensorApp::~SensorApp()
+AppSensor::~AppSensor()
 {
     cancelAndDelete(senseMsg);
 }

@@ -22,7 +22,8 @@ module Sensor extends Node802154
         @display("i=misc/node2;is=s");
     submodules:
         ass: Ass;
-        app: SensorApp;
+        app: AppSensor;
     connections:
         app.ssGate <--> ass.appGate;
+        app.netGate <--> net.appGate;
 }

@@ -29,7 +29,7 @@ class WorldUtil : public cSimpleModule
         virtual void handleMessage(cMessage *msg);
 
     public:
-        void arrangeNodes();
+        void arrangeNodes(); // Arrange nodes in positions
 };
 
 double distance(Mobility *mob1, Mobility *mob2);

@@ -13,26 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __TRACKINGWSN_SENSORAPP_H_
-#define __TRACKINGWSN_SENSORAPP_H_
+package trackingwsn;
 
-#include <omnetpp.h>
-
-/**
- * Sensor's Application Layer
- */
-class SensorApp : public cSimpleModule
+//
+// Network layer using EMRP protocol
+//
+simple NetEMRP
 {
-    private:
-        cMessage *senseMsg; // Self message for start sensing
-
-    protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
-
-    public:
-        SensorApp();
-        ~SensorApp();
-};
-
-#endif
+    @display("i=block/layer");
+    gates:
+        inout appGate;
+        inout linkGate;
+}

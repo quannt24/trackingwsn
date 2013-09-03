@@ -13,13 +13,25 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+#ifndef __TRACKINGWSN_LINK802154_H_
+#define __TRACKINGWSN_LINK802154_H_
 
-module Node802154 extends Entity
+#include "wsnpacket_m.h"
+#include <omnetpp.h>
+
+/**
+ * Phy/Link layer using IEEE 802.15.4
+ */
+class Link802154 : public cSimpleModule
 {
-    submodules:
-        net: NetEMRP;
-        link: Link802154;
-    connections:
-        net.linkGate <--> link.netGate;
-}
+    private:
+        int addr; // Address of link layer
+        void sendPacket(WsnPacket *packet); // Send packet out
+        void recvPacket(WsnPacket *packet); // Receive packet from other node, forward to upper layer
+
+    protected:
+        virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
+};
+
+#endif

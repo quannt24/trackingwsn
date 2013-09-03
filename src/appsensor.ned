@@ -15,11 +15,15 @@
 
 package trackingwsn;
 
-module Node802154 extends Entity
+//
+// Sensor's Application Layer
+//
+simple AppSensor
 {
-    submodules:
-        net: NetEMRP;
-        link: Link802154;
-    connections:
-        net.linkGate <--> link.netGate;
+    parameters:
+        double senseInterval = default(0.5);
+        @display("i=block/app");
+    gates:
+        inout ssGate; // Connect acoustic signal sensor (ass)
+        inout netGate; // Connect network layer
 }

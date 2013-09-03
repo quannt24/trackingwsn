@@ -13,13 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
-
-module Node802154 extends Entity
-{
-    submodules:
-        net: NetEMRP;
-        link: Link802154;
-    connections:
-        net.linkGate <--> link.netGate;
+//
+// Packet used in WSN
+//
+packet WsnPacket {
+    int srcAddr; // Source address
+    int desAddr; // Destination address
+    int frameSize; // Frame size when packet is sent through physical/link layer (in bytes)
 }

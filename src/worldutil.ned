@@ -20,5 +20,5 @@ package trackingwsn;
 //
 simple WorldUtil
 {
-    @display("i=misc/globe;p=-1,1");
+    @display("i=misc/globe;p=-4,2");
 }

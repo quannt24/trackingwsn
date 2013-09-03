@@ -16,13 +16,13 @@
 package trackingwsn;
 
 //
-// Sensor's Application Layer
+// Utility module for checking status of channel, used to simulate channel sensing. Each instance
+// of this module can be used to track the using of a channel (just like a register table, no
+// mechanism to control the behaviors of other modules is provided).
+// Other modules should register with this module if they are going to use/release channel; and
+// they can check the status of the channel.
 //
-simple SensorApp
+simple ChannelUtil
 {
-    parameters:
-        double senseInterval = default(0.5);
-        @display("i=block/app");
-    gates:
-        inout ssGate;
+    @display("i=block/network");
 }

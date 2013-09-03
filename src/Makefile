@@ -29,18 +29,21 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc and .msg files
 OBJS = \
-    $O/sensorapp.o \
+    $O/appsensor.o \
     $O/asg.o \
     $O/worldutil.o \
     $O/mobility.o \
     $O/link802154.o \
     $O/ass.o \
     $O/channelutil.o \
+    $O/netemrp.o \
+    $O/wsnpacket_m.o \
     $O/sensereq_m.o \
     $O/sensedsignal_m.o
 
 # Message files
 MSGFILES = \
+    wsnpacket.msg \
     sensereq.msg \
     sensedsignal.msg
 
@@ -125,6 +128,9 @@ depend:
 	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+$O/appsensor.o: appsensor.cc \
+	appsensor.h \
+	msgkind.h
 $O/asg.o: asg.cc \
 	asg.h \
 	ass.h \
@@ -142,21 +148,24 @@ $O/channelutil.o: channelutil.cc \
 	channelutil.h \
 	link802154.h \
 	mobility.h \
-	worldutil.h
+	worldutil.h \
+	wsnpacket_m.h
 $O/link802154.o: link802154.cc \
-	link802154.h
+	link802154.h \
+	wsnpacket_m.h
 $O/mobility.o: mobility.cc \
 	mobility.h
+$O/netemrp.o: netemrp.cc \
+	netemrp.h
 $O/sensedsignal_m.o: sensedsignal_m.cc \
 	sensedsignal_m.h
 $O/sensereq_m.o: sensereq_m.cc \
 	ass.h \
 	sensedsignal_m.h \
 	sensereq_m.h
-$O/sensorapp.o: sensorapp.cc \
-	msgkind.h \
-	sensorapp.h
 $O/worldutil.o: worldutil.cc \
 	mobility.h \
 	worldutil.h
+$O/wsnpacket_m.o: wsnpacket_m.cc \
+	wsnpacket_m.h
 

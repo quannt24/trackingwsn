@@ -13,13 +13,26 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+#ifndef __TRACKINGWSN_APPSENSOR_H_
+#define __TRACKINGWSN_APPSENSOR_H_
 
-module Node802154 extends Entity
+#include <omnetpp.h>
+
+/**
+ * Sensor's Application Layer
+ */
+class AppSensor : public cSimpleModule
 {
-    submodules:
-        net: NetEMRP;
-        link: Link802154;
-    connections:
-        net.linkGate <--> link.netGate;
-}
+    private:
+        cMessage *senseMsg; // Self message for start sensing
+
+    protected:
+        virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
+
+    public:
+        AppSensor();
+        ~AppSensor();
+};
+
+#endif

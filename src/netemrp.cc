@@ -13,13 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+#include "netemrp.h"
 
-module Node802154 extends Entity
+Define_Module(NetEMRP);
+
+void NetEMRP::initialize()
 {
-    submodules:
-        net: NetEMRP;
-        link: Link802154;
-    connections:
-        net.linkGate <--> link.netGate;
+    // TODO - Generated method body
+}
+
+void NetEMRP::handleMessage(cMessage *msg)
+{
+    // TODO - Generated method body
 }

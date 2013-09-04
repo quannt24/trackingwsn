@@ -26,7 +26,11 @@ class Link802154 : public cSimpleModule
 {
     private:
         int addr; // Address of link layer
-        void sendPacket(WsnPacket *packet); // Send packet out
+        cPacketQueue outQueue; // Packet sending queue
+        cMessage *txMsg; // Self message for transmit timer
+
+        void queuePacket(WsnPacket *packet);
+        void transmitPackets(); // Transmit queued packets to the air
         void recvPacket(WsnPacket *packet); // Receive packet from other node, forward to upper layer
 
     protected:
@@ -34,6 +38,8 @@ class Link802154 : public cSimpleModule
         virtual void handleMessage(cMessage *msg);
 
     public:
+        Link802154();
+        ~Link802154();
         int getAddr();
 };
 

@@ -26,15 +26,32 @@ void Link802154::initialize()
 
 void Link802154::handleMessage(cMessage *msg)
 {
-    if (msg->getArrivalGate() == gate("netGate$i")) {
-        // Packet from upper layer, send to next hop
-        sendPacket((WsnPacket*) msg);
-    } else if (msg->getArrivalGate() == gate("radioIn")) {
-        if (msg->getKind() == WL_PACKET) {
-            // Packet from other node
-            recvPacket((WsnPacket*) msg);
+    if (msg->isSelfMessage()) {
+        if (msg == txMsg) {
+            // Transmit timer
+            transmitPackets();
+        }
+    } else {
+        if (msg->getArrivalGate() == gate("netGate$i")) {
+            // Packet from upper layer, send to next hop
+            queuePacket((WsnPacket*) msg);
+        } else if (msg->getArrivalGate() == gate("radioIn")) {
+            if (msg->getKind() == WL_PACKET) {
+                // Packet from other node
+                recvPacket((WsnPacket*) msg);
+            }
         }
     }
+}
+
+Link802154::Link802154()
+{
+    txMsg = new cMessage("TxMsg");
+}
+
+Link802154::~Link802154()
+{
+    cancelAndDelete(txMsg);
 }
 
 /*
@@ -46,22 +63,39 @@ int Link802154::getAddr()
 }
 
 /*
- * Send packet out
+ * Add packet to sending queue and start a transmit timer.
  */
-void Link802154::sendPacket(WsnPacket* packet)
+void Link802154::queuePacket(WsnPacket *packet)
 {
-    Link802154 *desLink = (Link802154*) simulation.getModule(packet->getDesAddr());
-    if (desLink == NULL) {
-        EV << "destination error\n";
-        delete packet;
-        return;
-    }
-
-    packet->setSrcAddr(addr);
     // TODO set frame size
+    packet->setSrcAddr(addr);
+    outQueue.insert(packet);
 
-    // TODO Sense channel, calculate delay
-    sendDirect(packet, 0, 0, desLink, "radioIn"); // TODO add delay
+    // If transmit timer is not set, set it immediately
+    if (!txMsg->isScheduled()) scheduleAt(simTime(), txMsg);
+}
+
+/*
+ * Check if channel is idle, then transmit queued packets to the air.
+ * If channel is busy, back-off.
+ */
+void Link802154::transmitPackets()
+{
+    WsnPacket *pkt;
+    Link802154 *des;
+
+    while (!outQueue.isEmpty()) {
+        // TODO Sense channel, back-off if channel is busy
+        pkt = (WsnPacket*) outQueue.pop();
+        des = (Link802154*) simulation.getModule(pkt->getDesAddr());
+        if (des == NULL) {
+            EV << "Link802154::transmitPackets : destination error\n";
+            delete pkt;
+        } else {
+            // TODO Calculate delay
+            sendDirect(pkt, 0, 0, des, "radioIn");
+        }
+    }
 }
 
 /*

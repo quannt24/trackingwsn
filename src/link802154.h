@@ -20,7 +20,7 @@
 #include <omnetpp.h>
 
 /**
- * Phy/Link layer using IEEE 802.15.4
+ * Phy/Link layer using IEEE 802.15.4, CSMA-CA
  */
 class Link802154 : public cSimpleModule
 {

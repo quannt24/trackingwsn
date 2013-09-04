@@ -15,6 +15,7 @@
 
 #include "link802154.h"
 #include "wsnpacket_m.h"
+#include "msgkind.h"
 
 Define_Module(Link802154);
 
@@ -26,12 +27,13 @@ void Link802154::initialize()
 void Link802154::handleMessage(cMessage *msg)
 {
     if (msg->getArrivalGate() == gate("netGate$i")) {
-        // From upper layer
+        // Packet from upper layer, send to next hop
         sendPacket((WsnPacket*) msg);
-        EV << "sending packet";
     } else if (msg->getArrivalGate() == gate("radioIn")) {
-        EV << "receive packet";
-        delete msg; // TODO process message
+        if (msg->getKind() == WL_PACKET) {
+            // Packet from other node
+            recvPacket((WsnPacket*) msg);
+        }
     }
 }
 
@@ -58,7 +60,7 @@ void Link802154::sendPacket(WsnPacket* packet)
     packet->setSrcAddr(addr);
     // TODO set frame size
 
-    // TODO Sense channel
+    // TODO Sense channel, calculate delay
     sendDirect(packet, 0, 0, desLink, "radioIn"); // TODO add delay
 }
 
@@ -67,4 +69,6 @@ void Link802154::sendPacket(WsnPacket* packet)
  */
 void Link802154::recvPacket(WsnPacket* packet)
 {
+    // Forward to upper layer
+    send(packet, "netGate$o");
 }

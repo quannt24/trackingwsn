@@ -152,10 +152,12 @@ $O/channelutil.o: channelutil.cc \
 	wsnpacket_m.h
 $O/link802154.o: link802154.cc \
 	link802154.h \
+	msgkind.h \
 	wsnpacket_m.h
 $O/mobility.o: mobility.cc \
 	mobility.h
 $O/netemrp.o: netemrp.cc \
+	msgkind.h \
 	netemrp.h \
 	wsnpacket_m.h
 $O/sensedsignal_m.o: sensedsignal_m.cc \

@@ -15,6 +15,7 @@
 
 #include "netemrp.h"
 #include "wsnpacket_m.h"
+#include "msgkind.h"
 
 Define_Module(NetEMRP);
 
@@ -27,12 +28,18 @@ void NetEMRP::initialize()
 
 void NetEMRP::handleMessage(cMessage *msg)
 {
-    // TODO - Generated method body
     if (msg->isSelfMessage()) {
+        // TODO Test
         WsnPacket *packet = new WsnPacket();
+        packet->setKind(WL_PACKET);
         packet->setDesAddr(adjNode[intuniform(0, numAdjNode - 1)]);
         send(packet, "linkGate$o");
-        scheduleAt(simTime() + uniform(0, 1), msg);
+    } else if (msg->getArrivalGate() == gate("linkGate$i")) {
+        // TODO Process message
+        EV << "Packet received\n";
+        WsnPacket *packet = (WsnPacket*) msg;
+        packet->setDesAddr(adjNode[intuniform(0, numAdjNode - 1)]);
+        send(packet, "linkGate$o");
     }
 }
 

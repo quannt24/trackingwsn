@@ -25,12 +25,22 @@ void Link802154::initialize()
 
 void Link802154::handleMessage(cMessage *msg)
 {
-    if (msg->getArrivalGate() == gate("netGate")) {
+    if (msg->getArrivalGate() == gate("netGate$i")) {
         // From upper layer
         sendPacket((WsnPacket*) msg);
+        EV << "sending packet";
     } else if (msg->getArrivalGate() == gate("radioIn")) {
+        EV << "receive packet";
         delete msg; // TODO process message
     }
+}
+
+/*
+ * Get MAC address
+ */
+int Link802154::getAddr()
+{
+    return addr;
 }
 
 /*
@@ -38,12 +48,12 @@ void Link802154::handleMessage(cMessage *msg)
  */
 void Link802154::sendPacket(WsnPacket* packet)
 {
-    cModule *desNode = simulation.getModule(packet->getDesAddr());
-    if (desNode == NULL) {
+    Link802154 *desLink = (Link802154*) simulation.getModule(packet->getDesAddr());
+    if (desLink == NULL) {
+        EV << "destination error\n";
         delete packet;
         return;
     }
-    Link802154 *desLink = (Link802154*) desNode->getSubmodule("link");
 
     packet->setSrcAddr(addr);
     // TODO set frame size

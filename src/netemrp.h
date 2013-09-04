@@ -18,14 +18,26 @@
 
 #include <omnetpp.h>
 
+// Max numbers of connected nodes
+#define MAX_CONNECTIONS 25
+
 /**
  * Network layer using EMRP protocol
  */
 class NetEMRP : public cSimpleModule
 {
-  protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    private:
+        int numAdjNode;
+        int adjNode[25]; // Adjacent nodes
+
+    protected:
+        virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
+
+    public:
+        NetEMRP();
+        bool isFullConn(); // Check if connection list is full or not.
+        int addAdjNode(int addr); // Add a node to connection list
 };
 
 #endif

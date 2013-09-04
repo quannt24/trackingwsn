@@ -32,6 +32,9 @@ class Link802154 : public cSimpleModule
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
+
+    public:
+        int getAddr();
 };
 
 #endif

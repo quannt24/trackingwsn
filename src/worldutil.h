@@ -24,12 +24,13 @@
  */
 class WorldUtil : public cSimpleModule
 {
+    private:
+        void arrangeNodes(); // Arrange nodes in positions
+        void connectNodes(); // Connect adjacent nodes
+
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
-
-    public:
-        void arrangeNodes(); // Arrange nodes in positions
 };
 
 double distance(Mobility *mob1, Mobility *mob2);

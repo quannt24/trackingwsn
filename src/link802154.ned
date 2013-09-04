@@ -40,5 +40,5 @@ simple Link802154
 
     gates:
         inout netGate; // Connect with network layer
-        input radioIn; // Receive wireless packet
+        input radioIn @directIn; // Receive wireless packet
 }

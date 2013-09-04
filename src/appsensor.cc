@@ -21,7 +21,7 @@ Define_Module(AppSensor);
 void AppSensor::initialize()
 {
     // TODO Test Start sensing immediately
-    scheduleAt(0, senseMsg);
+    //scheduleAt(0, senseMsg);
 }
 
 void AppSensor::handleMessage(cMessage *msg)

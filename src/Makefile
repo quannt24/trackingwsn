@@ -156,7 +156,8 @@ $O/link802154.o: link802154.cc \
 $O/mobility.o: mobility.cc \
 	mobility.h
 $O/netemrp.o: netemrp.cc \
-	netemrp.h
+	netemrp.h \
+	wsnpacket_m.h
 $O/sensedsignal_m.o: sensedsignal_m.cc \
 	sensedsignal_m.h
 $O/sensereq_m.o: sensereq_m.cc \
@@ -164,8 +165,11 @@ $O/sensereq_m.o: sensereq_m.cc \
 	sensedsignal_m.h \
 	sensereq_m.h
 $O/worldutil.o: worldutil.cc \
+	link802154.h \
 	mobility.h \
-	worldutil.h
+	netemrp.h \
+	worldutil.h \
+	wsnpacket_m.h
 $O/wsnpacket_m.o: wsnpacket_m.cc \
 	wsnpacket_m.h
 

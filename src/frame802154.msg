@@ -14,10 +14,9 @@
 // 
 
 //
-// Packet used in WSN
+// Phy/Link frame
 //
-packet WsnPacket {
-    int srcAddr; // Source address
-    int desAddr; // Destination address
-    int frameSize; // Frame size when packet is sent through physical/link layer (in bytes)
+packet Frame802154 {
+    int srcAddr; // Source MAC address
+    int desAddr; // Destination MAC address
 }

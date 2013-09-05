@@ -16,8 +16,11 @@
 #ifndef __TRACKINGWSN_LINK802154_H_
 #define __TRACKINGWSN_LINK802154_H_
 
-#include "wsnpacket_m.h"
+#include "frame802154_m.h"
 #include <omnetpp.h>
+
+// Max numbers of connected nodes
+#define MAX_CONNECTIONS 25
 
 /**
  * Phy/Link layer using IEEE 802.15.4, CSMA-CA
@@ -25,13 +28,17 @@
 class Link802154 : public cSimpleModule
 {
     private:
-        int addr; // Address of link layer
-        cPacketQueue outQueue; // Packet sending queue
+        int macAddress; // Address of link layer
+        int numAdjNode; // Number of connected nodes (adjacent nodes), which is <= MAX_CONNECTIONS
+        int adjNode[MAX_CONNECTIONS]; // Adjacent nodes' addresses
+
+        cPacketQueue outQueue; // Frame sending queue
         cMessage *txMsg; // Self message for transmit timer
 
-        void queuePacket(WsnPacket *packet);
-        void transmitPackets(); // Transmit queued packets to the air
-        void recvPacket(WsnPacket *packet); // Receive packet from other node, forward to upper layer
+        Frame802154* createFrame(cPacket *packet);
+        void queueFrame(Frame802154 *frame);
+        void transmitFrames(); // Transmit queued frames to the air
+        void recvFrame(Frame802154 *frame); // Receive frame from other node, forward to upper layer
 
     protected:
         virtual void initialize();
@@ -41,6 +48,9 @@ class Link802154 : public cSimpleModule
         Link802154();
         ~Link802154();
         int getAddr();
+        bool isFullConn(); // Check if connection list is full or not.
+        int addAdjNode(int addr); // Add a node to connection list
+
 };
 
 #endif

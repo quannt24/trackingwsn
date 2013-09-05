@@ -14,7 +14,7 @@
 // 
 
 #include "netemrp.h"
-#include "wsnpacket_m.h"
+#include "packetemrp_m.h"
 #include "msgkind.h"
 
 Define_Module(NetEMRP);
@@ -23,48 +23,20 @@ void NetEMRP::initialize()
 {
     // TODO test
     cMessage *self = new cMessage("Self");
-    scheduleAt(uniform(0, 1), self);
+    scheduleAt(uniform(0, 5), self);
 }
 
 void NetEMRP::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
-        // TODO Test
-        WsnPacket *packet = new WsnPacket();
-        packet->setKind(WL_PACKET);
-        packet->setDesAddr(adjNode[intuniform(0, numAdjNode - 1)]);
+        // TODO Test, dispose self
+        PacketEMRP *packet = new PacketEMRP("PacketEMRP");
+        packet->setByteLength(86); // TODO Test
         send(packet, "linkGate$o");
     } else if (msg->getArrivalGate() == gate("linkGate$i")) {
         // TODO Process message
-        EV << "Packet received\n";
-        WsnPacket *packet = (WsnPacket*) msg;
-        packet->setDesAddr(adjNode[intuniform(0, numAdjNode - 1)]);
+        PacketEMRP *packet = (PacketEMRP*) msg;
+        EV << "Packet received, size " << packet->getByteLength() << "\n";
         send(packet, "linkGate$o");
     }
-}
-
-NetEMRP::NetEMRP()
-{
-    numAdjNode = 0;
-}
-
-/*
- * Check if connection list is full or not.
- */
-bool NetEMRP::isFullConn()
-{
-    return numAdjNode >= MAX_CONNECTIONS;
-}
-
-/*
- * Add a node to connection list.
- * Return: 0 on success, -1 when error
- */
-int NetEMRP::addAdjNode(int addr)
-{
-    if (numAdjNode >= MAX_CONNECTIONS) return -1;
-
-    adjNode[numAdjNode] = addr;
-    numAdjNode++;
-    return 0;
 }

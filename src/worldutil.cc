@@ -15,7 +15,6 @@
 
 #include "worldutil.h"
 #include "mobility.h"
-#include "netemrp.h"
 #include "link802154.h"
 
 Define_Module(WorldUtil);
@@ -69,7 +68,6 @@ void WorldUtil::connectNodes()
     cModule *ss1, *ss2;
     Mobility *mob1, *mob2;
     Link802154 *link1, *link2;
-    NetEMRP *net1, *net2;
     int n = wsn->par("numSensors").longValue();
     int i, j;
     double d;
@@ -80,25 +78,21 @@ void WorldUtil::connectNodes()
     for (i = 0; i < n - 1; i++) {
         ss1 = wsn->getSubmodule("sensor", i);
 
-        net1 = (NetEMRP*) ss1->getSubmodule("net");
-        if (net1->isFullConn()) continue;
-
         mob1 = (Mobility*) ss1->getSubmodule("mobility");
         link1 = (Link802154*) ss1->getSubmodule("link");
+        if (link1->isFullConn()) continue;
 
         for (j = i + 1; j < n; j++) {
             ss2 = wsn->getSubmodule("sensor", j);
 
-            net2 = (NetEMRP*) ss2->getSubmodule("net");
-            if (net2->isFullConn()) continue;
-
             mob2 = (Mobility*) ss2->getSubmodule("mobility");
             link2 = (Link802154*) ss2->getSubmodule("link");
+            if (link2->isFullConn()) continue;
 
             d = distance(mob1, mob2);
             if (d <= link1->par("txRange").longValue() && d <= link2->par("txRange").longValue()) {
-                net1->addAdjNode(link2->getAddr());
-                net2->addAdjNode(link1->getAddr());
+                link1->addAdjNode(link2->getAddr());
+                link2->addAdjNode(link1->getAddr());
             }
         }
     }

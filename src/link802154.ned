@@ -22,19 +22,21 @@ simple Link802154
 {
     parameters:
         double txRange @unit(m) = default(10m); // Transmission range
+        int bitRate @unit(bps) = default(250000bps);
+        
         int maxFrameSize = default(127); // Max size of a link layer frame in byte, not including physical layer header
         int phyHeaderSize = default(6); // Physical layer header size in byte
         // Physical (transmited) frame size = phyHeaderSize + link frame size
         
-        // Size of fixed segments in a frame in byte
-        int segFrameControl = default(2);
-        int segSequenceId = default(1);
-        int segAddr = default(8); // Short address ~ 2 bytes; Long address ~ 8 bytes
+        // Size of MAC layer fields in a frame in byte
+        int fldFrameControl = default(2);
+        int fldSequenceId = default(1);
+        int fldAddr = default(8); // Short address ~ 2 bytes; Long address ~ 8 bytes
         // Security segment is ignored
-        int segFooter = default(2);
+        int fldFooter = default(2);
         
         // Max packet size for upper layer
-        int maxPacketSize = maxFrameSize - segFrameControl - segSequenceId - segAddr - segFooter;
+        int maxPacketSize = maxFrameSize - fldFrameControl - fldSequenceId - fldAddr - fldFooter;
         
         @display("i=block/wrxtx");
 

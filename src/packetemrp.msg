@@ -13,19 +13,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __TRACKINGWSN_NETEMRP_H_
-#define __TRACKINGWSN_NETEMRP_H_
-
-#include <omnetpp.h>
-
-/**
- * Network layer using EMRP protocol
- */
-class NetEMRP : public cSimpleModule
-{
-    protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
-};
-
-#endif
+//
+// EMRP network packet
+//
+packet PacketEMRP {
+    int someField;
+    string anotherField;
+}

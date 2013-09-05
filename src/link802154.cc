@@ -14,14 +14,15 @@
 // 
 
 #include "link802154.h"
-#include "wsnpacket_m.h"
+#include "frame802154_m.h"
 #include "msgkind.h"
+#include "wsnexception.h"
 
 Define_Module(Link802154);
 
 void Link802154::initialize()
 {
-    addr = this->getId(); // Address is also module id of link module
+    macAddress = this->getId(); // Address is also module id of link module
 }
 
 void Link802154::handleMessage(cMessage *msg)
@@ -29,23 +30,22 @@ void Link802154::handleMessage(cMessage *msg)
     if (msg->isSelfMessage()) {
         if (msg == txMsg) {
             // Transmit timer
-            transmitPackets();
+            transmitFrames();
         }
     } else {
         if (msg->getArrivalGate() == gate("netGate$i")) {
-            // Packet from upper layer, send to next hop
-            queuePacket((WsnPacket*) msg);
+            // Packet from upper layer, assemble frame and send to next hop
+            queueFrame(createFrame((cPacket*) msg));
         } else if (msg->getArrivalGate() == gate("radioIn")) {
-            if (msg->getKind() == WL_PACKET) {
-                // Packet from other node
-                recvPacket((WsnPacket*) msg);
-            }
+            // Frame from other node
+            recvFrame((Frame802154*) msg);
         }
     }
 }
 
 Link802154::Link802154()
 {
+    numAdjNode = 0;
     txMsg = new cMessage("TxMsg");
 }
 
@@ -59,50 +59,92 @@ Link802154::~Link802154()
  */
 int Link802154::getAddr()
 {
-    return addr;
+    return macAddress;
 }
 
 /*
- * Add packet to sending queue and start a transmit timer.
+ * Check if connection list is full or not.
  */
-void Link802154::queuePacket(WsnPacket *packet)
+bool Link802154::isFullConn()
 {
-    // TODO set frame size
-    packet->setSrcAddr(addr);
-    outQueue.insert(packet);
+    return numAdjNode >= MAX_CONNECTIONS;
+}
+
+/*
+ * Add a node to connection list.
+ * Return: 0 on success, -1 when error
+ */
+int Link802154::addAdjNode(int addr)
+{
+    if (numAdjNode >= MAX_CONNECTIONS) return -1;
+
+    adjNode[numAdjNode] = addr;
+    numAdjNode++;
+    return 0;
+}
+
+/*
+ * Assemble a frame to encapsulate a packet.
+ */
+Frame802154* Link802154::createFrame(cPacket* packet)
+{
+    // TODO Process long packet
+    if (packet->getByteLength() > par("maxPacketSize").longValue()) throw PACKET_TOO_LONG;
+
+    Frame802154 *frm = new Frame802154("Frame802154");
+    frm->setSrcAddr(macAddress);
+    frm->setDesAddr(adjNode[intuniform(0, numAdjNode - 1)]); // TODO Test
+    frm->setByteLength(par("fldFrameControl").longValue() + par("fldSequenceId").longValue()
+            + par("fldAddr").longValue() + par("fldFooter").longValue() + par("phyHeaderSize").longValue());
+    frm->encapsulate(packet); // Frame length will be increased by length of packet
+
+    return frm;
+}
+
+/*
+ * Add Frame to sending queue and start a transmit timer.
+ */
+void Link802154::queueFrame(Frame802154 *frame)
+{
+    outQueue.insert(frame);
 
     // If transmit timer is not set, set it immediately
     if (!txMsg->isScheduled()) scheduleAt(simTime(), txMsg);
 }
 
 /*
- * Check if channel is idle, then transmit queued packets to the air.
+ * Check if channel is idle, then transmit queued frames to the air.
  * If channel is busy, back-off.
  */
-void Link802154::transmitPackets()
+void Link802154::transmitFrames()
 {
-    WsnPacket *pkt;
+    Frame802154 *frm;
     Link802154 *des;
+    double txDuration;
 
     while (!outQueue.isEmpty()) {
         // TODO Sense channel, back-off if channel is busy
-        pkt = (WsnPacket*) outQueue.pop();
-        des = (Link802154*) simulation.getModule(pkt->getDesAddr());
+        frm = (Frame802154*) outQueue.pop();
+        des = (Link802154*) simulation.getModule(frm->getDesAddr());
         if (des == NULL) {
-            EV << "Link802154::transmitPackets : destination error\n";
-            delete pkt;
+            EV << "Link802154::transmitFrames : destination error\n";
+            delete frm;
         } else {
-            // TODO Calculate delay
-            sendDirect(pkt, 0, 0, des, "radioIn");
+            txDuration = ((double) frm->getBitLength()) / par("bitRate").doubleValue();
+            EV << "Link802154::transmitFrames : Tx Duration " << txDuration << "\n";
+            sendDirect(frm, 0, txDuration, des, "radioIn");
         }
     }
 }
 
 /*
- * Receive packet from other node, forward to upper layer
+ * Receive frame from other node, forward to upper layer
  */
-void Link802154::recvPacket(WsnPacket* packet)
+void Link802154::recvFrame(Frame802154* frame)
 {
+    // TODO Test
+    EV << "Link802154::recvFrame : Frame size " << frame->getByteLength() << "\n";
     // Forward to upper layer
-    send(packet, "netGate$o");
+    send(frame->decapsulate(), "netGate$o");
+    delete frame;
 }

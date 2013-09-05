@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from wsnpacket.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from packetemrp.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "wsnpacket_m.h"
+#include "packetemrp_m.h"
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -30,25 +30,24 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 
-Register_Class(WsnPacket);
+Register_Class(PacketEMRP);
 
-WsnPacket::WsnPacket(const char *name, int kind) : cPacket(name,kind)
+PacketEMRP::PacketEMRP(const char *name, int kind) : cPacket(name,kind)
 {
-    this->srcAddr_var = 0;
-    this->desAddr_var = 0;
-    this->frameSize_var = 0;
+    this->someField_var = 0;
+    this->anotherField_var = 0;
 }
 
-WsnPacket::WsnPacket(const WsnPacket& other) : cPacket(other)
+PacketEMRP::PacketEMRP(const PacketEMRP& other) : cPacket(other)
 {
     copy(other);
 }
 
-WsnPacket::~WsnPacket()
+PacketEMRP::~PacketEMRP()
 {
 }
 
-WsnPacket& WsnPacket::operator=(const WsnPacket& other)
+PacketEMRP& PacketEMRP::operator=(const PacketEMRP& other)
 {
     if (this==&other) return *this;
     cPacket::operator=(other);
@@ -56,64 +55,51 @@ WsnPacket& WsnPacket::operator=(const WsnPacket& other)
     return *this;
 }
 
-void WsnPacket::copy(const WsnPacket& other)
+void PacketEMRP::copy(const PacketEMRP& other)
 {
-    this->srcAddr_var = other.srcAddr_var;
-    this->desAddr_var = other.desAddr_var;
-    this->frameSize_var = other.frameSize_var;
+    this->someField_var = other.someField_var;
+    this->anotherField_var = other.anotherField_var;
 }
 
-void WsnPacket::parsimPack(cCommBuffer *b)
+void PacketEMRP::parsimPack(cCommBuffer *b)
 {
     cPacket::parsimPack(b);
-    doPacking(b,this->srcAddr_var);
-    doPacking(b,this->desAddr_var);
-    doPacking(b,this->frameSize_var);
+    doPacking(b,this->someField_var);
+    doPacking(b,this->anotherField_var);
 }
 
-void WsnPacket::parsimUnpack(cCommBuffer *b)
+void PacketEMRP::parsimUnpack(cCommBuffer *b)
 {
     cPacket::parsimUnpack(b);
-    doUnpacking(b,this->srcAddr_var);
-    doUnpacking(b,this->desAddr_var);
-    doUnpacking(b,this->frameSize_var);
+    doUnpacking(b,this->someField_var);
+    doUnpacking(b,this->anotherField_var);
 }
 
-int WsnPacket::getSrcAddr() const
+int PacketEMRP::getSomeField() const
 {
-    return srcAddr_var;
+    return someField_var;
 }
 
-void WsnPacket::setSrcAddr(int srcAddr)
+void PacketEMRP::setSomeField(int someField)
 {
-    this->srcAddr_var = srcAddr;
+    this->someField_var = someField;
 }
 
-int WsnPacket::getDesAddr() const
+const char * PacketEMRP::getAnotherField() const
 {
-    return desAddr_var;
+    return anotherField_var.c_str();
 }
 
-void WsnPacket::setDesAddr(int desAddr)
+void PacketEMRP::setAnotherField(const char * anotherField)
 {
-    this->desAddr_var = desAddr;
+    this->anotherField_var = anotherField;
 }
 
-int WsnPacket::getFrameSize() const
-{
-    return frameSize_var;
-}
-
-void WsnPacket::setFrameSize(int frameSize)
-{
-    this->frameSize_var = frameSize;
-}
-
-class WsnPacketDescriptor : public cClassDescriptor
+class PacketEMRPDescriptor : public cClassDescriptor
 {
   public:
-    WsnPacketDescriptor();
-    virtual ~WsnPacketDescriptor();
+    PacketEMRPDescriptor();
+    virtual ~PacketEMRPDescriptor();
 
     virtual bool doesSupport(cObject *obj) const;
     virtual const char *getProperty(const char *propertyname) const;
@@ -132,34 +118,34 @@ class WsnPacketDescriptor : public cClassDescriptor
     virtual void *getFieldStructPointer(void *object, int field, int i) const;
 };
 
-Register_ClassDescriptor(WsnPacketDescriptor);
+Register_ClassDescriptor(PacketEMRPDescriptor);
 
-WsnPacketDescriptor::WsnPacketDescriptor() : cClassDescriptor("WsnPacket", "cPacket")
+PacketEMRPDescriptor::PacketEMRPDescriptor() : cClassDescriptor("PacketEMRP", "cPacket")
 {
 }
 
-WsnPacketDescriptor::~WsnPacketDescriptor()
+PacketEMRPDescriptor::~PacketEMRPDescriptor()
 {
 }
 
-bool WsnPacketDescriptor::doesSupport(cObject *obj) const
+bool PacketEMRPDescriptor::doesSupport(cObject *obj) const
 {
-    return dynamic_cast<WsnPacket *>(obj)!=NULL;
+    return dynamic_cast<PacketEMRP *>(obj)!=NULL;
 }
 
-const char *WsnPacketDescriptor::getProperty(const char *propertyname) const
+const char *PacketEMRPDescriptor::getProperty(const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     return basedesc ? basedesc->getProperty(propertyname) : NULL;
 }
 
-int WsnPacketDescriptor::getFieldCount(void *object) const
+int PacketEMRPDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 3+basedesc->getFieldCount(object) : 3;
+    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
 }
 
-unsigned int WsnPacketDescriptor::getFieldTypeFlags(void *object, int field) const
+unsigned int PacketEMRPDescriptor::getFieldTypeFlags(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -170,12 +156,11 @@ unsigned int WsnPacketDescriptor::getFieldTypeFlags(void *object, int field) con
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
         FD_ISEDITABLE,
-        FD_ISEDITABLE,
     };
-    return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
 }
 
-const char *WsnPacketDescriptor::getFieldName(void *object, int field) const
+const char *PacketEMRPDescriptor::getFieldName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -184,24 +169,22 @@ const char *WsnPacketDescriptor::getFieldName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldNames[] = {
-        "srcAddr",
-        "desAddr",
-        "frameSize",
+        "someField",
+        "anotherField",
     };
-    return (field>=0 && field<3) ? fieldNames[field] : NULL;
+    return (field>=0 && field<2) ? fieldNames[field] : NULL;
 }
 
-int WsnPacketDescriptor::findField(void *object, const char *fieldName) const
+int PacketEMRPDescriptor::findField(void *object, const char *fieldName) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
-    if (fieldName[0]=='s' && strcmp(fieldName, "srcAddr")==0) return base+0;
-    if (fieldName[0]=='d' && strcmp(fieldName, "desAddr")==0) return base+1;
-    if (fieldName[0]=='f' && strcmp(fieldName, "frameSize")==0) return base+2;
+    if (fieldName[0]=='s' && strcmp(fieldName, "someField")==0) return base+0;
+    if (fieldName[0]=='a' && strcmp(fieldName, "anotherField")==0) return base+1;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
-const char *WsnPacketDescriptor::getFieldTypeString(void *object, int field) const
+const char *PacketEMRPDescriptor::getFieldTypeString(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -211,13 +194,12 @@ const char *WsnPacketDescriptor::getFieldTypeString(void *object, int field) con
     }
     static const char *fieldTypeStrings[] = {
         "int",
-        "int",
-        "int",
+        "string",
     };
-    return (field>=0 && field<3) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
 }
 
-const char *WsnPacketDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+const char *PacketEMRPDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -230,7 +212,7 @@ const char *WsnPacketDescriptor::getFieldProperty(void *object, int field, const
     }
 }
 
-int WsnPacketDescriptor::getArraySize(void *object, int field) const
+int PacketEMRPDescriptor::getArraySize(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -238,13 +220,13 @@ int WsnPacketDescriptor::getArraySize(void *object, int field) const
             return basedesc->getArraySize(object, field);
         field -= basedesc->getFieldCount(object);
     }
-    WsnPacket *pp = (WsnPacket *)object; (void)pp;
+    PacketEMRP *pp = (PacketEMRP *)object; (void)pp;
     switch (field) {
         default: return 0;
     }
 }
 
-std::string WsnPacketDescriptor::getFieldAsString(void *object, int field, int i) const
+std::string PacketEMRPDescriptor::getFieldAsString(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -252,16 +234,15 @@ std::string WsnPacketDescriptor::getFieldAsString(void *object, int field, int i
             return basedesc->getFieldAsString(object,field,i);
         field -= basedesc->getFieldCount(object);
     }
-    WsnPacket *pp = (WsnPacket *)object; (void)pp;
+    PacketEMRP *pp = (PacketEMRP *)object; (void)pp;
     switch (field) {
-        case 0: return long2string(pp->getSrcAddr());
-        case 1: return long2string(pp->getDesAddr());
-        case 2: return long2string(pp->getFrameSize());
+        case 0: return long2string(pp->getSomeField());
+        case 1: return oppstring2string(pp->getAnotherField());
         default: return "";
     }
 }
 
-bool WsnPacketDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+bool PacketEMRPDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -269,16 +250,15 @@ bool WsnPacketDescriptor::setFieldAsString(void *object, int field, int i, const
             return basedesc->setFieldAsString(object,field,i,value);
         field -= basedesc->getFieldCount(object);
     }
-    WsnPacket *pp = (WsnPacket *)object; (void)pp;
+    PacketEMRP *pp = (PacketEMRP *)object; (void)pp;
     switch (field) {
-        case 0: pp->setSrcAddr(string2long(value)); return true;
-        case 1: pp->setDesAddr(string2long(value)); return true;
-        case 2: pp->setFrameSize(string2long(value)); return true;
+        case 0: pp->setSomeField(string2long(value)); return true;
+        case 1: pp->setAnotherField((value)); return true;
         default: return false;
     }
 }
 
-const char *WsnPacketDescriptor::getFieldStructName(void *object, int field) const
+const char *PacketEMRPDescriptor::getFieldStructName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -289,12 +269,11 @@ const char *WsnPacketDescriptor::getFieldStructName(void *object, int field) con
     static const char *fieldStructNames[] = {
         NULL,
         NULL,
-        NULL,
     };
-    return (field>=0 && field<3) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
 }
 
-void *WsnPacketDescriptor::getFieldStructPointer(void *object, int field, int i) const
+void *PacketEMRPDescriptor::getFieldStructPointer(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -302,7 +281,7 @@ void *WsnPacketDescriptor::getFieldStructPointer(void *object, int field, int i)
             return basedesc->getFieldStructPointer(object, field, i);
         field -= basedesc->getFieldCount(object);
     }
-    WsnPacket *pp = (WsnPacket *)object; (void)pp;
+    PacketEMRP *pp = (PacketEMRP *)object; (void)pp;
     switch (field) {
         default: return NULL;
     }

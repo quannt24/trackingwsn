@@ -17,6 +17,7 @@
 #include "frame802154_m.h"
 #include "msgkind.h"
 #include "wsnexception.h"
+#include "channelutil.h"
 
 Define_Module(Link802154);
 
@@ -28,9 +29,11 @@ void Link802154::initialize()
 void Link802154::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
-        if (msg == txMsg) {
-            // Transmit timer
-            transmitFrames();
+        if (msg == csmaMsg) {
+            // Start CSMA transmission
+            csmaTransmit();
+        } else if (msg == releaseChannelMsg) {
+            releaseChannel();
         }
     } else {
         if (msg->getArrivalGate() == gate("netGate$i")) {
@@ -46,12 +49,15 @@ void Link802154::handleMessage(cMessage *msg)
 Link802154::Link802154()
 {
     numAdjNode = 0;
-    txMsg = new cMessage("TxMsg");
+    txFrame = NULL;
+    csmaMsg = new cMessage("CSMAMsg");
+    releaseChannelMsg = new cMessage("ReleaseChannelMsg");
 }
 
 Link802154::~Link802154()
 {
-    cancelAndDelete(txMsg);
+    cancelAndDelete(csmaMsg);
+    cancelAndDelete(releaseChannelMsg);
 }
 
 /*
@@ -107,34 +113,8 @@ Frame802154* Link802154::createFrame(cPacket* packet)
 void Link802154::queueFrame(Frame802154 *frame)
 {
     outQueue.insert(frame);
-
-    // If transmit timer is not set, set it immediately
-    if (!txMsg->isScheduled()) scheduleAt(simTime(), txMsg);
-}
-
-/*
- * Check if channel is idle, then transmit queued frames to the air.
- * If channel is busy, back-off.
- */
-void Link802154::transmitFrames()
-{
-    Frame802154 *frm;
-    Link802154 *des;
-    double txDuration;
-
-    while (!outQueue.isEmpty()) {
-        // TODO Sense channel, back-off if channel is busy
-        frm = (Frame802154*) outQueue.pop();
-        des = (Link802154*) simulation.getModule(frm->getDesAddr());
-        if (des == NULL) {
-            EV << "Link802154::transmitFrames : destination error\n";
-            delete frm;
-        } else {
-            txDuration = ((double) frm->getBitLength()) / par("bitRate").doubleValue();
-            EV << "Link802154::transmitFrames : Tx Duration " << txDuration << "\n";
-            sendDirect(frm, 0, txDuration, des, "radioIn");
-        }
-    }
+    // If CSMA transmission is not in process, start new one
+    if (!csmaMsg->isScheduled() && !releaseChannelMsg->isScheduled()) scheduleAt(simTime(), csmaMsg);
 }
 
 /*
@@ -147,4 +127,102 @@ void Link802154::recvFrame(Frame802154* frame)
     // Forward to upper layer
     send(frame->decapsulate(), "netGate$o");
     delete frame;
+}
+
+/*
+ * Transmit a prepared frame using unslotted CSMA/CA.
+ * This function is entry point of unslotted CSMA/CA algorithm.
+ */
+void Link802154::csmaTransmit()
+{
+    if (txFrame == NULL) {
+        // Initialize when a frame is transmitted for first time
+        if (outQueue.isEmpty()) return; // Nothing to transmit
+        // Pop new frame from queue
+        txFrame = (Frame802154*) outQueue.pop();
+        // Initialize first CSMA attempt
+        NB = 0;
+        BE = par("macMinBE").longValue();
+    } else {
+        // Re-attempt to transmit prepared frame
+        NB++;
+        if (BE < par("aMaxBE").longValue()) {
+            BE++;
+        } else {
+            BE = par("aMaxBE").longValue();
+        }
+    }
+
+    if (performCCA()) {
+        transmit();
+    } else {
+        if (NB < par("aMaxNB").longValue()) {
+            backoff();
+        } else {
+            // TODO Transmission failure
+            delete txFrame;
+            txFrame = NULL;
+            EV << "Link802154::csmaTransmit : Transmission failure\n";
+        }
+    }
+}
+
+/*
+ * Perform a Clear Channel Assessment (CCA).
+ * In simulation, this function will also acquire the channel if possible.
+ * Return true if channel is idle, false if channel is busy or error.
+ */
+bool Link802154::performCCA()
+{
+    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
+    int ret = cu->acquireChannel(this);
+    EV << "Link802154::performCCA : result " << ret << '\n';
+    return ret == 0;
+}
+
+/*
+ * Release channel
+ */
+void Link802154::releaseChannel()
+{
+    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
+    cu->releaseChannel(this);
+    EV << "Link802154::releaseChannel\n";
+}
+
+/*
+ * Transmit prepared frame, set a timer to release channel when transmission completes.
+ * If outgoing frame queue is not empty, set a timer for next CSMA transmission.
+ */
+void Link802154::transmit()
+{
+    if (txFrame == NULL) return;
+
+    Link802154 *des = (Link802154*) simulation.getModule(txFrame->getDesAddr());
+    if (des == NULL) {
+        EV << "Link802154::transmitFrames : destination error\n";
+        delete txFrame;
+    } else {
+        double txDuration = ((double) txFrame->getBitLength()) / par("bitRate").doubleValue();
+        EV << "Link802154::transmit : Tx Duration " << txDuration << '\n';
+        sendDirect(txFrame, 0, txDuration, des, "radioIn");
+        txFrame = NULL;
+        // Set a timer to release channel
+        scheduleAt(simTime() + txDuration, releaseChannelMsg);
+
+        if (!outQueue.isEmpty()) {
+            // Set a timer to transmit next frame in queue
+            scheduleAt(simTime() + txDuration, csmaMsg); // TODO A process time may need to be added to timer
+        }
+    }
+}
+
+/*
+ * Back-off when channel is not idle.
+ */
+void Link802154::backoff()
+{
+    double backoffDur = intuniform(0, (int)(pow(2, BE) - 1)) * aUnitBP;
+    scheduleAt(simTime() + backoffDur, csmaMsg);
+    EV << "Link802154::backoff : duration " << backoffDur << '\n';
 }

@@ -32,4 +32,5 @@ network Wsn
         target[numTargets]: Target;
         sensor[numSensors]: Sensor;
         wu: WorldUtil;
+        cu: ChannelUtil;
 }

@@ -79,23 +79,32 @@ int ChannelUtil::acquireChannel(Link802154 *host)
     if (host == NULL) return -1;
     if (!checkChannel(host)) return 1;
 
+    std::list<Link802154*>::iterator it;
     Link802154 *acqHost = NULL; // Pointer to a acquiring channel host
     bool flagIn = false; // flagIn = true when issuing host has been already in list
     Mobility *mob1 = (Mobility*) host->getParentModule()->getSubmodule("mobility");
     Mobility *mob2;
 
     // Check if issuing host has been already in list, and kick out all other hosts in its range
-    for (std::list<Link802154*>::iterator it = hostList.begin(); it != hostList.end(); it++) {
-        acqHost = *it;
-        mob2 = (Mobility*) acqHost->getParentModule()->getSubmodule("mobility");
-        if (acqHost == host) flagIn = true;
-        if (host != acqHost && distance(mob1, mob2) <= host->par("txRange").doubleValue()) {
-            hostList.remove(acqHost);
+    if (!hostList.empty()) {
+        it = hostList.begin();
+        while (it != hostList.end()) {
+            acqHost = *it;
+            mob2 = (Mobility*) acqHost->getParentModule()->getSubmodule("mobility");
+            if (acqHost == host) {
+                flagIn = true;
+            } else {
+                if (distance(mob1, mob2) <= host->par("txRange").doubleValue()) {
+                    it = hostList.erase(it);
+                    continue; // Skip increasing iterator
+                }
+            }
+            it++;
         }
     }
 
     if (!flagIn) {
-        hostList.insert(hostList.end(), host);
+        hostList.push_back(host);
     }
     return 0;
 }
@@ -106,12 +115,16 @@ int ChannelUtil::acquireChannel(Link802154 *host)
 void ChannelUtil::releaseChannel(Link802154 *host)
 {
     if (host == NULL) return;
-    Link802154 *acqHost = NULL; // Pointer to a acquiring channel host
+    std::list<Link802154*>::iterator it;
 
-    for (std::list<Link802154*>::iterator it = hostList.begin(); it != hostList.end(); it++) {
-        acqHost = *it;
-        if (acqHost == host) {
-            hostList.remove(acqHost);
+    if (!hostList.empty()) {
+        it = hostList.begin();
+        while (it != hostList.end()) {
+            if (*it == host) {
+                it = hostList.erase(it);
+                continue; // Skip increasing iterator
+            }
+            it++;
         }
     }
 }

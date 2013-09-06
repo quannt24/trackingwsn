@@ -37,7 +37,12 @@ simple Link802154
         
         // Max packet size for upper layer
         int maxPacketSize = maxFrameSize - fldFrameControl - fldSequenceId - fldAddr - fldFooter;
-        
+
+		// Unslotted CSMA/CA parameters
+		int macMinBE = default(3);
+		int aMaxBE = default(5);
+		int aMaxNB = default(5);
+
         @display("i=block/wrxtx");
 
     gates:

@@ -155,6 +155,7 @@ $O/channelutil.o: channelutil.cc \
 $O/frame802154_m.o: frame802154_m.cc \
 	frame802154_m.h
 $O/link802154.o: link802154.cc \
+	channelutil.h \
 	frame802154_m.h \
 	link802154.h \
 	msgkind.h \

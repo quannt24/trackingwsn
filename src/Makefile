@@ -29,6 +29,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc and .msg files
 OBJS = \
+    $O/appbasestation.o \
     $O/appsensor.o \
     $O/asg.o \
     $O/worldutil.o \
@@ -130,6 +131,8 @@ depend:
 	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+$O/appbasestation.o: appbasestation.cc \
+	appbasestation.h
 $O/appsensor.o: appsensor.cc \
 	appsensor.h \
 	msgkind.h

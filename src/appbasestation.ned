@@ -15,16 +15,13 @@
 
 package trackingwsn;
 
-module Sensor extends Node802154
+//
+// Base station's Application Layer
+//
+simple AppBaseStation
 {
     parameters:
-        mobility.moving = false;
-        net.isBaseStation = false;
-        @display("i=misc/node2;is=s");
-    submodules:
-        ass: Ass;
-        app: AppSensor;
-    connections:
-        app.ssGate <--> ass.appGate;
-        app.netGate <--> net.appGate;
+        @display("i=block/app");
+    gates:
+        inout netGate; // Connect network layer
 }

@@ -13,18 +13,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+#ifndef __TRACKINGWSN_APPBASESTATION_H_
+#define __TRACKINGWSN_APPBASESTATION_H_
 
-module Sensor extends Node802154
+#include <omnetpp.h>
+
+/**
+ * Base station's Application Layer
+ */
+class AppBaseStation : public cSimpleModule
 {
-    parameters:
-        mobility.moving = false;
-        net.isBaseStation = false;
-        @display("i=misc/node2;is=s");
-    submodules:
-        ass: Ass;
-        app: AppSensor;
-    connections:
-        app.ssGate <--> ass.appGate;
-        app.netGate <--> net.appGate;
-}
+  protected:
+    virtual void initialize();
+    virtual void handleMessage(cMessage *msg);
+};
+
+#endif

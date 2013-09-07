@@ -20,7 +20,9 @@ package trackingwsn;
 //
 simple NetEMRP
 {
-    @display("i=block/layer");
+    parameters:
+        bool isBaseStation = default(false);
+        @display("i=block/layer");
     gates:
         inout appGate;
         inout linkGate;

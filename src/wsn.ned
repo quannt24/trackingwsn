@@ -31,6 +31,12 @@ network Wsn
     submodules:
         target[numTargets]: Target;
         sensor[numSensors]: Sensor;
+        bs: BaseStation {
+            parameters:
+                mobility.posX = width / 2;
+                mobility.posY = height;
+        }
+        // These following modules are intended to initialize afterward
         wu: WorldUtil;
         cu: ChannelUtil;
 }

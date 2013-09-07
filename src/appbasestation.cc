@@ -13,18 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+#include "appbasestation.h"
 
-module Sensor extends Node802154
+Define_Module(AppBaseStation);
+
+void AppBaseStation::initialize()
 {
-    parameters:
-        mobility.moving = false;
-        net.isBaseStation = false;
-        @display("i=misc/node2;is=s");
-    submodules:
-        ass: Ass;
-        app: AppSensor;
-    connections:
-        app.ssGate <--> ass.appGate;
-        app.netGate <--> net.appGate;
+    // TODO - Generated method body
+}
+
+void AppBaseStation::handleMessage(cMessage *msg)
+{
+    // TODO - Generated method body
 }

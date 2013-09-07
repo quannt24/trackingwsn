@@ -155,6 +155,7 @@ void Link802154::csmaTransmit()
 
     if (performCCA()) {
         transmit();
+        txFrame = NULL;
     } else {
         if (NB < par("aMaxNB").longValue()) {
             backoff();
@@ -206,7 +207,7 @@ void Link802154::transmit()
         double txDuration = ((double) txFrame->getBitLength()) / par("bitRate").doubleValue();
         EV << "Link802154::transmit : Tx Duration " << txDuration << '\n';
         sendDirect(txFrame, 0, txDuration, des, "radioIn");
-        txFrame = NULL;
+
         // Set a timer to release channel
         scheduleAt(simTime() + txDuration, releaseChannelMsg);
 

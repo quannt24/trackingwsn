@@ -15,16 +15,14 @@
 
 package trackingwsn;
 
-module Sensor extends Node802154
+module BaseStation extends Node802154
 {
     parameters:
         mobility.moving = false;
-        net.isBaseStation = false;
-        @display("i=misc/node2;is=s");
+        net.isBaseStation = true;
+        @display("i=device/antennatower");
     submodules:
-        ass: Ass;
-        app: AppSensor;
+        app: AppBaseStation;
     connections:
-        app.ssGate <--> ass.appGate;
         app.netGate <--> net.appGate;
 }

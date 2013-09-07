@@ -65,14 +65,31 @@ void WorldUtil::arrangeNodes()
 void WorldUtil::connectNodes()
 {
     cModule *wsn = simulation.getModuleByPath("Wsn");
-    cModule *ss1, *ss2;
+    cModule *ss1, *ss2, *bs;
     Mobility *mob1, *mob2;
     Link802154 *link1, *link2;
     int n = wsn->par("numSensors").longValue();
     int i, j;
     double d;
 
-    // TODO Add adjacent nodes of base station first
+    // Add adjacent nodes of base station first
+    bs = wsn->getSubmodule("bs");
+    mob2 = (Mobility*) bs->getSubmodule("mobility");
+    link2 = (Link802154*) bs->getSubmodule("link");
+    for (i = 0; i < n; i++) {
+        if (link2->isFullConn()) break;
+
+        ss1 = wsn->getSubmodule("sensor", i);
+        mob1 = (Mobility*) ss1->getSubmodule("mobility");
+        link1 = (Link802154*) ss1->getSubmodule("link");
+        if (link1->isFullConn()) continue;
+
+        d = distance(mob1, mob2);
+        if (d <= link1->par("txRange").longValue() && d <= link2->par("txRange").longValue()) {
+            link1->addAdjNode(link2->getAddr());
+            link2->addAdjNode(link1->getAddr());
+        }
+    }
 
     // Connect sensor nodes
     for (i = 0; i < n - 1; i++) {

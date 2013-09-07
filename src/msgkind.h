@@ -11,6 +11,6 @@
 /*
  * Message kinds
  */
-enum MsgKind {SS_START, SS_RESULT, SS_REQ, SS_SIGNAL, FR_DATA};
+enum MsgKind {SS_START, SS_RESULT, SS_REQ, SS_SIGNAL, PK_BROADCAST, PK_NORMAL};
 
 #endif /* MSGKIND_H_ */

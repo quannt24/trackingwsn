@@ -30,9 +30,10 @@ void NetEMRP::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
         // TODO Test, dispose self
-        PacketEMRP *packet = new PacketEMRP("PacketEMRP");
-        packet->setByteLength(86); // TODO Test
-        send(packet, "linkGate$o");
+        PacketEMRP *pkt = new PacketEMRP("PacketEMRP");
+        pkt->setKind(PK_BROADCAST); // TODO Test
+        pkt->setByteLength(86); // TODO Test
+        send(pkt, "linkGate$o");
     } else if (msg->getArrivalGate() == gate("linkGate$i")) {
         // TODO Process message
         PacketEMRP *packet = (PacketEMRP*) msg;

@@ -21,6 +21,8 @@
 
 // Max numbers of connected nodes
 #define MAX_CONNECTIONS 25
+// Broadcast address
+#define BROADCAST_ADDR -1
 
 // CSMA time symbol (s)
 #define CSMA_SYMBOL 0.000016

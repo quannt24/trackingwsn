@@ -37,7 +37,7 @@ void Link802154::handleMessage(cMessage *msg)
         }
     } else {
         if (msg->getArrivalGate() == gate("netGate$i")) {
-            // Packet from upper layer, assemble frame and send to next hop
+            // Packet from upper layer, assemble frame and add to sending queue
             queueFrame(createFrame((cPacket*) msg));
         } else if (msg->getArrivalGate() == gate("radioIn")) {
             // Frame from other node
@@ -58,6 +58,8 @@ Link802154::~Link802154()
 {
     cancelAndDelete(csmaMsg);
     cancelAndDelete(releaseChannelMsg);
+    if (txFrame != NULL) delete txFrame;
+    outQueue.clear();
 }
 
 /*
@@ -99,7 +101,12 @@ Frame802154* Link802154::createFrame(cPacket* packet)
 
     Frame802154 *frm = new Frame802154("Frame802154");
     frm->setSrcAddr(macAddress);
-    frm->setDesAddr(adjNode[intuniform(0, numAdjNode - 1)]); // TODO Test
+    if (packet->getKind() == PK_BROADCAST) {
+        // This packet is intended to be broadcasted
+        frm->setDesAddr(BROADCAST_ADDR);
+    } else {
+        frm->setDesAddr(adjNode[intuniform(0, numAdjNode - 1)]); // TODO Test
+    }
     frm->setByteLength(par("fldFrameControl").longValue() + par("fldSequenceId").longValue()
             + par("fldAddr").longValue() + par("fldFooter").longValue() + par("phyHeaderSize").longValue());
     frm->encapsulate(packet); // Frame length will be increased by length of packet
@@ -197,24 +204,46 @@ void Link802154::releaseChannel()
  */
 void Link802154::transmit()
 {
-    if (txFrame == NULL) return;
+    double txDuration = 0;
 
-    Link802154 *des = (Link802154*) simulation.getModule(txFrame->getDesAddr());
-    if (des == NULL) {
-        EV << "Link802154::transmitFrames : destination error\n";
-        delete txFrame;
-    } else {
-        double txDuration = ((double) txFrame->getBitLength()) / par("bitRate").doubleValue();
-        EV << "Link802154::transmit : Tx Duration " << txDuration << '\n';
-        sendDirect(txFrame, 0, txDuration, des, "radioIn");
+    if (txFrame != NULL) {
+        txDuration = ((double) txFrame->getBitLength()) / par("bitRate").doubleValue();
+        int desAddr = txFrame->getDesAddr();
+        Link802154 *des;
 
-        // Set a timer to release channel
-        scheduleAt(simTime() + txDuration, releaseChannelMsg);
-
-        if (!outQueue.isEmpty()) {
-            // Set a timer to transmit next frame in queue
-            scheduleAt(simTime() + txDuration, csmaMsg); // TODO A process time may need to be added to timer
+        if (desAddr == BROADCAST_ADDR) {
+            // Broadcast frame. In simulation, we send frame to all connected nodes
+            Frame802154 *copy;
+            for (int i = 0; i < numAdjNode; i++) {
+                des = (Link802154*) simulation.getModule(adjNode[i]);
+                if (des != NULL) {
+                    copy = txFrame->dup();
+                    sendDirect(copy, 0, txDuration, des, "radioIn");
+                } else {
+                    EV << "Link802154::transmitFrames : destination error, ID " << adjNode[i] << '\n';
+                    delete copy;
+                }
+            }
+            delete txFrame; // Original frame is redundant
+        } else {
+            // Transmit to specific destination
+            des = (Link802154*) simulation.getModule(desAddr);
+            if (des != NULL) {
+                sendDirect(txFrame, 0, txDuration, des, "radioIn");
+            } else {
+                EV << "Link802154::transmitFrames : destination error, ID " << desAddr << '\n';
+                delete txFrame;
+            }
         }
+
+    }
+
+    // Set a timer to release channel
+    scheduleAt(simTime() + txDuration, releaseChannelMsg);
+
+    if (!outQueue.isEmpty()) {
+        // Set a timer to transmit next frame in queue
+        scheduleAt(simTime() + txDuration, csmaMsg); // TODO A process time may need to be added to timer
     }
 }
 

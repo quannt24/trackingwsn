@@ -13,27 +13,21 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __TRACKINGWSN_WORLDUTIL_H_
-#define __TRACKINGWSN_WORLDUTIL_H_
-
-#include <omnetpp.h>
-#include "mobility.h"
-
-/**
- * Utilities about simulation world
- */
-class WorldUtil : public cSimpleModule
-{
-    private:
-        void arrangeNodes(); // Arrange nodes in positions
-        void connectNodes(); // Connect adjacent nodes
-
-    protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
+// Trasmission type
+enum TxType {
+    TX_PPP = 0; // Point to point
+    TX_BROADCAST = -1;
 };
 
-double distance(Mobility *mob1, Mobility *mob2);
-double distance(double x1, double y1, double x2, double y2);
-
-#endif
+//
+// Packet for upper layer built upon Link802154. All packets of upper layer
+// of Link802154 should belong to this class or its subclasses.
+//
+packet Packet802154 {
+    // Trasmission type: 0 = normal (to 1 host); -1 = broadcast
+    int txType @enum(TxType);
+    // Source MAC address
+    int srcMacAddr;
+    // Destination/Next-hop MAC address.
+    int desMacAddr;
+}

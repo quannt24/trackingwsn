@@ -34,10 +34,12 @@ OBJS = \
     $O/asg.o \
     $O/worldutil.o \
     $O/mobility.o \
+    $O/energy.o \
     $O/link802154.o \
     $O/ass.o \
     $O/channelutil.o \
     $O/netemrp.o \
+    $O/packet802154_m.o \
     $O/packetemrp_m.o \
     $O/sensereq_m.o \
     $O/frame802154_m.o \
@@ -45,6 +47,7 @@ OBJS = \
 
 # Message files
 MSGFILES = \
+    packet802154.msg \
     packetemrp.msg \
     sensereq.msg \
     frame802154.msg \
@@ -154,22 +157,35 @@ $O/channelutil.o: channelutil.cc \
 	frame802154_m.h \
 	link802154.h \
 	mobility.h \
+	packet802154_m.h \
 	worldutil.h
+$O/energy.o: energy.cc \
+	energy.h
 $O/frame802154_m.o: frame802154_m.cc \
 	frame802154_m.h
 $O/link802154.o: link802154.cc \
 	channelutil.h \
+	energy.h \
 	frame802154_m.h \
 	link802154.h \
-	msgkind.h \
+	packet802154_m.h \
 	wsnexception.h
 $O/mobility.o: mobility.cc \
 	mobility.h
 $O/netemrp.o: netemrp.cc \
+	energy.h \
+	frame802154_m.h \
+	link802154.h \
+	mobility.h \
 	msgkind.h \
 	netemrp.h \
-	packetemrp_m.h
+	packet802154_m.h \
+	packetemrp_m.h \
+	worldutil.h
+$O/packet802154_m.o: packet802154_m.cc \
+	packet802154_m.h
 $O/packetemrp_m.o: packetemrp_m.cc \
+	packet802154_m.h \
 	packetemrp_m.h
 $O/sensedsignal_m.o: sensedsignal_m.cc \
 	sensedsignal_m.h
@@ -181,5 +197,8 @@ $O/worldutil.o: worldutil.cc \
 	frame802154_m.h \
 	link802154.h \
 	mobility.h \
+	netemrp.h \
+	packet802154_m.h \
+	packetemrp_m.h \
 	worldutil.h
 

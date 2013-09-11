@@ -30,15 +30,22 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 
+EXECUTE_ON_STARTUP(
+    cEnum *e = cEnum::find("PacketType");
+    if (!e) enums.getInstance()->add(e = new cEnum("PacketType"));
+    e->insert(PK_DATA_TO_BS, "PK_DATA_TO_BS");
+    e->insert(PK_REQ_RELAY, "PK_REQ_RELAY");
+    e->insert(PK_RELAY_INFO, "PK_RELAY_INFO");
+);
+
 Register_Class(PacketEMRP);
 
-PacketEMRP::PacketEMRP(const char *name, int kind) : cPacket(name,kind)
+PacketEMRP::PacketEMRP(const char *name, int kind) : Packet802154(name,kind)
 {
-    this->someField_var = 0;
-    this->anotherField_var = 0;
+    this->pkType_var = 0;
 }
 
-PacketEMRP::PacketEMRP(const PacketEMRP& other) : cPacket(other)
+PacketEMRP::PacketEMRP(const PacketEMRP& other) : Packet802154(other)
 {
     copy(other);
 }
@@ -50,49 +57,36 @@ PacketEMRP::~PacketEMRP()
 PacketEMRP& PacketEMRP::operator=(const PacketEMRP& other)
 {
     if (this==&other) return *this;
-    cPacket::operator=(other);
+    Packet802154::operator=(other);
     copy(other);
     return *this;
 }
 
 void PacketEMRP::copy(const PacketEMRP& other)
 {
-    this->someField_var = other.someField_var;
-    this->anotherField_var = other.anotherField_var;
+    this->pkType_var = other.pkType_var;
 }
 
 void PacketEMRP::parsimPack(cCommBuffer *b)
 {
-    cPacket::parsimPack(b);
-    doPacking(b,this->someField_var);
-    doPacking(b,this->anotherField_var);
+    Packet802154::parsimPack(b);
+    doPacking(b,this->pkType_var);
 }
 
 void PacketEMRP::parsimUnpack(cCommBuffer *b)
 {
-    cPacket::parsimUnpack(b);
-    doUnpacking(b,this->someField_var);
-    doUnpacking(b,this->anotherField_var);
+    Packet802154::parsimUnpack(b);
+    doUnpacking(b,this->pkType_var);
 }
 
-int PacketEMRP::getSomeField() const
+int PacketEMRP::getPkType() const
 {
-    return someField_var;
+    return pkType_var;
 }
 
-void PacketEMRP::setSomeField(int someField)
+void PacketEMRP::setPkType(int pkType)
 {
-    this->someField_var = someField;
-}
-
-const char * PacketEMRP::getAnotherField() const
-{
-    return anotherField_var.c_str();
-}
-
-void PacketEMRP::setAnotherField(const char * anotherField)
-{
-    this->anotherField_var = anotherField;
+    this->pkType_var = pkType;
 }
 
 class PacketEMRPDescriptor : public cClassDescriptor
@@ -120,7 +114,7 @@ class PacketEMRPDescriptor : public cClassDescriptor
 
 Register_ClassDescriptor(PacketEMRPDescriptor);
 
-PacketEMRPDescriptor::PacketEMRPDescriptor() : cClassDescriptor("PacketEMRP", "cPacket")
+PacketEMRPDescriptor::PacketEMRPDescriptor() : cClassDescriptor("PacketEMRP", "Packet802154")
 {
 }
 
@@ -142,7 +136,7 @@ const char *PacketEMRPDescriptor::getProperty(const char *propertyname) const
 int PacketEMRPDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
+    return basedesc ? 1+basedesc->getFieldCount(object) : 1;
 }
 
 unsigned int PacketEMRPDescriptor::getFieldTypeFlags(void *object, int field) const
@@ -155,9 +149,8 @@ unsigned int PacketEMRPDescriptor::getFieldTypeFlags(void *object, int field) co
     }
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
-        FD_ISEDITABLE,
     };
-    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<1) ? fieldTypeFlags[field] : 0;
 }
 
 const char *PacketEMRPDescriptor::getFieldName(void *object, int field) const
@@ -169,18 +162,16 @@ const char *PacketEMRPDescriptor::getFieldName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldNames[] = {
-        "someField",
-        "anotherField",
+        "pkType",
     };
-    return (field>=0 && field<2) ? fieldNames[field] : NULL;
+    return (field>=0 && field<1) ? fieldNames[field] : NULL;
 }
 
 int PacketEMRPDescriptor::findField(void *object, const char *fieldName) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
-    if (fieldName[0]=='s' && strcmp(fieldName, "someField")==0) return base+0;
-    if (fieldName[0]=='a' && strcmp(fieldName, "anotherField")==0) return base+1;
+    if (fieldName[0]=='p' && strcmp(fieldName, "pkType")==0) return base+0;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -194,9 +185,8 @@ const char *PacketEMRPDescriptor::getFieldTypeString(void *object, int field) co
     }
     static const char *fieldTypeStrings[] = {
         "int",
-        "string",
     };
-    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<1) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *PacketEMRPDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -236,8 +226,7 @@ std::string PacketEMRPDescriptor::getFieldAsString(void *object, int field, int 
     }
     PacketEMRP *pp = (PacketEMRP *)object; (void)pp;
     switch (field) {
-        case 0: return long2string(pp->getSomeField());
-        case 1: return oppstring2string(pp->getAnotherField());
+        case 0: return long2string(pp->getPkType());
         default: return "";
     }
 }
@@ -252,8 +241,7 @@ bool PacketEMRPDescriptor::setFieldAsString(void *object, int field, int i, cons
     }
     PacketEMRP *pp = (PacketEMRP *)object; (void)pp;
     switch (field) {
-        case 0: pp->setSomeField(string2long(value)); return true;
-        case 1: pp->setAnotherField((value)); return true;
+        case 0: pp->setPkType(string2long(value)); return true;
         default: return false;
     }
 }
@@ -268,9 +256,8 @@ const char *PacketEMRPDescriptor::getFieldStructName(void *object, int field) co
     }
     static const char *fieldStructNames[] = {
         NULL,
-        NULL,
     };
-    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<1) ? fieldStructNames[field] : NULL;
 }
 
 void *PacketEMRPDescriptor::getFieldStructPointer(void *object, int field, int i) const
@@ -282,6 +269,326 @@ void *PacketEMRPDescriptor::getFieldStructPointer(void *object, int field, int i
         field -= basedesc->getFieldCount(object);
     }
     PacketEMRP *pp = (PacketEMRP *)object; (void)pp;
+    switch (field) {
+        default: return NULL;
+    }
+}
+
+Register_Class(PacketEMRP_RelayInfo);
+
+PacketEMRP_RelayInfo::PacketEMRP_RelayInfo(const char *name, int kind) : PacketEMRP(name,kind)
+{
+    this->bsFlag_var = 0;
+    this->energy_var = 0;
+    this->posX_var = 0;
+    this->posY_var = 0;
+    this->dBS_var = 0;
+}
+
+PacketEMRP_RelayInfo::PacketEMRP_RelayInfo(const PacketEMRP_RelayInfo& other) : PacketEMRP(other)
+{
+    copy(other);
+}
+
+PacketEMRP_RelayInfo::~PacketEMRP_RelayInfo()
+{
+}
+
+PacketEMRP_RelayInfo& PacketEMRP_RelayInfo::operator=(const PacketEMRP_RelayInfo& other)
+{
+    if (this==&other) return *this;
+    PacketEMRP::operator=(other);
+    copy(other);
+    return *this;
+}
+
+void PacketEMRP_RelayInfo::copy(const PacketEMRP_RelayInfo& other)
+{
+    this->bsFlag_var = other.bsFlag_var;
+    this->energy_var = other.energy_var;
+    this->posX_var = other.posX_var;
+    this->posY_var = other.posY_var;
+    this->dBS_var = other.dBS_var;
+}
+
+void PacketEMRP_RelayInfo::parsimPack(cCommBuffer *b)
+{
+    PacketEMRP::parsimPack(b);
+    doPacking(b,this->bsFlag_var);
+    doPacking(b,this->energy_var);
+    doPacking(b,this->posX_var);
+    doPacking(b,this->posY_var);
+    doPacking(b,this->dBS_var);
+}
+
+void PacketEMRP_RelayInfo::parsimUnpack(cCommBuffer *b)
+{
+    PacketEMRP::parsimUnpack(b);
+    doUnpacking(b,this->bsFlag_var);
+    doUnpacking(b,this->energy_var);
+    doUnpacking(b,this->posX_var);
+    doUnpacking(b,this->posY_var);
+    doUnpacking(b,this->dBS_var);
+}
+
+bool PacketEMRP_RelayInfo::getBsFlag() const
+{
+    return bsFlag_var;
+}
+
+void PacketEMRP_RelayInfo::setBsFlag(bool bsFlag)
+{
+    this->bsFlag_var = bsFlag;
+}
+
+double PacketEMRP_RelayInfo::getEnergy() const
+{
+    return energy_var;
+}
+
+void PacketEMRP_RelayInfo::setEnergy(double energy)
+{
+    this->energy_var = energy;
+}
+
+double PacketEMRP_RelayInfo::getPosX() const
+{
+    return posX_var;
+}
+
+void PacketEMRP_RelayInfo::setPosX(double posX)
+{
+    this->posX_var = posX;
+}
+
+double PacketEMRP_RelayInfo::getPosY() const
+{
+    return posY_var;
+}
+
+void PacketEMRP_RelayInfo::setPosY(double posY)
+{
+    this->posY_var = posY;
+}
+
+double PacketEMRP_RelayInfo::getDBS() const
+{
+    return dBS_var;
+}
+
+void PacketEMRP_RelayInfo::setDBS(double dBS)
+{
+    this->dBS_var = dBS;
+}
+
+class PacketEMRP_RelayInfoDescriptor : public cClassDescriptor
+{
+  public:
+    PacketEMRP_RelayInfoDescriptor();
+    virtual ~PacketEMRP_RelayInfoDescriptor();
+
+    virtual bool doesSupport(cObject *obj) const;
+    virtual const char *getProperty(const char *propertyname) const;
+    virtual int getFieldCount(void *object) const;
+    virtual const char *getFieldName(void *object, int field) const;
+    virtual int findField(void *object, const char *fieldName) const;
+    virtual unsigned int getFieldTypeFlags(void *object, int field) const;
+    virtual const char *getFieldTypeString(void *object, int field) const;
+    virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const;
+    virtual int getArraySize(void *object, int field) const;
+
+    virtual std::string getFieldAsString(void *object, int field, int i) const;
+    virtual bool setFieldAsString(void *object, int field, int i, const char *value) const;
+
+    virtual const char *getFieldStructName(void *object, int field) const;
+    virtual void *getFieldStructPointer(void *object, int field, int i) const;
+};
+
+Register_ClassDescriptor(PacketEMRP_RelayInfoDescriptor);
+
+PacketEMRP_RelayInfoDescriptor::PacketEMRP_RelayInfoDescriptor() : cClassDescriptor("PacketEMRP_RelayInfo", "PacketEMRP")
+{
+}
+
+PacketEMRP_RelayInfoDescriptor::~PacketEMRP_RelayInfoDescriptor()
+{
+}
+
+bool PacketEMRP_RelayInfoDescriptor::doesSupport(cObject *obj) const
+{
+    return dynamic_cast<PacketEMRP_RelayInfo *>(obj)!=NULL;
+}
+
+const char *PacketEMRP_RelayInfoDescriptor::getProperty(const char *propertyname) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? basedesc->getProperty(propertyname) : NULL;
+}
+
+int PacketEMRP_RelayInfoDescriptor::getFieldCount(void *object) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? 5+basedesc->getFieldCount(object) : 5;
+}
+
+unsigned int PacketEMRP_RelayInfoDescriptor::getFieldTypeFlags(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldTypeFlags(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static unsigned int fieldTypeFlags[] = {
+        FD_ISEDITABLE,
+        FD_ISEDITABLE,
+        FD_ISEDITABLE,
+        FD_ISEDITABLE,
+        FD_ISEDITABLE,
+    };
+    return (field>=0 && field<5) ? fieldTypeFlags[field] : 0;
+}
+
+const char *PacketEMRP_RelayInfoDescriptor::getFieldName(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldName(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldNames[] = {
+        "bsFlag",
+        "energy",
+        "posX",
+        "posY",
+        "dBS",
+    };
+    return (field>=0 && field<5) ? fieldNames[field] : NULL;
+}
+
+int PacketEMRP_RelayInfoDescriptor::findField(void *object, const char *fieldName) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    int base = basedesc ? basedesc->getFieldCount(object) : 0;
+    if (fieldName[0]=='b' && strcmp(fieldName, "bsFlag")==0) return base+0;
+    if (fieldName[0]=='e' && strcmp(fieldName, "energy")==0) return base+1;
+    if (fieldName[0]=='p' && strcmp(fieldName, "posX")==0) return base+2;
+    if (fieldName[0]=='p' && strcmp(fieldName, "posY")==0) return base+3;
+    if (fieldName[0]=='d' && strcmp(fieldName, "dBS")==0) return base+4;
+    return basedesc ? basedesc->findField(object, fieldName) : -1;
+}
+
+const char *PacketEMRP_RelayInfoDescriptor::getFieldTypeString(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldTypeString(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldTypeStrings[] = {
+        "bool",
+        "double",
+        "double",
+        "double",
+        "double",
+    };
+    return (field>=0 && field<5) ? fieldTypeStrings[field] : NULL;
+}
+
+const char *PacketEMRP_RelayInfoDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldProperty(object, field, propertyname);
+        field -= basedesc->getFieldCount(object);
+    }
+    switch (field) {
+        default: return NULL;
+    }
+}
+
+int PacketEMRP_RelayInfoDescriptor::getArraySize(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getArraySize(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    PacketEMRP_RelayInfo *pp = (PacketEMRP_RelayInfo *)object; (void)pp;
+    switch (field) {
+        default: return 0;
+    }
+}
+
+std::string PacketEMRP_RelayInfoDescriptor::getFieldAsString(void *object, int field, int i) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldAsString(object,field,i);
+        field -= basedesc->getFieldCount(object);
+    }
+    PacketEMRP_RelayInfo *pp = (PacketEMRP_RelayInfo *)object; (void)pp;
+    switch (field) {
+        case 0: return bool2string(pp->getBsFlag());
+        case 1: return double2string(pp->getEnergy());
+        case 2: return double2string(pp->getPosX());
+        case 3: return double2string(pp->getPosY());
+        case 4: return double2string(pp->getDBS());
+        default: return "";
+    }
+}
+
+bool PacketEMRP_RelayInfoDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->setFieldAsString(object,field,i,value);
+        field -= basedesc->getFieldCount(object);
+    }
+    PacketEMRP_RelayInfo *pp = (PacketEMRP_RelayInfo *)object; (void)pp;
+    switch (field) {
+        case 0: pp->setBsFlag(string2bool(value)); return true;
+        case 1: pp->setEnergy(string2double(value)); return true;
+        case 2: pp->setPosX(string2double(value)); return true;
+        case 3: pp->setPosY(string2double(value)); return true;
+        case 4: pp->setDBS(string2double(value)); return true;
+        default: return false;
+    }
+}
+
+const char *PacketEMRP_RelayInfoDescriptor::getFieldStructName(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldStructName(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldStructNames[] = {
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+        NULL,
+    };
+    return (field>=0 && field<5) ? fieldStructNames[field] : NULL;
+}
+
+void *PacketEMRP_RelayInfoDescriptor::getFieldStructPointer(void *object, int field, int i) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldStructPointer(object, field, i);
+        field -= basedesc->getFieldCount(object);
+    }
+    PacketEMRP_RelayInfo *pp = (PacketEMRP_RelayInfo *)object; (void)pp;
     switch (field) {
         default: return NULL;
     }

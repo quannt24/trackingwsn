@@ -22,7 +22,7 @@ module Target extends Entity
 {
     parameters:
         double range @unit(m) = default(8m);
-        mobility.moving = true;
+        mobility.moving = false;
         @display("i=block/broadcast;is=s;r=$range");
         
     submodules:

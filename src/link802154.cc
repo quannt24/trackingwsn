@@ -15,15 +15,18 @@
 
 #include "link802154.h"
 #include "frame802154_m.h"
-#include "msgkind.h"
+#include "packet802154_m.h"
 #include "wsnexception.h"
 #include "channelutil.h"
+#include "energy.h"
 
 Define_Module(Link802154);
 
 void Link802154::initialize()
 {
-    macAddress = this->getId(); // Address is also module id of link module
+    // Address is also module id of link module. This address is only available when initializing
+    // stage of this module finishes.
+    macAddress = this->getId();
 }
 
 void Link802154::handleMessage(cMessage *msg)
@@ -38,7 +41,7 @@ void Link802154::handleMessage(cMessage *msg)
     } else {
         if (msg->getArrivalGate() == gate("netGate$i")) {
             // Packet from upper layer, assemble frame and add to sending queue
-            queueFrame(createFrame((cPacket*) msg));
+            queueFrame(createFrame((Packet802154*) msg));
         } else if (msg->getArrivalGate() == gate("radioIn")) {
             // Frame from other node
             recvFrame((Frame802154*) msg);
@@ -94,18 +97,19 @@ int Link802154::addAdjNode(int addr)
 /*
  * Assemble a frame to encapsulate a packet.
  */
-Frame802154* Link802154::createFrame(cPacket* packet)
+Frame802154* Link802154::createFrame(Packet802154* packet)
 {
     // TODO Process long packet
     if (packet->getByteLength() > par("maxPacketSize").longValue()) throw PACKET_TOO_LONG;
 
     Frame802154 *frm = new Frame802154("Frame802154");
     frm->setSrcAddr(macAddress);
-    if (packet->getKind() == PK_BROADCAST) {
+    if (packet->getTxType() == TX_BROADCAST) {
         // This packet is intended to be broadcasted
         frm->setDesAddr(BROADCAST_ADDR);
     } else {
-        frm->setDesAddr(adjNode[intuniform(0, numAdjNode - 1)]); // TODO Test
+        // Send to specific address
+        frm->setDesAddr(packet->getDesMacAddr());
     }
     frm->setByteLength(par("fldFrameControl").longValue() + par("fldSequenceId").longValue()
             + par("fldAddr").longValue() + par("fldFooter").longValue() + par("phyHeaderSize").longValue());
@@ -130,7 +134,7 @@ void Link802154::queueFrame(Frame802154 *frame)
 void Link802154::recvFrame(Frame802154* frame)
 {
     // TODO Test
-    EV << "Link802154::recvFrame : Frame size " << frame->getByteLength() << "\n";
+    EV << "Link802154::recvFrame : Physical frame size " << frame->getByteLength() << "\n";
     // Forward to upper layer
     send(frame->decapsulate(), "netGate$o");
     delete frame;
@@ -236,6 +240,7 @@ void Link802154::transmit()
             }
         }
 
+        // TODO Draw energy
     }
 
     // Set a timer to release channel

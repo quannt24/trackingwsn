@@ -16,6 +16,7 @@
 #include "worldutil.h"
 #include "mobility.h"
 #include "link802154.h"
+#include "netemrp.h"
 
 Define_Module(WorldUtil);
 
@@ -68,6 +69,7 @@ void WorldUtil::connectNodes()
     cModule *ss1, *ss2, *bs;
     Mobility *mob1, *mob2;
     Link802154 *link1, *link2;
+    NetEMRP *net1;
     int n = wsn->par("numSensors").longValue();
     int i, j;
     double d;
@@ -80,6 +82,12 @@ void WorldUtil::connectNodes()
         if (link2->isFullConn()) break;
 
         ss1 = wsn->getSubmodule("sensor", i);
+
+        // Store information about base station to sensors
+        net1 = (NetEMRP*) ss1->getSubmodule("net");
+        net1->setBSPos(mob2->getX(), mob2->getY());
+
+        // Connect sensors with base station
         mob1 = (Mobility*) ss1->getSubmodule("mobility");
         link1 = (Link802154*) ss1->getSubmodule("link");
         if (link1->isFullConn()) continue;
@@ -122,4 +130,12 @@ double distance(Mobility *mob1, Mobility *mob2)
 {
     return sqrt((mob1->getX() - mob2->getX()) * (mob1->getX() - mob2->getX())
             + (mob1->getY() - mob2->getY()) * (mob1->getY() - mob2->getY()));
+}
+
+/*
+ * Calculate distance between two coordinates
+ */
+double distance(double x1, double y1, double x2, double y2)
+{
+    return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
 }

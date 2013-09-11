@@ -13,10 +13,28 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-//
+cplusplus {{
+#include "packet802154_m.h"
+}}
+
+packet Packet802154;
+
+enum PacketType {
+    PK_DATA_TO_BS = 0; // Data to transmit to base station
+    PK_REQ_RELAY = 1; // Request for relay info
+    PK_RELAY_INFO = 2; // Relay info to response the request
+};
+
 // EMRP network packet
-//
-packet PacketEMRP {
-    int someField;
-    string anotherField;
+packet PacketEMRP extends Packet802154 {
+    int pkType; // Packet type
+}
+
+// EMRP relay info packet
+packet PacketEMRP_RelayInfo extends PacketEMRP {
+    bool bsFlag; // Flag on if sender is base station
+    double energy; // Current energy
+    double posX; // Coordination x in meter
+    double posY; // Coordination y in meter
+    double dBS; // Distance to base station
 }

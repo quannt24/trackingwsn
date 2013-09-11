@@ -22,6 +22,12 @@ simple NetEMRP
 {
     parameters:
         bool isBaseStation = default(false);
+        // Period for broadcast first relay request. If this period is too short, channel may be
+        // too busy and some nodes may fail to complete initializing procedure. The warm-up period
+        // will be dependent to this period.
+        double initPeriod = default(20);
+        // Period for responsing for a relay request
+        double resRelayPeriod = default(2);
         @display("i=block/layer");
     gates:
         inout appGate;

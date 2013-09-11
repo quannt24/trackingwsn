@@ -17,6 +17,7 @@
 #define __TRACKINGWSN_LINK802154_H_
 
 #include "frame802154_m.h"
+#include "packet802154_m.h"
 #include <omnetpp.h>
 
 // Max numbers of connected nodes
@@ -48,7 +49,7 @@ class Link802154 : public cSimpleModule
         cMessage *releaseChannelMsg; // Self message for releasing channel timer
         Frame802154 *txFrame; // Frame going to be transmitted
 
-        Frame802154* createFrame(cPacket *packet);
+        Frame802154* createFrame(Packet802154 *packet);
         void queueFrame(Frame802154 *frame);
         void recvFrame(Frame802154 *frame);
 

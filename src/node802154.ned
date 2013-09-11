@@ -20,6 +20,7 @@ module Node802154 extends Entity
     submodules:
         net: NetEMRP;
         link: Link802154;
+        energy: Energy;
     connections:
         net.linkGate <--> link.netGate;
 }

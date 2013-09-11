@@ -13,27 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __TRACKINGWSN_WORLDUTIL_H_
-#define __TRACKINGWSN_WORLDUTIL_H_
+package trackingwsn;
 
-#include <omnetpp.h>
-#include "mobility.h"
-
-/**
- * Utilities about simulation world
- */
-class WorldUtil : public cSimpleModule
+//
+// Module for simulating and managing energy.
+//
+simple Energy
 {
-    private:
-        void arrangeNodes(); // Arrange nodes in positions
-        void connectNodes(); // Connect adjacent nodes
-
-    protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
-};
-
-double distance(Mobility *mob1, Mobility *mob2);
-double distance(double x1, double y1, double x2, double y2);
-
-#endif
+    parameters:
+        bool hasLinePower = default(false); // If module having line power supply (infinite)
+        double initCap @unit(J) = default(1J); // Initial capacity
+        @display("i=block/plug");
+}

@@ -28,6 +28,11 @@ simple NetEMRP
         double initPeriod = default(20);
         // Period for responsing for a relay request
         double resRelayPeriod = default(2);
+        // Waiting for relay info timeout. This timeout is used when a message is needed to be sent
+        // to BS, but relay info is not ready (may be due to incomplete initializing stage). A request
+        // for relay info will be sent and retry to send the message after this timeout. If retry is
+        // unsuccessful (relay info is still not ready), this transmision is fail.
+        double waitRelayTimeout = default(0.1);
         @display("i=block/layer");
     gates:
         inout appGate;

@@ -43,7 +43,8 @@ OBJS = \
     $O/packetemrp_m.o \
     $O/sensereq_m.o \
     $O/frame802154_m.o \
-    $O/sensedsignal_m.o
+    $O/sensedsignal_m.o \
+    $O/messagecr_m.o
 
 # Message files
 MSGFILES = \
@@ -51,7 +52,8 @@ MSGFILES = \
     packetemrp.msg \
     sensereq.msg \
     frame802154.msg \
-    sensedsignal.msg
+    sensedsignal.msg \
+    messagecr.msg
 
 #------------------------------------------------------------------------------
 
@@ -138,6 +140,7 @@ $O/appbasestation.o: appbasestation.cc \
 	appbasestation.h
 $O/appsensor.o: appsensor.cc \
 	appsensor.h \
+	messagecr_m.h \
 	msgkind.h
 $O/asg.o: asg.cc \
 	asg.h \
@@ -170,12 +173,15 @@ $O/link802154.o: link802154.cc \
 	link802154.h \
 	packet802154_m.h \
 	wsnexception.h
+$O/messagecr_m.o: messagecr_m.cc \
+	messagecr_m.h
 $O/mobility.o: mobility.cc \
 	mobility.h
 $O/netemrp.o: netemrp.cc \
 	energy.h \
 	frame802154_m.h \
 	link802154.h \
+	messagecr_m.h \
 	mobility.h \
 	msgkind.h \
 	netemrp.h \
@@ -196,6 +202,7 @@ $O/sensereq_m.o: sensereq_m.cc \
 $O/worldutil.o: worldutil.cc \
 	frame802154_m.h \
 	link802154.h \
+	messagecr_m.h \
 	mobility.h \
 	netemrp.h \
 	packet802154_m.h \

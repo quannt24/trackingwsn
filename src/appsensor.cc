@@ -14,6 +14,7 @@
 // 
 
 #include "appsensor.h"
+#include "messagecr_m.h"
 #include "msgkind.h"
 
 Define_Module(AppSensor);
@@ -26,16 +27,24 @@ void AppSensor::initialize()
 
 void AppSensor::handleMessage(cMessage *msg)
 {
-    if (msg == senseMsg) {
-        // Sensing timer
+    if (msg->isSelfMessage()) {
+        if (msg == senseMsg) {
+            // Sensing timer:
+            cMessage *ssStartMsg = new cMessage("ssStartMsg", SS_START);
+            send(ssStartMsg, "ssGate$o");
+            // Schedule next sensing
+            scheduleAt(simTime() + par("senseInterval"), senseMsg);
+        }
+    } else {
+        if (msg->getArrivalGate() == gate("ssGate$i")) {
+            if (msg->getKind() == SS_SIGNAL) {
+                // Sensed signal:
+                EV<< "Target is sensed\n";
+                delete msg;
+            }
+        } else if (msg->getArrivalGate() == gate("netGate$i")) {
 
-        cMessage *ssStartMsg = new cMessage("ssStartMsg", SS_START);
-        send(ssStartMsg, "ssGate$o");
-        // Schedule next sensing
-        scheduleAt(simTime() + par("senseInterval"), senseMsg);
-    } else if (msg->getKind() == SS_SIGNAL) {
-        EV << "Target is sensed\n";
-        delete msg;
+        }
     }
 }
 

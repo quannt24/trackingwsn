@@ -17,6 +17,7 @@
 #define __TRACKINGWSN_NETEMRP_H_
 
 #include "packetemrp_m.h"
+#include "messagecr_m.h"
 #include <omnetpp.h>
 
 /**
@@ -49,7 +50,9 @@ class NetEMRP : public cSimpleModule
 
         /* Get MAC address from link layer. At initial stage, this address may not available. */
         int getMacAddr();
-        /* Process received packet */
+        /* Process received message from upper layer */
+        void recvMessage(MessageCR *msg);
+        /* Process received packet from lower layer */
         void recvPacket(PacketEMRP *pkt);
         /* Broadcast request for info of base station/relay/backup node */
         void requestRelay();
@@ -74,6 +77,8 @@ class NetEMRP : public cSimpleModule
          *  dRcBs: distance from relay candidate to base station
          */
         double assessRelay(double ener, double dRc, double dBs, double dRcBs);
+        /* Package and send message from upper layer down to lower layer */
+        void sendMsgDown(MessageCR *msg);
 
     protected:
         virtual void initialize();

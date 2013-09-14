@@ -133,7 +133,7 @@ void Link802154::queueFrame(Frame802154 *frame)
  */
 void Link802154::recvFrame(Frame802154* frame)
 {
-    // TODO Test
+    // TODO Control frame of link layer will not be forward to upper layer
     EV << "Link802154::recvFrame : Physical frame size " << frame->getByteLength() << "\n";
     // Forward to upper layer
     send(frame->decapsulate(), "netGate$o");

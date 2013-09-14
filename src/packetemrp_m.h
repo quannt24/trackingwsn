@@ -23,16 +23,18 @@
  * Enum generated from <tt>packetemrp.msg</tt> by opp_msgc.
  * <pre>
  * enum PacketType {
- *     PK_DATA_TO_BS = 0; 
- *     PK_REQ_RELAY = 1; 
- *     PK_RELAY_INFO = 2; 
+ *     PK_PAYLOAD_TO_AN = 0; 
+ *     PK_PAYLOAD_TO_BS = 1; 
+ *     PK_REQ_RELAY = 2; 
+ *     PK_RELAY_INFO = 3; 
  * };
  * </pre>
  */
 enum PacketType {
-    PK_DATA_TO_BS = 0,
-    PK_REQ_RELAY = 1,
-    PK_RELAY_INFO = 2
+    PK_PAYLOAD_TO_AN = 0,
+    PK_PAYLOAD_TO_BS = 1,
+    PK_REQ_RELAY = 2,
+    PK_RELAY_INFO = 3
 };
 
 /**

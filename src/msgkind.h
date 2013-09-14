@@ -11,6 +11,6 @@
 /*
  * Message kinds
  */
-enum MsgKind {SS_START, SS_RESULT, SS_REQ, SS_SIGNAL, EMRP_RES_RELAY};
+enum MsgKind {SS_START, SS_RESULT, SS_REQ, SS_SIGNAL, EMRP_RES_RELAY, EMRP_WAIT_RELAY};
 
 #endif /* MSGKIND_H_ */

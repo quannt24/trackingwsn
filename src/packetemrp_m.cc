@@ -33,7 +33,8 @@ void doUnpacking(cCommBuffer *, T& t) {
 EXECUTE_ON_STARTUP(
     cEnum *e = cEnum::find("PacketType");
     if (!e) enums.getInstance()->add(e = new cEnum("PacketType"));
-    e->insert(PK_DATA_TO_BS, "PK_DATA_TO_BS");
+    e->insert(PK_PAYLOAD_TO_AN, "PK_PAYLOAD_TO_AN");
+    e->insert(PK_PAYLOAD_TO_BS, "PK_PAYLOAD_TO_BS");
     e->insert(PK_REQ_RELAY, "PK_REQ_RELAY");
     e->insert(PK_RELAY_INFO, "PK_RELAY_INFO");
 );

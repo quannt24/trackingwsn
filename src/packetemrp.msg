@@ -20,9 +20,10 @@ cplusplus {{
 packet Packet802154;
 
 enum PacketType {
-    PK_DATA_TO_BS = 0; // Data to transmit to base station
-    PK_REQ_RELAY = 1; // Request for relay info
-    PK_RELAY_INFO = 2; // Relay info to response the request
+    PK_PAYLOAD_TO_AN = 0; // Packet to be transmited to adjacent node (cluster head or a specific node)
+    PK_PAYLOAD_TO_BS = 1; // Packet to be transmited to base station
+    PK_REQ_RELAY = 2; // Request for relay info
+    PK_RELAY_INFO = 3; // Relay info to response the request
 };
 
 // EMRP network packet

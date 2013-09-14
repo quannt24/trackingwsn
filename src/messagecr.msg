@@ -11,22 +11,18 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+//
 
-package trackingwsn;
+enum MsgType {
+    MSG_TO_AN = 0; // Message to adjacent node
+    MSG_TO_BS = 1; // Message to base station
+};
 
 //
-// Target to be tracked
+// Application level message (actually a packet) working with network layer which is
+// implementing a cluster routing protocol
 //
-module Target extends Entity
-{
-    parameters:
-        double range @unit(m) = default(8m);
-        mobility.moving = true;
-        @display("i=block/broadcast;is=s;r=$range");
-        
-    submodules:
-        asg: Asg {
-            ssRange = range;
-        }
+packet MessageCR {
+    int msgType; // Message type
+    int desMacAddr; // Destination MAC address, use when msgType is MSG_TO_AN
 }

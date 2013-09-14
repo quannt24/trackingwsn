@@ -15,6 +15,7 @@
 
 #include "netemrp.h"
 #include "packetemrp_m.h"
+#include "messagecr_m.h"
 #include "link802154.h" // TODO This should be module interface
 #include "energy.h"
 #include "mobility.h"
@@ -35,11 +36,28 @@ void NetEMRP::handleMessage(cMessage *msg)
         if (msg == initMsg) {
             requestRelay();
         } else if (msg->getKind() == EMRP_RES_RELAY) {
+            // This message has a packet passed in context pointer
             sendRelayInfo((PacketEMRP*) msg->getContextPointer());
+            delete msg;
+        } else if (msg->getKind() == EMRP_WAIT_RELAY) {
+            // An amount of time waited for relay info. If relay info is ready, send the delayed
+            // message; if not, report a failure.
+            if (bsAddr > 0 || rlAddr > 0) {
+                sendMsgDown((MessageCR*) msg->getContextPointer());
+            } else {
+                // Delete message that failed to be sent
+                delete (MessageCR*) msg->getContextPointer();
+                // TODO Report failure
+                EV << "Error: Cannot send data to BS now\n";
+            }
             delete msg;
         }
     } else {
-        if (msg->getArrivalGate() == gate("linkGate$i")) {
+        if (msg->getArrivalGate() == gate("appGate$i")) {
+            // Packet from upper layer
+            recvMessage((MessageCR*) msg);
+        } else if (msg->getArrivalGate() == gate("linkGate$i")) {
+            // Packet from link layer
             recvPacket((PacketEMRP*) msg);
         }
     }
@@ -86,17 +104,26 @@ int NetEMRP::getMacAddr()
     return macAddr;
 }
 
+/* Process received message from upper layer */
+void NetEMRP::recvMessage(MessageCR *msg)
+{
+    sendMsgDown(msg);
+}
+
 /*
  * Process received packet
  */
 void NetEMRP::recvPacket(PacketEMRP *pkt)
 {
     if (pkt->getPkType() == PK_REQ_RELAY) {
+        // Receive a request for relay information
         cMessage *resRelayMsg = new cMessage("ResRelayMsg");
         resRelayMsg->setKind(EMRP_RES_RELAY);
         resRelayMsg->setContextPointer(pkt->dup());
         scheduleAt(simTime() + uniform(0, par("resRelayPeriod").doubleValue()), resRelayMsg);
+        delete pkt;
     } else if (pkt->getPkType() == PK_RELAY_INFO) {
+        // Receive relay information
         PacketEMRP_RelayInfo *ri = check_and_cast<PacketEMRP_RelayInfo*>(pkt);
         if (ri->getBsFlag() == true) {
             bsAddr = ri->getSrcMacAddr();
@@ -106,9 +133,28 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
                 if (!ret) considerBackup(ri);
             }
         }
+        delete pkt;
+    } else if (pkt->getPkType() == PK_PAYLOAD_TO_AN) {
+        // Send message to upper layer
+        MessageCR *msg = (MessageCR*) pkt->decapsulate();
+        send(msg, "appGate$o");
+        delete pkt;
+    } else if (pkt->getPkType() == PK_PAYLOAD_TO_BS) {
+        if (par("isBaseStation").boolValue() == true) {
+            // Here is the destination, send message to upper layer
+            MessageCR *msg = (MessageCR*) pkt->decapsulate();
+            send(msg, "appGate$o");
+            delete pkt;
+        } else {
+            // Forward to base station
+            if (bsAddr > 0) {
+                pkt->setDesMacAddr(bsAddr);
+            } else {
+                pkt->setDesMacAddr(rlAddr);
+            }
+            send(pkt, "linkGate$o");
+        }
     }
-
-    delete pkt;
 }
 
 /*
@@ -245,4 +291,37 @@ double NetEMRP::assessRelay(double ener, double dRc, double dBs, double dRcBs)
 {
     double cosa = (dRc*dRc + dBs*dBs - dRcBs*dRcBs) / (2 * dRcBs * dBs);
     return ener / dRcBs * cosa;
+}
+
+/*
+ * Package and send message from upper layer down to lower layer
+ */
+void NetEMRP::sendMsgDown(MessageCR *msg)
+{
+    if (msg->getMsgType() == MSG_TO_BS && bsAddr <= 0 && rlAddr) {
+        // If at the time having a message need to be sent to BS, relay info is not ready
+        // (may be due to incomplete initializing stage), send a request for relay info,
+        // and delay sending this message for a short time.
+        cMessage *waitRelayMsg = new cMessage("WaitRelayMsg");
+        waitRelayMsg->setKind(EMRP_WAIT_RELAY);
+        waitRelayMsg->setContextPointer(msg);
+        scheduleAt(simTime() + par("waitRelayTimeout").doubleValue(), waitRelayMsg);
+        return;
+    }
+
+    PacketEMRP *pkt = new PacketEMRP();
+    pkt->setTxType(TX_PPP);
+    if (msg->getMsgType() == MSG_TO_AN) {
+        pkt->setPkType(PK_PAYLOAD_TO_AN);
+        pkt->setDesMacAddr(msg->getDesMacAddr());
+    } else {
+        pkt->setPkType(PK_PAYLOAD_TO_BS);
+        pkt->setDesMacAddr(rlAddr);
+    }
+    pkt->setSrcMacAddr(getMacAddr());
+
+    pkt->setByteLength(18); // TODO hard code network header size
+    pkt->encapsulate(msg); // Packet length will be increased by message length
+
+    send(pkt, "linkGate$o");
 }

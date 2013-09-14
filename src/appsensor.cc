@@ -21,8 +21,8 @@ Define_Module(AppSensor);
 
 void AppSensor::initialize()
 {
-    // TODO Test Start sensing immediately
-    //scheduleAt(0, senseMsg);
+    // TODO Test Start sensing
+    scheduleAt(22 + uniform(0, 5), senseMsg);
 }
 
 void AppSensor::handleMessage(cMessage *msg)
@@ -39,11 +39,14 @@ void AppSensor::handleMessage(cMessage *msg)
         if (msg->getArrivalGate() == gate("ssGate$i")) {
             if (msg->getKind() == SS_SIGNAL) {
                 // Sensed signal:
-                EV<< "Target is sensed\n";
+                // TODO Test, change to use MessageTracking
+                MessageCR *data = new MessageCR("SensedData");
+                data->setMsgType(MSG_TO_BS);
+                send(data, "netGate$o");
                 delete msg;
             }
         } else if (msg->getArrivalGate() == gate("netGate$i")) {
-
+            delete msg;
         }
     }
 }

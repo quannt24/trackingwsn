@@ -25,5 +25,6 @@ void AppBaseStation::initialize()
 void AppBaseStation::handleMessage(cMessage *msg)
 {
     // TODO - Generated method body
+    EV << msg->getName() << "\n";
     delete msg;
 }

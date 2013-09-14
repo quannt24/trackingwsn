@@ -298,7 +298,7 @@ double NetEMRP::assessRelay(double ener, double dRc, double dBs, double dRcBs)
  */
 void NetEMRP::sendMsgDown(MessageCR *msg)
 {
-    if (msg->getMsgType() == MSG_TO_BS && bsAddr <= 0 && rlAddr) {
+    if (msg->getMsgType() == MSG_TO_BS && bsAddr <= 0 && rlAddr <= 0) {
         // If at the time having a message need to be sent to BS, relay info is not ready
         // (may be due to incomplete initializing stage), send a request for relay info,
         // and delay sending this message for a short time.

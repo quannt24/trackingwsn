@@ -24,6 +24,7 @@ enum PacketType {
     PK_PAYLOAD_TO_BS = 1; // Packet to be transmited to base station
     PK_REQ_RELAY = 2; // Request for relay info
     PK_RELAY_INFO = 3; // Relay info to response the request
+    PK_ENERGY_INFO = 4; // Enegry info report after relay a packet
 };
 
 // EMRP network packet
@@ -33,9 +34,16 @@ packet PacketEMRP extends Packet802154 {
 
 // EMRP relay info packet
 packet PacketEMRP_RelayInfo extends PacketEMRP {
+    pkType = PK_RELAY_INFO;
     bool bsFlag; // Flag on if sender is base station
     double energy; // Current energy
     double posX; // Coordination x in meter
     double posY; // Coordination y in meter
     double dBS; // Distance to base station
+}
+
+// EMRP energy report packet
+packet PacketEMRP_EnergyInfo extends PacketEMRP {
+    pkType = PK_ENERGY_INFO;
+    double energy; // Current energy
 }

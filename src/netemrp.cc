@@ -134,6 +134,9 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
             }
         }
         delete pkt;
+    } else if (pkt->getPkType() == PK_ENERGY_INFO) {
+        // Receive energy information
+        updateRelayEnergy(check_and_cast<PacketEMRP_EnergyInfo*>(pkt));
     } else if (pkt->getPkType() == PK_PAYLOAD_TO_AN) {
         // Send message to upper layer
         MessageCR *msg = (MessageCR*) pkt->decapsulate();
@@ -147,12 +150,17 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
             delete pkt;
         } else {
             // Forward to base station
+            int sender = pkt->getSrcMacAddr();
+            pkt->setSrcMacAddr(getMacAddr());
             if (bsAddr > 0) {
                 pkt->setDesMacAddr(bsAddr);
             } else {
                 pkt->setDesMacAddr(rlAddr);
             }
             send(pkt, "linkGate$o");
+
+            // Send back a report about energy
+            sendEnergyInfo(sender);
         }
     }
 }
@@ -291,6 +299,35 @@ double NetEMRP::assessRelay(double ener, double dRc, double dBs, double dRcBs)
 {
     double cosa = (dRc*dRc + dBs*dBs - dRcBs*dRcBs) / (2 * dRcBs * dBs);
     return ener / dRcBs * cosa;
+}
+
+/*
+ * Send an energy report to a node
+ */
+void NetEMRP::sendEnergyInfo(int addr)
+{
+    PacketEMRP_EnergyInfo *ei = new PacketEMRP_EnergyInfo("EnergyInfo");
+    ei->setTxType(TX_PPP);
+
+    ei->setPkType(PK_ENERGY_INFO);
+    ei->setSrcMacAddr(getMacAddr());
+    ei->setDesMacAddr(addr);
+
+    ei->setEnergy(((Energy*) getParentModule()->getSubmodule("energy"))->getCapacity());
+    ei->setByteLength(86); // TODO hard code
+
+    send(ei, "linkGate$o");
+}
+
+/*
+ * Update energy of relay node when receive an energy reporting packet.
+ * Perform switch relay node or find new relay node if neccessary.
+ */
+void NetEMRP::updateRelayEnergy(PacketEMRP_EnergyInfo *ei)
+{
+    enerRl = ei->getEnergy();
+    delete ei;
+    // TODO Check energy
 }
 
 /*

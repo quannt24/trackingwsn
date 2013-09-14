@@ -37,6 +37,7 @@ EXECUTE_ON_STARTUP(
     e->insert(PK_PAYLOAD_TO_BS, "PK_PAYLOAD_TO_BS");
     e->insert(PK_REQ_RELAY, "PK_REQ_RELAY");
     e->insert(PK_RELAY_INFO, "PK_RELAY_INFO");
+    e->insert(PK_ENERGY_INFO, "PK_ENERGY_INFO");
 );
 
 Register_Class(PacketEMRP);
@@ -279,6 +280,8 @@ Register_Class(PacketEMRP_RelayInfo);
 
 PacketEMRP_RelayInfo::PacketEMRP_RelayInfo(const char *name, int kind) : PacketEMRP(name,kind)
 {
+    this->setPkType(PK_RELAY_INFO);
+
     this->bsFlag_var = 0;
     this->energy_var = 0;
     this->posX_var = 0;
@@ -590,6 +593,244 @@ void *PacketEMRP_RelayInfoDescriptor::getFieldStructPointer(void *object, int fi
         field -= basedesc->getFieldCount(object);
     }
     PacketEMRP_RelayInfo *pp = (PacketEMRP_RelayInfo *)object; (void)pp;
+    switch (field) {
+        default: return NULL;
+    }
+}
+
+Register_Class(PacketEMRP_EnergyInfo);
+
+PacketEMRP_EnergyInfo::PacketEMRP_EnergyInfo(const char *name, int kind) : PacketEMRP(name,kind)
+{
+    this->setPkType(PK_ENERGY_INFO);
+
+    this->energy_var = 0;
+}
+
+PacketEMRP_EnergyInfo::PacketEMRP_EnergyInfo(const PacketEMRP_EnergyInfo& other) : PacketEMRP(other)
+{
+    copy(other);
+}
+
+PacketEMRP_EnergyInfo::~PacketEMRP_EnergyInfo()
+{
+}
+
+PacketEMRP_EnergyInfo& PacketEMRP_EnergyInfo::operator=(const PacketEMRP_EnergyInfo& other)
+{
+    if (this==&other) return *this;
+    PacketEMRP::operator=(other);
+    copy(other);
+    return *this;
+}
+
+void PacketEMRP_EnergyInfo::copy(const PacketEMRP_EnergyInfo& other)
+{
+    this->energy_var = other.energy_var;
+}
+
+void PacketEMRP_EnergyInfo::parsimPack(cCommBuffer *b)
+{
+    PacketEMRP::parsimPack(b);
+    doPacking(b,this->energy_var);
+}
+
+void PacketEMRP_EnergyInfo::parsimUnpack(cCommBuffer *b)
+{
+    PacketEMRP::parsimUnpack(b);
+    doUnpacking(b,this->energy_var);
+}
+
+double PacketEMRP_EnergyInfo::getEnergy() const
+{
+    return energy_var;
+}
+
+void PacketEMRP_EnergyInfo::setEnergy(double energy)
+{
+    this->energy_var = energy;
+}
+
+class PacketEMRP_EnergyInfoDescriptor : public cClassDescriptor
+{
+  public:
+    PacketEMRP_EnergyInfoDescriptor();
+    virtual ~PacketEMRP_EnergyInfoDescriptor();
+
+    virtual bool doesSupport(cObject *obj) const;
+    virtual const char *getProperty(const char *propertyname) const;
+    virtual int getFieldCount(void *object) const;
+    virtual const char *getFieldName(void *object, int field) const;
+    virtual int findField(void *object, const char *fieldName) const;
+    virtual unsigned int getFieldTypeFlags(void *object, int field) const;
+    virtual const char *getFieldTypeString(void *object, int field) const;
+    virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const;
+    virtual int getArraySize(void *object, int field) const;
+
+    virtual std::string getFieldAsString(void *object, int field, int i) const;
+    virtual bool setFieldAsString(void *object, int field, int i, const char *value) const;
+
+    virtual const char *getFieldStructName(void *object, int field) const;
+    virtual void *getFieldStructPointer(void *object, int field, int i) const;
+};
+
+Register_ClassDescriptor(PacketEMRP_EnergyInfoDescriptor);
+
+PacketEMRP_EnergyInfoDescriptor::PacketEMRP_EnergyInfoDescriptor() : cClassDescriptor("PacketEMRP_EnergyInfo", "PacketEMRP")
+{
+}
+
+PacketEMRP_EnergyInfoDescriptor::~PacketEMRP_EnergyInfoDescriptor()
+{
+}
+
+bool PacketEMRP_EnergyInfoDescriptor::doesSupport(cObject *obj) const
+{
+    return dynamic_cast<PacketEMRP_EnergyInfo *>(obj)!=NULL;
+}
+
+const char *PacketEMRP_EnergyInfoDescriptor::getProperty(const char *propertyname) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? basedesc->getProperty(propertyname) : NULL;
+}
+
+int PacketEMRP_EnergyInfoDescriptor::getFieldCount(void *object) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? 1+basedesc->getFieldCount(object) : 1;
+}
+
+unsigned int PacketEMRP_EnergyInfoDescriptor::getFieldTypeFlags(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldTypeFlags(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static unsigned int fieldTypeFlags[] = {
+        FD_ISEDITABLE,
+    };
+    return (field>=0 && field<1) ? fieldTypeFlags[field] : 0;
+}
+
+const char *PacketEMRP_EnergyInfoDescriptor::getFieldName(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldName(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldNames[] = {
+        "energy",
+    };
+    return (field>=0 && field<1) ? fieldNames[field] : NULL;
+}
+
+int PacketEMRP_EnergyInfoDescriptor::findField(void *object, const char *fieldName) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    int base = basedesc ? basedesc->getFieldCount(object) : 0;
+    if (fieldName[0]=='e' && strcmp(fieldName, "energy")==0) return base+0;
+    return basedesc ? basedesc->findField(object, fieldName) : -1;
+}
+
+const char *PacketEMRP_EnergyInfoDescriptor::getFieldTypeString(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldTypeString(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldTypeStrings[] = {
+        "double",
+    };
+    return (field>=0 && field<1) ? fieldTypeStrings[field] : NULL;
+}
+
+const char *PacketEMRP_EnergyInfoDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldProperty(object, field, propertyname);
+        field -= basedesc->getFieldCount(object);
+    }
+    switch (field) {
+        default: return NULL;
+    }
+}
+
+int PacketEMRP_EnergyInfoDescriptor::getArraySize(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getArraySize(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    PacketEMRP_EnergyInfo *pp = (PacketEMRP_EnergyInfo *)object; (void)pp;
+    switch (field) {
+        default: return 0;
+    }
+}
+
+std::string PacketEMRP_EnergyInfoDescriptor::getFieldAsString(void *object, int field, int i) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldAsString(object,field,i);
+        field -= basedesc->getFieldCount(object);
+    }
+    PacketEMRP_EnergyInfo *pp = (PacketEMRP_EnergyInfo *)object; (void)pp;
+    switch (field) {
+        case 0: return double2string(pp->getEnergy());
+        default: return "";
+    }
+}
+
+bool PacketEMRP_EnergyInfoDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->setFieldAsString(object,field,i,value);
+        field -= basedesc->getFieldCount(object);
+    }
+    PacketEMRP_EnergyInfo *pp = (PacketEMRP_EnergyInfo *)object; (void)pp;
+    switch (field) {
+        case 0: pp->setEnergy(string2double(value)); return true;
+        default: return false;
+    }
+}
+
+const char *PacketEMRP_EnergyInfoDescriptor::getFieldStructName(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldStructName(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldStructNames[] = {
+        NULL,
+    };
+    return (field>=0 && field<1) ? fieldStructNames[field] : NULL;
+}
+
+void *PacketEMRP_EnergyInfoDescriptor::getFieldStructPointer(void *object, int field, int i) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldStructPointer(object, field, i);
+        field -= basedesc->getFieldCount(object);
+    }
+    PacketEMRP_EnergyInfo *pp = (PacketEMRP_EnergyInfo *)object; (void)pp;
     switch (field) {
         default: return NULL;
     }

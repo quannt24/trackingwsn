@@ -58,25 +58,24 @@ class NetEMRP : public cSimpleModule
         void requestRelay();
         /* Response to a request for relay node, given the requesting packet */
         void sendRelayInfo(PacketEMRP *reqPkt);
-        /*
-         * Compare new relay info with current relay node; if it's better, select it as new relay node.
-         * Return true when new the node having new relay info is selected as new relay node.
-         */
+        /* Compare new relay info with current relay node; if it's better, select it as new relay node.
+         * Return true when new the node having new relay info is selected as new relay node. */
         bool considerRelay(PacketEMRP_RelayInfo *ri);
-        /*
-         * Compare new relay info with current backup node; if it's better, select it as new backup node.
-         * Return true when new the node having new relay info is selected as new backup node.
-         */
+        /* Compare new relay info with current backup node; if it's better, select it as new backup node.
+         * Return true when new the node having new relay info is selected as new backup node. */
         bool considerBackup(PacketEMRP_RelayInfo *ri);
-        /*
-         * Function for assessing a candidate for relaying.
+        /* Function for assessing a candidate for relaying.
          * Parameters:
          *  ener: energy of relay candidate
          *  dRc: distance from this node to relay candidate
          *  dBs: distance from this node to base station
-         *  dRcBs: distance from relay candidate to base station
-         */
+         *  dRcBs: distance from relay candidate to base station */
         double assessRelay(double ener, double dRc, double dBs, double dRcBs);
+        /* Send an energy report to a node */
+        void sendEnergyInfo(int addr);
+        /* Update energy of relay node when receive an energy reporting packet.
+         * Perform switch relay node or find new relay node if neccessary. */
+        void updateRelayEnergy(PacketEMRP_EnergyInfo *ei);
         /* Package and send message from upper layer down to lower layer */
         void sendMsgDown(MessageCR *msg);
 

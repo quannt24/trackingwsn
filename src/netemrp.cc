@@ -313,7 +313,8 @@ void NetEMRP::sendEnergyInfo(int addr)
     ei->setSrcMacAddr(getMacAddr());
     ei->setDesMacAddr(addr);
 
-    ei->setEnergy(((Energy*) getParentModule()->getSubmodule("energy"))->getCapacity());
+    //ei->setEnergy(((Energy*) getParentModule()->getSubmodule("energy"))->getCapacity());
+    ei->setConsumedEnergy(0.05); // TODO Calculate
     ei->setByteLength(86); // TODO hard code
 
     send(ei, "linkGate$o");
@@ -325,9 +326,49 @@ void NetEMRP::sendEnergyInfo(int addr)
  */
 void NetEMRP::updateRelayEnergy(PacketEMRP_EnergyInfo *ei)
 {
-    enerRl = ei->getEnergy();
+    enerRl -= ei->getConsumedEnergy();
     delete ei;
-    // TODO Check energy
+
+    // Check critical energy value
+    if (enerRl < par("criticalEnergy").doubleValue()) {
+        if (enerBk < par("criticalEnergy").doubleValue()) {
+            // Find new relay/backup nodes
+            requestRelay();
+        } else {
+            // Switch to backup node
+            switchRN();
+        }
+        return;
+    }
+
+    if (enerBk - enerRl >= par("switchingEnergy").doubleValue()) {
+        switchRN();
+    }
+}
+
+/*
+ * Switch between relay/backup nodes
+ */
+void NetEMRP::switchRN()
+{
+    int tempi;
+    double tempd;
+
+    tempi = rlAddr;
+    rlAddr = bkAddr;
+    bkAddr = tempi;
+
+    tempd = enerRl;
+    enerRl = enerBk;
+    enerBk = tempd;
+
+    tempd = dRlBs;
+    dRlBs = dBkBs;
+    dBkBs = tempd;
+
+    tempd = dRl;
+    dRl = dBk;
+    dBk = tempd;
 }
 
 /*

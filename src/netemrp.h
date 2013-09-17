@@ -76,6 +76,9 @@ class NetEMRP : public cSimpleModule
         /* Update energy of relay node when receive an energy reporting packet.
          * Perform switch relay node or find new relay node if neccessary. */
         void updateRelayEnergy(PacketEMRP_EnergyInfo *ei);
+        /* Switch between relay/backup nodes */
+        void switchRN();
+
         /* Package and send message from upper layer down to lower layer */
         void sendMsgDown(MessageCR *msg);
 

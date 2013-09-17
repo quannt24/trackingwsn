@@ -33,6 +33,11 @@ simple NetEMRP
         // for relay info will be sent and retry to send the message after this timeout. If retry is
         // unsuccessful (relay info is still not ready), this transmision is fail.
         double waitRelayTimeout = default(0.1);
+        // Differential amount of relay/backup nodes' energy that triggers switch nodes
+        double switchingEnergy = default(0.1);
+        // Critical energy level that a node cannot guarantees reliable transmission
+        double criticalEnergy = default(0.2);
+        
         @display("i=block/layer");
     gates:
         inout appGate;

@@ -605,6 +605,7 @@ PacketEMRP_EnergyInfo::PacketEMRP_EnergyInfo(const char *name, int kind) : Packe
     this->setPkType(PK_ENERGY_INFO);
 
     this->energy_var = 0;
+    this->consumedEnergy_var = 0;
 }
 
 PacketEMRP_EnergyInfo::PacketEMRP_EnergyInfo(const PacketEMRP_EnergyInfo& other) : PacketEMRP(other)
@@ -627,18 +628,21 @@ PacketEMRP_EnergyInfo& PacketEMRP_EnergyInfo::operator=(const PacketEMRP_EnergyI
 void PacketEMRP_EnergyInfo::copy(const PacketEMRP_EnergyInfo& other)
 {
     this->energy_var = other.energy_var;
+    this->consumedEnergy_var = other.consumedEnergy_var;
 }
 
 void PacketEMRP_EnergyInfo::parsimPack(cCommBuffer *b)
 {
     PacketEMRP::parsimPack(b);
     doPacking(b,this->energy_var);
+    doPacking(b,this->consumedEnergy_var);
 }
 
 void PacketEMRP_EnergyInfo::parsimUnpack(cCommBuffer *b)
 {
     PacketEMRP::parsimUnpack(b);
     doUnpacking(b,this->energy_var);
+    doUnpacking(b,this->consumedEnergy_var);
 }
 
 double PacketEMRP_EnergyInfo::getEnergy() const
@@ -649,6 +653,16 @@ double PacketEMRP_EnergyInfo::getEnergy() const
 void PacketEMRP_EnergyInfo::setEnergy(double energy)
 {
     this->energy_var = energy;
+}
+
+double PacketEMRP_EnergyInfo::getConsumedEnergy() const
+{
+    return consumedEnergy_var;
+}
+
+void PacketEMRP_EnergyInfo::setConsumedEnergy(double consumedEnergy)
+{
+    this->consumedEnergy_var = consumedEnergy;
 }
 
 class PacketEMRP_EnergyInfoDescriptor : public cClassDescriptor
@@ -698,7 +712,7 @@ const char *PacketEMRP_EnergyInfoDescriptor::getProperty(const char *propertynam
 int PacketEMRP_EnergyInfoDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 1+basedesc->getFieldCount(object) : 1;
+    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
 }
 
 unsigned int PacketEMRP_EnergyInfoDescriptor::getFieldTypeFlags(void *object, int field) const
@@ -711,8 +725,9 @@ unsigned int PacketEMRP_EnergyInfoDescriptor::getFieldTypeFlags(void *object, in
     }
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<1) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
 }
 
 const char *PacketEMRP_EnergyInfoDescriptor::getFieldName(void *object, int field) const
@@ -725,8 +740,9 @@ const char *PacketEMRP_EnergyInfoDescriptor::getFieldName(void *object, int fiel
     }
     static const char *fieldNames[] = {
         "energy",
+        "consumedEnergy",
     };
-    return (field>=0 && field<1) ? fieldNames[field] : NULL;
+    return (field>=0 && field<2) ? fieldNames[field] : NULL;
 }
 
 int PacketEMRP_EnergyInfoDescriptor::findField(void *object, const char *fieldName) const
@@ -734,6 +750,7 @@ int PacketEMRP_EnergyInfoDescriptor::findField(void *object, const char *fieldNa
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
     if (fieldName[0]=='e' && strcmp(fieldName, "energy")==0) return base+0;
+    if (fieldName[0]=='c' && strcmp(fieldName, "consumedEnergy")==0) return base+1;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -747,8 +764,9 @@ const char *PacketEMRP_EnergyInfoDescriptor::getFieldTypeString(void *object, in
     }
     static const char *fieldTypeStrings[] = {
         "double",
+        "double",
     };
-    return (field>=0 && field<1) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *PacketEMRP_EnergyInfoDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -789,6 +807,7 @@ std::string PacketEMRP_EnergyInfoDescriptor::getFieldAsString(void *object, int 
     PacketEMRP_EnergyInfo *pp = (PacketEMRP_EnergyInfo *)object; (void)pp;
     switch (field) {
         case 0: return double2string(pp->getEnergy());
+        case 1: return double2string(pp->getConsumedEnergy());
         default: return "";
     }
 }
@@ -804,6 +823,7 @@ bool PacketEMRP_EnergyInfoDescriptor::setFieldAsString(void *object, int field, 
     PacketEMRP_EnergyInfo *pp = (PacketEMRP_EnergyInfo *)object; (void)pp;
     switch (field) {
         case 0: pp->setEnergy(string2double(value)); return true;
+        case 1: pp->setConsumedEnergy(string2double(value)); return true;
         default: return false;
     }
 }
@@ -818,8 +838,9 @@ const char *PacketEMRP_EnergyInfoDescriptor::getFieldStructName(void *object, in
     }
     static const char *fieldStructNames[] = {
         NULL,
+        NULL,
     };
-    return (field>=0 && field<1) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
 }
 
 void *PacketEMRP_EnergyInfoDescriptor::getFieldStructPointer(void *object, int field, int i) const

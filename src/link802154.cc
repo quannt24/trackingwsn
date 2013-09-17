@@ -215,6 +215,9 @@ void Link802154::transmit()
         int desAddr = txFrame->getDesAddr();
         Link802154 *des;
 
+        // Draw energy for transmission
+        useEnergyTx(txFrame->getBitLength());
+
         if (desAddr == BROADCAST_ADDR) {
             // Broadcast frame. In simulation, we send frame to all connected nodes
             Frame802154 *copy;
@@ -239,8 +242,6 @@ void Link802154::transmit()
                 delete txFrame;
             }
         }
-
-        // TODO Draw energy
     }
 
     // Set a timer to release channel
@@ -260,4 +261,25 @@ void Link802154::backoff()
     double backoffDur = intuniform(0, (int)(pow(2, BE) - 1)) * aUnitBP;
     scheduleAt(simTime() + backoffDur, csmaMsg);
     EV << "Link802154::backoff : duration " << backoffDur << '\n';
+}
+
+/*
+ * Calculate and draw energy from energy module for transmitting.
+*/
+void Link802154::useEnergyTx(int nbits)
+{
+    double ce; // Consumed energy
+    double d = par("txRange").doubleValue();
+    double e_elect = par("e_elec").doubleValue();
+    double e_fs = par("e_fs").doubleValue();
+
+    if (d <= par("txRTh").doubleValue()) {
+        ce = (e_elect + e_fs * d * d) * nbits;
+    } else {
+        ce = (e_elect + e_fs * d * d * d * d) * nbits;
+    }
+
+    Energy *energy = (Energy*) getParentModule()->getSubmodule("energy");
+    energy->draw(ce);
+    EV << "Link802154::useEnergyTx : use " << ce << " J\n";
 }

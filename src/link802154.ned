@@ -21,7 +21,15 @@ package trackingwsn;
 simple Link802154
 {
     parameters:
-        double txRange @unit(m) = default(10m); // Transmission range
+        // Transmission range threshold. This parameter depends on environment and affects energy to transmit data.
+        double txRTh @unit(m) = default(20m);
+        // Energy for encode/decode signal for 1 bit
+        double e_elec = default(50e-9); // Unit J/bit
+        // Energy for amplifying signal for 1 bit when txRange < txRTh
+        double e_fs = default(10e-12); // Unit J/bit/m2
+        
+        // Transmission range
+        double txRange @unit(m) = default(10m);
         int bitRate @unit(bps) = default(250000bps);
         
         int maxFrameSize = default(127); // Max size of a link layer frame in byte, not including physical layer header

@@ -59,6 +59,9 @@ class Link802154 : public cSimpleModule
         void transmit();
         void backoff();
 
+        /* Calculate and draw energy from energy module for transmitting */
+        void useEnergyTx(int nbits);
+
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);

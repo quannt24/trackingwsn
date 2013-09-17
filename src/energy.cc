@@ -55,7 +55,6 @@ void Energy::setCapacity(double cap)
  */
 double Energy::draw(double amount)
 {
-    /*
     if (amount > 0 && amount <= capacity) {
         capacity -= amount;
         return amount;
@@ -66,6 +65,4 @@ double Energy::draw(double amount)
     } else {
         return 0;
     }
-    */
-    return amount; // TODO Test
 }

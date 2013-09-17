@@ -31,20 +31,20 @@ class NetEMRP : public cSimpleModule
         // MAC addresses for routing
         // Value 0 means connection info is not initialized.
         int bsAddr;
-        int rlAddr;
-        int bkAddr;
+        int rnAddr;
+        int bnAddr;
 
         // Stored information about base station, these info must be set so that node can work properly.
         double bsPosX, bsPosY; // Base station position
         double dBS; // Distance from this node to base station
 
         // Stored information about relay/backup nodes
-        double enerRl; // Energy
-        double dRlBs; // Distance from relay node to base station in meter
-        double dRl; // Distance from relay node to this node
-        double enerBk;
-        double dBkBs;
-        double dBk;
+        double enerRn; // Energy
+        double dRnBs; // Distance from relay node to base station in meter
+        double dRn; // Distance from relay node to this node
+        double enerBn;
+        double dBnBs;
+        double dBn;
 
         cMessage *initMsg; // Self message for initializing EMRP procedure
 

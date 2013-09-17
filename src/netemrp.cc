@@ -42,7 +42,7 @@ void NetEMRP::handleMessage(cMessage *msg)
         } else if (msg->getKind() == EMRP_WAIT_RELAY) {
             // An amount of time waited for relay info. If relay info is ready, send the delayed
             // message; if not, report a failure.
-            if (bsAddr > 0 || rlAddr > 0) {
+            if (bsAddr > 0 || rnAddr > 0) {
                 sendMsgDown((MessageCR*) msg->getContextPointer());
             } else {
                 // Delete message that failed to be sent
@@ -67,13 +67,13 @@ NetEMRP::NetEMRP()
 {
     macAddr = -1;
     bsAddr = 0;
-    rlAddr = 0;
-    bkAddr = 0;
+    rnAddr = 0;
+    bnAddr = 0;
 
-    enerRl = 0;
-    dRlBs = 0;
-    enerBk = 0;
-    dBkBs = 0;
+    enerRn = 0;
+    dRnBs = 0;
+    enerBn = 0;
+    dBnBs = 0;
 
     initMsg = new cMessage("InitEmrpMsg");
 }
@@ -155,7 +155,7 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
             if (bsAddr > 0) {
                 pkt->setDesMacAddr(bsAddr);
             } else {
-                pkt->setDesMacAddr(rlAddr);
+                pkt->setDesMacAddr(rnAddr);
             }
             send(pkt, "linkGate$o");
 
@@ -221,26 +221,26 @@ bool NetEMRP::considerRelay(PacketEMRP_RelayInfo *ri)
     // Distance from this node to candidate
     double dRc = distance(mob->getX(), mob->getY(), ri->getPosX(), ri->getPosY());
 
-    if (rlAddr <= 0) {
+    if (rnAddr <= 0) {
         // No relay node has been selected, select this candidate
-        rlAddr = ri->getSrcMacAddr();
+        rnAddr = ri->getSrcMacAddr();
 
-        enerRl = ri->getEnergy();
-        dRlBs = ri->getDBS();
-        dRl = dRc;
+        enerRn = ri->getEnergy();
+        dRnBs = ri->getDBS();
+        dRn = dRc;
 
         return true;
     } else {
         // Compare relay info of candidate to current relay node
-        double a1 = assessRelay(enerRl, dRl, dBS, dRlBs);
+        double a1 = assessRelay(enerRn, dRn, dBS, dRnBs);
         double a2 = assessRelay(ri->getEnergy(), dRc, dBS, ri->getDBS());
 
         if (a2 > a1) {
-            rlAddr = ri->getSrcMacAddr();
+            rnAddr = ri->getSrcMacAddr();
 
-            enerRl = ri->getEnergy();
-            dRlBs = ri->getDBS();
-            dRl = dRc;
+            enerRn = ri->getEnergy();
+            dRnBs = ri->getDBS();
+            dRn = dRc;
 
             return true;
         } else {
@@ -259,26 +259,26 @@ bool NetEMRP::considerBackup(PacketEMRP_RelayInfo *ri)
     // Distance from this node to candidate
     double dRc = distance(mob->getX(), mob->getY(), ri->getPosX(), ri->getPosY());
 
-    if (bkAddr <= 0) {
+    if (bnAddr <= 0) {
         // No relay node has been selected, select this candidate
-        bkAddr = ri->getSrcMacAddr();
+        bnAddr = ri->getSrcMacAddr();
 
-        enerBk = ri->getEnergy();
-        dBkBs = ri->getDBS();
-        dBk = dRc;
+        enerBn = ri->getEnergy();
+        dBnBs = ri->getDBS();
+        dBn = dRc;
 
         return true;
     } else {
         // Compare relay info of candidate to current relay node
-        double a1 = assessRelay(enerBk, dBk, dBS, dBkBs);
+        double a1 = assessRelay(enerBn, dBn, dBS, dBnBs);
         double a2 = assessRelay(ri->getEnergy(), dRc, dBS, ri->getDBS());
 
         if (a2 > a1) {
-            bkAddr = ri->getSrcMacAddr();
+            bnAddr = ri->getSrcMacAddr();
 
-            enerBk = ri->getEnergy();
-            dBkBs = ri->getDBS();
-            dBk = dRc;
+            enerBn = ri->getEnergy();
+            dBnBs = ri->getDBS();
+            dBn = dRc;
 
             return true;
         } else {
@@ -326,12 +326,12 @@ void NetEMRP::sendEnergyInfo(int addr)
  */
 void NetEMRP::updateRelayEnergy(PacketEMRP_EnergyInfo *ei)
 {
-    enerRl -= ei->getConsumedEnergy();
+    enerRn -= ei->getConsumedEnergy();
     delete ei;
 
     // Check critical energy value
-    if (enerRl < par("criticalEnergy").doubleValue()) {
-        if (enerBk < par("criticalEnergy").doubleValue()) {
+    if (enerRn < par("criticalEnergy").doubleValue()) {
+        if (enerBn < par("criticalEnergy").doubleValue()) {
             // Find new relay/backup nodes
             requestRelay();
         } else {
@@ -341,7 +341,7 @@ void NetEMRP::updateRelayEnergy(PacketEMRP_EnergyInfo *ei)
         return;
     }
 
-    if (enerBk - enerRl >= par("switchingEnergy").doubleValue()) {
+    if (enerBn - enerRn >= par("switchingEnergy").doubleValue()) {
         switchRN();
     }
 }
@@ -354,21 +354,21 @@ void NetEMRP::switchRN()
     int tempi;
     double tempd;
 
-    tempi = rlAddr;
-    rlAddr = bkAddr;
-    bkAddr = tempi;
+    tempi = rnAddr;
+    rnAddr = bnAddr;
+    bnAddr = tempi;
 
-    tempd = enerRl;
-    enerRl = enerBk;
-    enerBk = tempd;
+    tempd = enerRn;
+    enerRn = enerBn;
+    enerBn = tempd;
 
-    tempd = dRlBs;
-    dRlBs = dBkBs;
-    dBkBs = tempd;
+    tempd = dRnBs;
+    dRnBs = dBnBs;
+    dBnBs = tempd;
 
-    tempd = dRl;
-    dRl = dBk;
-    dBk = tempd;
+    tempd = dRn;
+    dRn = dBn;
+    dBn = tempd;
 }
 
 /*
@@ -376,7 +376,7 @@ void NetEMRP::switchRN()
  */
 void NetEMRP::sendMsgDown(MessageCR *msg)
 {
-    if (msg->getMsgType() == MSG_TO_BS && bsAddr <= 0 && rlAddr <= 0) {
+    if (msg->getMsgType() == MSG_TO_BS && bsAddr <= 0 && rnAddr <= 0) {
         // If at the time having a message need to be sent to BS, relay info is not ready
         // (may be due to incomplete initializing stage), send a request for relay info,
         // and delay sending this message for a short time.
@@ -394,7 +394,7 @@ void NetEMRP::sendMsgDown(MessageCR *msg)
         pkt->setDesMacAddr(msg->getDesMacAddr());
     } else {
         pkt->setPkType(PK_PAYLOAD_TO_BS);
-        pkt->setDesMacAddr(rlAddr);
+        pkt->setDesMacAddr(rnAddr);
     }
     pkt->setSrcMacAddr(getMacAddr());
 

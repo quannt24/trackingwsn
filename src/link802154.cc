@@ -51,6 +51,7 @@ void Link802154::handleMessage(cMessage *msg)
 
 Link802154::Link802154()
 {
+    radioMode = RADIO_ON;
     numAdjNode = 0;
     txFrame = NULL;
     csmaMsg = new cMessage("CSMAMsg");
@@ -63,6 +64,11 @@ Link802154::~Link802154()
     cancelAndDelete(releaseChannelMsg);
     if (txFrame != NULL) delete txFrame;
     outQueue.clear();
+}
+
+void Link802154::setRadioMode(int mode)
+{
+    if (mode == RADIO_OFF || mode == RADIO_ON) radioMode = mode;
 }
 
 /*

@@ -20,6 +20,10 @@
 #include "packet802154_m.h"
 #include <omnetpp.h>
 
+// Radio mode
+#define RADIO_OFF 0
+#define RADIO_ON 1
+
 // Max numbers of connected nodes
 #define MAX_CONNECTIONS 25
 // Broadcast address
@@ -36,6 +40,7 @@
 class Link802154 : public cSimpleModule
 {
     private:
+        int radioMode;
         int macAddress; // Address of link layer
         int numAdjNode; // Number of connected nodes (adjacent nodes), which is <= MAX_CONNECTIONS
         int adjNode[MAX_CONNECTIONS]; // Adjacent nodes' addresses
@@ -69,10 +74,11 @@ class Link802154 : public cSimpleModule
     public:
         Link802154();
         ~Link802154();
+        int getRadioMode() { return radioMode; };
+        void setRadioMode(int mode);
         int getAddr();
         bool isFullConn();
         int addAdjNode(int addr);
-
 };
 
 #endif

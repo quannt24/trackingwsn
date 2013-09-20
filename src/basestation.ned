@@ -15,6 +15,9 @@
 
 package trackingwsn;
 
+import trackingwsn.nodes.Node802154;
+import trackingwsn.applications.AppBaseStation;
+
 module BaseStation extends Node802154
 {
     parameters:

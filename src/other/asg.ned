@@ -13,12 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+package trackingwsn.other;
 
 //
-// Utilities about simulation world
+// Acoustic Signal Generator
 //
-simple WorldUtil
+simple Asg
 {
-    @display("i=misc/globe;p=-4,2");
+    parameters:
+        double ssRange @unit(m);
+        @display("i=block/wtx");
+    gates:
+        input reqIn @directIn; // Gate for receiving sensing request
 }

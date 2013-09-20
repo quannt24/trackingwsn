@@ -66,6 +66,34 @@ bool ChannelUtil::checkChannel(Link802154 *host)
 }
 
 /*
+ * Check if channel around a host has collisions. Collisions occur when two or more other
+ * hosts' signals are transmitted in this area. This function can be used for issued host
+ * when it is receiving packet to simulate packet lost.
+ */
+bool ChannelUtil::hasCollision(Link802154 *host)
+{
+    bool collide = false;
+    Link802154 *acqHost = NULL; // Pointer to a acquiring channel host
+    Mobility *mob1 = (Mobility*) host->getParentModule()->getSubmodule("mobility");
+    Mobility *mob2;
+    int nAcqHost = 0;
+
+    for (std::list<Link802154*>::iterator it = hostList.begin(); it != hostList.end(); it++) {
+        acqHost = *it;
+        mob2 = (Mobility*) acqHost->getParentModule()->getSubmodule("mobility");
+        if (host != acqHost && distance(mob1, mob2) <= acqHost->par("txRange").doubleValue()) {
+            nAcqHost++;
+            if (nAcqHost > 1) {
+                collide = true;
+                break;
+            }
+        }
+    }
+
+    return collide;
+}
+
+/*
  * Acquire channel to transmit data. This function will perform a checkChannel() before acquiring
  * the channel to issuing host. If the check is passed, all hosts which is in range of the issuing
  * host will be removed from the acquiring list of the ChannelUtil object; this is for programming

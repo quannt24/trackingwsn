@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from frame802154.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from other/sensedsignal.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "frame802154_m.h"
+#include "sensedsignal_m.h"
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -30,76 +30,90 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 
-Register_Class(Frame802154);
+Register_Class(SensedSignal);
 
-Frame802154::Frame802154(const char *name, int kind) : cPacket(name,kind)
+SensedSignal::SensedSignal(const char *name, int kind) : cMessage(name,kind)
 {
-    this->srcAddr_var = 0;
-    this->desAddr_var = 0;
+    this->tarId_var = 0;
+    this->signal_var = 0;
+    this->distance_var = 0;
 }
 
-Frame802154::Frame802154(const Frame802154& other) : cPacket(other)
+SensedSignal::SensedSignal(const SensedSignal& other) : cMessage(other)
 {
     copy(other);
 }
 
-Frame802154::~Frame802154()
+SensedSignal::~SensedSignal()
 {
 }
 
-Frame802154& Frame802154::operator=(const Frame802154& other)
+SensedSignal& SensedSignal::operator=(const SensedSignal& other)
 {
     if (this==&other) return *this;
-    cPacket::operator=(other);
+    cMessage::operator=(other);
     copy(other);
     return *this;
 }
 
-void Frame802154::copy(const Frame802154& other)
+void SensedSignal::copy(const SensedSignal& other)
 {
-    this->srcAddr_var = other.srcAddr_var;
-    this->desAddr_var = other.desAddr_var;
+    this->tarId_var = other.tarId_var;
+    this->signal_var = other.signal_var;
+    this->distance_var = other.distance_var;
 }
 
-void Frame802154::parsimPack(cCommBuffer *b)
+void SensedSignal::parsimPack(cCommBuffer *b)
 {
-    cPacket::parsimPack(b);
-    doPacking(b,this->srcAddr_var);
-    doPacking(b,this->desAddr_var);
+    cMessage::parsimPack(b);
+    doPacking(b,this->tarId_var);
+    doPacking(b,this->signal_var);
+    doPacking(b,this->distance_var);
 }
 
-void Frame802154::parsimUnpack(cCommBuffer *b)
+void SensedSignal::parsimUnpack(cCommBuffer *b)
 {
-    cPacket::parsimUnpack(b);
-    doUnpacking(b,this->srcAddr_var);
-    doUnpacking(b,this->desAddr_var);
+    cMessage::parsimUnpack(b);
+    doUnpacking(b,this->tarId_var);
+    doUnpacking(b,this->signal_var);
+    doUnpacking(b,this->distance_var);
 }
 
-int Frame802154::getSrcAddr() const
+int SensedSignal::getTarId() const
 {
-    return srcAddr_var;
+    return tarId_var;
 }
 
-void Frame802154::setSrcAddr(int srcAddr)
+void SensedSignal::setTarId(int tarId)
 {
-    this->srcAddr_var = srcAddr;
+    this->tarId_var = tarId;
 }
 
-int Frame802154::getDesAddr() const
+const char * SensedSignal::getSignal() const
 {
-    return desAddr_var;
+    return signal_var.c_str();
 }
 
-void Frame802154::setDesAddr(int desAddr)
+void SensedSignal::setSignal(const char * signal)
 {
-    this->desAddr_var = desAddr;
+    this->signal_var = signal;
 }
 
-class Frame802154Descriptor : public cClassDescriptor
+double SensedSignal::getDistance() const
+{
+    return distance_var;
+}
+
+void SensedSignal::setDistance(double distance)
+{
+    this->distance_var = distance;
+}
+
+class SensedSignalDescriptor : public cClassDescriptor
 {
   public:
-    Frame802154Descriptor();
-    virtual ~Frame802154Descriptor();
+    SensedSignalDescriptor();
+    virtual ~SensedSignalDescriptor();
 
     virtual bool doesSupport(cObject *obj) const;
     virtual const char *getProperty(const char *propertyname) const;
@@ -118,34 +132,34 @@ class Frame802154Descriptor : public cClassDescriptor
     virtual void *getFieldStructPointer(void *object, int field, int i) const;
 };
 
-Register_ClassDescriptor(Frame802154Descriptor);
+Register_ClassDescriptor(SensedSignalDescriptor);
 
-Frame802154Descriptor::Frame802154Descriptor() : cClassDescriptor("Frame802154", "cPacket")
+SensedSignalDescriptor::SensedSignalDescriptor() : cClassDescriptor("SensedSignal", "cMessage")
 {
 }
 
-Frame802154Descriptor::~Frame802154Descriptor()
+SensedSignalDescriptor::~SensedSignalDescriptor()
 {
 }
 
-bool Frame802154Descriptor::doesSupport(cObject *obj) const
+bool SensedSignalDescriptor::doesSupport(cObject *obj) const
 {
-    return dynamic_cast<Frame802154 *>(obj)!=NULL;
+    return dynamic_cast<SensedSignal *>(obj)!=NULL;
 }
 
-const char *Frame802154Descriptor::getProperty(const char *propertyname) const
+const char *SensedSignalDescriptor::getProperty(const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     return basedesc ? basedesc->getProperty(propertyname) : NULL;
 }
 
-int Frame802154Descriptor::getFieldCount(void *object) const
+int SensedSignalDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
+    return basedesc ? 3+basedesc->getFieldCount(object) : 3;
 }
 
-unsigned int Frame802154Descriptor::getFieldTypeFlags(void *object, int field) const
+unsigned int SensedSignalDescriptor::getFieldTypeFlags(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -156,11 +170,12 @@ unsigned int Frame802154Descriptor::getFieldTypeFlags(void *object, int field) c
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
 }
 
-const char *Frame802154Descriptor::getFieldName(void *object, int field) const
+const char *SensedSignalDescriptor::getFieldName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -169,22 +184,24 @@ const char *Frame802154Descriptor::getFieldName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldNames[] = {
-        "srcAddr",
-        "desAddr",
+        "tarId",
+        "signal",
+        "distance",
     };
-    return (field>=0 && field<2) ? fieldNames[field] : NULL;
+    return (field>=0 && field<3) ? fieldNames[field] : NULL;
 }
 
-int Frame802154Descriptor::findField(void *object, const char *fieldName) const
+int SensedSignalDescriptor::findField(void *object, const char *fieldName) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
-    if (fieldName[0]=='s' && strcmp(fieldName, "srcAddr")==0) return base+0;
-    if (fieldName[0]=='d' && strcmp(fieldName, "desAddr")==0) return base+1;
+    if (fieldName[0]=='t' && strcmp(fieldName, "tarId")==0) return base+0;
+    if (fieldName[0]=='s' && strcmp(fieldName, "signal")==0) return base+1;
+    if (fieldName[0]=='d' && strcmp(fieldName, "distance")==0) return base+2;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
-const char *Frame802154Descriptor::getFieldTypeString(void *object, int field) const
+const char *SensedSignalDescriptor::getFieldTypeString(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -194,12 +211,13 @@ const char *Frame802154Descriptor::getFieldTypeString(void *object, int field) c
     }
     static const char *fieldTypeStrings[] = {
         "int",
-        "int",
+        "string",
+        "double",
     };
-    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<3) ? fieldTypeStrings[field] : NULL;
 }
 
-const char *Frame802154Descriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+const char *SensedSignalDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -212,7 +230,7 @@ const char *Frame802154Descriptor::getFieldProperty(void *object, int field, con
     }
 }
 
-int Frame802154Descriptor::getArraySize(void *object, int field) const
+int SensedSignalDescriptor::getArraySize(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -220,13 +238,13 @@ int Frame802154Descriptor::getArraySize(void *object, int field) const
             return basedesc->getArraySize(object, field);
         field -= basedesc->getFieldCount(object);
     }
-    Frame802154 *pp = (Frame802154 *)object; (void)pp;
+    SensedSignal *pp = (SensedSignal *)object; (void)pp;
     switch (field) {
         default: return 0;
     }
 }
 
-std::string Frame802154Descriptor::getFieldAsString(void *object, int field, int i) const
+std::string SensedSignalDescriptor::getFieldAsString(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -234,15 +252,16 @@ std::string Frame802154Descriptor::getFieldAsString(void *object, int field, int
             return basedesc->getFieldAsString(object,field,i);
         field -= basedesc->getFieldCount(object);
     }
-    Frame802154 *pp = (Frame802154 *)object; (void)pp;
+    SensedSignal *pp = (SensedSignal *)object; (void)pp;
     switch (field) {
-        case 0: return long2string(pp->getSrcAddr());
-        case 1: return long2string(pp->getDesAddr());
+        case 0: return long2string(pp->getTarId());
+        case 1: return oppstring2string(pp->getSignal());
+        case 2: return double2string(pp->getDistance());
         default: return "";
     }
 }
 
-bool Frame802154Descriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+bool SensedSignalDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -250,15 +269,16 @@ bool Frame802154Descriptor::setFieldAsString(void *object, int field, int i, con
             return basedesc->setFieldAsString(object,field,i,value);
         field -= basedesc->getFieldCount(object);
     }
-    Frame802154 *pp = (Frame802154 *)object; (void)pp;
+    SensedSignal *pp = (SensedSignal *)object; (void)pp;
     switch (field) {
-        case 0: pp->setSrcAddr(string2long(value)); return true;
-        case 1: pp->setDesAddr(string2long(value)); return true;
+        case 0: pp->setTarId(string2long(value)); return true;
+        case 1: pp->setSignal((value)); return true;
+        case 2: pp->setDistance(string2double(value)); return true;
         default: return false;
     }
 }
 
-const char *Frame802154Descriptor::getFieldStructName(void *object, int field) const
+const char *SensedSignalDescriptor::getFieldStructName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -269,11 +289,12 @@ const char *Frame802154Descriptor::getFieldStructName(void *object, int field) c
     static const char *fieldStructNames[] = {
         NULL,
         NULL,
+        NULL,
     };
-    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<3) ? fieldStructNames[field] : NULL;
 }
 
-void *Frame802154Descriptor::getFieldStructPointer(void *object, int field, int i) const
+void *SensedSignalDescriptor::getFieldStructPointer(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -281,7 +302,7 @@ void *Frame802154Descriptor::getFieldStructPointer(void *object, int field, int 
             return basedesc->getFieldStructPointer(object, field, i);
         field -= basedesc->getFieldCount(object);
     }
-    Frame802154 *pp = (Frame802154 *)object; (void)pp;
+    SensedSignal *pp = (SensedSignal *)object; (void)pp;
     switch (field) {
         default: return NULL;
     }

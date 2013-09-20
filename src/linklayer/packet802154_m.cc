@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from packet802154.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from linklayer/packet802154.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:

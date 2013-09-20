@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from sensereq.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from other/sensereq.msg.
 //
 
 #ifndef _SENSEREQ_M_H_
@@ -21,7 +21,7 @@
 
 
 /**
- * Class generated from <tt>sensereq.msg</tt> by opp_msgc.
+ * Class generated from <tt>other/sensereq.msg</tt> by opp_msgc.
  * <pre>
  * message SenseReq {
  *     AssPtr srcAss;

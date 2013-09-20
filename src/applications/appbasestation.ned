@@ -13,16 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+package trackingwsn.applications;
 
 //
-// Acoustic Signal Generator
+// Base station's Application Layer
 //
-simple Asg
+simple AppBaseStation
 {
     parameters:
-        double ssRange @unit(m);
-        @display("i=block/wtx");
+        @display("i=block/app");
     gates:
-        input reqIn @directIn; // Gate for receiving sensing request
+        inout netGate; // Connect network layer
 }

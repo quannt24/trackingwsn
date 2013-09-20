@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+package trackingwsn.linklayer;
 
 //
 // Phy/Link layer using IEEE 802.15.4

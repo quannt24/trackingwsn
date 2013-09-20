@@ -15,6 +15,8 @@
 
 package trackingwsn;
 
+import trackingwsn.util.*;
+
 network Wsn
 {
     parameters:

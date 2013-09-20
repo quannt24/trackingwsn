@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from sensedsignal.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from networklayer/messagecr.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "sensedsignal_m.h"
+#include "messagecr_m.h"
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -30,90 +30,83 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 
-Register_Class(SensedSignal);
+EXECUTE_ON_STARTUP(
+    cEnum *e = cEnum::find("MsgType");
+    if (!e) enums.getInstance()->add(e = new cEnum("MsgType"));
+    e->insert(MSG_TO_AN, "MSG_TO_AN");
+    e->insert(MSG_TO_BS, "MSG_TO_BS");
+);
 
-SensedSignal::SensedSignal(const char *name, int kind) : cMessage(name,kind)
+Register_Class(MessageCR);
+
+MessageCR::MessageCR(const char *name, int kind) : cPacket(name,kind)
 {
-    this->tarId_var = 0;
-    this->signal_var = 0;
-    this->distance_var = 0;
+    this->msgType_var = 0;
+    this->desMacAddr_var = 0;
 }
 
-SensedSignal::SensedSignal(const SensedSignal& other) : cMessage(other)
+MessageCR::MessageCR(const MessageCR& other) : cPacket(other)
 {
     copy(other);
 }
 
-SensedSignal::~SensedSignal()
+MessageCR::~MessageCR()
 {
 }
 
-SensedSignal& SensedSignal::operator=(const SensedSignal& other)
+MessageCR& MessageCR::operator=(const MessageCR& other)
 {
     if (this==&other) return *this;
-    cMessage::operator=(other);
+    cPacket::operator=(other);
     copy(other);
     return *this;
 }
 
-void SensedSignal::copy(const SensedSignal& other)
+void MessageCR::copy(const MessageCR& other)
 {
-    this->tarId_var = other.tarId_var;
-    this->signal_var = other.signal_var;
-    this->distance_var = other.distance_var;
+    this->msgType_var = other.msgType_var;
+    this->desMacAddr_var = other.desMacAddr_var;
 }
 
-void SensedSignal::parsimPack(cCommBuffer *b)
+void MessageCR::parsimPack(cCommBuffer *b)
 {
-    cMessage::parsimPack(b);
-    doPacking(b,this->tarId_var);
-    doPacking(b,this->signal_var);
-    doPacking(b,this->distance_var);
+    cPacket::parsimPack(b);
+    doPacking(b,this->msgType_var);
+    doPacking(b,this->desMacAddr_var);
 }
 
-void SensedSignal::parsimUnpack(cCommBuffer *b)
+void MessageCR::parsimUnpack(cCommBuffer *b)
 {
-    cMessage::parsimUnpack(b);
-    doUnpacking(b,this->tarId_var);
-    doUnpacking(b,this->signal_var);
-    doUnpacking(b,this->distance_var);
+    cPacket::parsimUnpack(b);
+    doUnpacking(b,this->msgType_var);
+    doUnpacking(b,this->desMacAddr_var);
 }
 
-int SensedSignal::getTarId() const
+int MessageCR::getMsgType() const
 {
-    return tarId_var;
+    return msgType_var;
 }
 
-void SensedSignal::setTarId(int tarId)
+void MessageCR::setMsgType(int msgType)
 {
-    this->tarId_var = tarId;
+    this->msgType_var = msgType;
 }
 
-const char * SensedSignal::getSignal() const
+int MessageCR::getDesMacAddr() const
 {
-    return signal_var.c_str();
+    return desMacAddr_var;
 }
 
-void SensedSignal::setSignal(const char * signal)
+void MessageCR::setDesMacAddr(int desMacAddr)
 {
-    this->signal_var = signal;
+    this->desMacAddr_var = desMacAddr;
 }
 
-double SensedSignal::getDistance() const
-{
-    return distance_var;
-}
-
-void SensedSignal::setDistance(double distance)
-{
-    this->distance_var = distance;
-}
-
-class SensedSignalDescriptor : public cClassDescriptor
+class MessageCRDescriptor : public cClassDescriptor
 {
   public:
-    SensedSignalDescriptor();
-    virtual ~SensedSignalDescriptor();
+    MessageCRDescriptor();
+    virtual ~MessageCRDescriptor();
 
     virtual bool doesSupport(cObject *obj) const;
     virtual const char *getProperty(const char *propertyname) const;
@@ -132,34 +125,34 @@ class SensedSignalDescriptor : public cClassDescriptor
     virtual void *getFieldStructPointer(void *object, int field, int i) const;
 };
 
-Register_ClassDescriptor(SensedSignalDescriptor);
+Register_ClassDescriptor(MessageCRDescriptor);
 
-SensedSignalDescriptor::SensedSignalDescriptor() : cClassDescriptor("SensedSignal", "cMessage")
+MessageCRDescriptor::MessageCRDescriptor() : cClassDescriptor("MessageCR", "cPacket")
 {
 }
 
-SensedSignalDescriptor::~SensedSignalDescriptor()
+MessageCRDescriptor::~MessageCRDescriptor()
 {
 }
 
-bool SensedSignalDescriptor::doesSupport(cObject *obj) const
+bool MessageCRDescriptor::doesSupport(cObject *obj) const
 {
-    return dynamic_cast<SensedSignal *>(obj)!=NULL;
+    return dynamic_cast<MessageCR *>(obj)!=NULL;
 }
 
-const char *SensedSignalDescriptor::getProperty(const char *propertyname) const
+const char *MessageCRDescriptor::getProperty(const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     return basedesc ? basedesc->getProperty(propertyname) : NULL;
 }
 
-int SensedSignalDescriptor::getFieldCount(void *object) const
+int MessageCRDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 3+basedesc->getFieldCount(object) : 3;
+    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
 }
 
-unsigned int SensedSignalDescriptor::getFieldTypeFlags(void *object, int field) const
+unsigned int MessageCRDescriptor::getFieldTypeFlags(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -170,12 +163,11 @@ unsigned int SensedSignalDescriptor::getFieldTypeFlags(void *object, int field) 
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
         FD_ISEDITABLE,
-        FD_ISEDITABLE,
     };
-    return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
 }
 
-const char *SensedSignalDescriptor::getFieldName(void *object, int field) const
+const char *MessageCRDescriptor::getFieldName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -184,24 +176,22 @@ const char *SensedSignalDescriptor::getFieldName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldNames[] = {
-        "tarId",
-        "signal",
-        "distance",
+        "msgType",
+        "desMacAddr",
     };
-    return (field>=0 && field<3) ? fieldNames[field] : NULL;
+    return (field>=0 && field<2) ? fieldNames[field] : NULL;
 }
 
-int SensedSignalDescriptor::findField(void *object, const char *fieldName) const
+int MessageCRDescriptor::findField(void *object, const char *fieldName) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
-    if (fieldName[0]=='t' && strcmp(fieldName, "tarId")==0) return base+0;
-    if (fieldName[0]=='s' && strcmp(fieldName, "signal")==0) return base+1;
-    if (fieldName[0]=='d' && strcmp(fieldName, "distance")==0) return base+2;
+    if (fieldName[0]=='m' && strcmp(fieldName, "msgType")==0) return base+0;
+    if (fieldName[0]=='d' && strcmp(fieldName, "desMacAddr")==0) return base+1;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
-const char *SensedSignalDescriptor::getFieldTypeString(void *object, int field) const
+const char *MessageCRDescriptor::getFieldTypeString(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -211,13 +201,12 @@ const char *SensedSignalDescriptor::getFieldTypeString(void *object, int field) 
     }
     static const char *fieldTypeStrings[] = {
         "int",
-        "string",
-        "double",
+        "int",
     };
-    return (field>=0 && field<3) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
 }
 
-const char *SensedSignalDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+const char *MessageCRDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -230,7 +219,7 @@ const char *SensedSignalDescriptor::getFieldProperty(void *object, int field, co
     }
 }
 
-int SensedSignalDescriptor::getArraySize(void *object, int field) const
+int MessageCRDescriptor::getArraySize(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -238,13 +227,13 @@ int SensedSignalDescriptor::getArraySize(void *object, int field) const
             return basedesc->getArraySize(object, field);
         field -= basedesc->getFieldCount(object);
     }
-    SensedSignal *pp = (SensedSignal *)object; (void)pp;
+    MessageCR *pp = (MessageCR *)object; (void)pp;
     switch (field) {
         default: return 0;
     }
 }
 
-std::string SensedSignalDescriptor::getFieldAsString(void *object, int field, int i) const
+std::string MessageCRDescriptor::getFieldAsString(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -252,16 +241,15 @@ std::string SensedSignalDescriptor::getFieldAsString(void *object, int field, in
             return basedesc->getFieldAsString(object,field,i);
         field -= basedesc->getFieldCount(object);
     }
-    SensedSignal *pp = (SensedSignal *)object; (void)pp;
+    MessageCR *pp = (MessageCR *)object; (void)pp;
     switch (field) {
-        case 0: return long2string(pp->getTarId());
-        case 1: return oppstring2string(pp->getSignal());
-        case 2: return double2string(pp->getDistance());
+        case 0: return long2string(pp->getMsgType());
+        case 1: return long2string(pp->getDesMacAddr());
         default: return "";
     }
 }
 
-bool SensedSignalDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+bool MessageCRDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -269,16 +257,15 @@ bool SensedSignalDescriptor::setFieldAsString(void *object, int field, int i, co
             return basedesc->setFieldAsString(object,field,i,value);
         field -= basedesc->getFieldCount(object);
     }
-    SensedSignal *pp = (SensedSignal *)object; (void)pp;
+    MessageCR *pp = (MessageCR *)object; (void)pp;
     switch (field) {
-        case 0: pp->setTarId(string2long(value)); return true;
-        case 1: pp->setSignal((value)); return true;
-        case 2: pp->setDistance(string2double(value)); return true;
+        case 0: pp->setMsgType(string2long(value)); return true;
+        case 1: pp->setDesMacAddr(string2long(value)); return true;
         default: return false;
     }
 }
 
-const char *SensedSignalDescriptor::getFieldStructName(void *object, int field) const
+const char *MessageCRDescriptor::getFieldStructName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -289,12 +276,11 @@ const char *SensedSignalDescriptor::getFieldStructName(void *object, int field) 
     static const char *fieldStructNames[] = {
         NULL,
         NULL,
-        NULL,
     };
-    return (field>=0 && field<3) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
 }
 
-void *SensedSignalDescriptor::getFieldStructPointer(void *object, int field, int i) const
+void *MessageCRDescriptor::getFieldStructPointer(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -302,7 +288,7 @@ void *SensedSignalDescriptor::getFieldStructPointer(void *object, int field, int
             return basedesc->getFieldStructPointer(object, field, i);
         field -= basedesc->getFieldCount(object);
     }
-    SensedSignal *pp = (SensedSignal *)object; (void)pp;
+    MessageCR *pp = (MessageCR *)object; (void)pp;
     switch (field) {
         default: return NULL;
     }

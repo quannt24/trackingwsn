@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from packetemrp.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from networklayer/packetemrp.msg.
 //
 
 #ifndef _PACKETEMRP_M_H_
@@ -20,7 +20,7 @@
 
 
 /**
- * Enum generated from <tt>packetemrp.msg</tt> by opp_msgc.
+ * Enum generated from <tt>networklayer/packetemrp.msg</tt> by opp_msgc.
  * <pre>
  * enum PacketType {
  *     PK_PAYLOAD_TO_AN = 0; 
@@ -40,7 +40,7 @@ enum PacketType {
 };
 
 /**
- * Class generated from <tt>packetemrp.msg</tt> by opp_msgc.
+ * Class generated from <tt>networklayer/packetemrp.msg</tt> by opp_msgc.
  * <pre>
  * packet PacketEMRP extends Packet802154 {
  *     int pkType; 
@@ -77,7 +77,7 @@ inline void doPacking(cCommBuffer *b, PacketEMRP& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, PacketEMRP& obj) {obj.parsimUnpack(b);}
 
 /**
- * Class generated from <tt>packetemrp.msg</tt> by opp_msgc.
+ * Class generated from <tt>networklayer/packetemrp.msg</tt> by opp_msgc.
  * <pre>
  * packet PacketEMRP_RelayInfo extends PacketEMRP {
  *     pkType = PK_RELAY_INFO;
@@ -131,7 +131,7 @@ inline void doPacking(cCommBuffer *b, PacketEMRP_RelayInfo& obj) {obj.parsimPack
 inline void doUnpacking(cCommBuffer *b, PacketEMRP_RelayInfo& obj) {obj.parsimUnpack(b);}
 
 /**
- * Class generated from <tt>packetemrp.msg</tt> by opp_msgc.
+ * Class generated from <tt>networklayer/packetemrp.msg</tt> by opp_msgc.
  * <pre>
  * packet PacketEMRP_EnergyInfo extends PacketEMRP {
  *     pkType = PK_ENERGY_INFO;

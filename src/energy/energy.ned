@@ -13,14 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+package trackingwsn.energy;
 
-module Node802154 extends Entity
+//
+// Module for simulating and managing energy.
+//
+simple Energy
 {
-    submodules:
-        net: NetEMRP;
-        link: Link802154;
-        energy: Energy;
-    connections:
-        net.linkGate <--> link.netGate;
+    parameters:
+        bool hasLinePower = default(false); // If module having line power supply (infinite)
+        double initCap @unit(J) = default(1J); // Initial capacity
+        @display("i=block/plug");
 }

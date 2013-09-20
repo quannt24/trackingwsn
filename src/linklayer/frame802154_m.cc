@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from messagecr.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from linklayer/frame802154.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -10,7 +10,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "messagecr_m.h"
+#include "frame802154_m.h"
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -30,31 +30,24 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 
-EXECUTE_ON_STARTUP(
-    cEnum *e = cEnum::find("MsgType");
-    if (!e) enums.getInstance()->add(e = new cEnum("MsgType"));
-    e->insert(MSG_TO_AN, "MSG_TO_AN");
-    e->insert(MSG_TO_BS, "MSG_TO_BS");
-);
+Register_Class(Frame802154);
 
-Register_Class(MessageCR);
-
-MessageCR::MessageCR(const char *name, int kind) : cPacket(name,kind)
+Frame802154::Frame802154(const char *name, int kind) : cPacket(name,kind)
 {
-    this->msgType_var = 0;
-    this->desMacAddr_var = 0;
+    this->srcAddr_var = 0;
+    this->desAddr_var = 0;
 }
 
-MessageCR::MessageCR(const MessageCR& other) : cPacket(other)
+Frame802154::Frame802154(const Frame802154& other) : cPacket(other)
 {
     copy(other);
 }
 
-MessageCR::~MessageCR()
+Frame802154::~Frame802154()
 {
 }
 
-MessageCR& MessageCR::operator=(const MessageCR& other)
+Frame802154& Frame802154::operator=(const Frame802154& other)
 {
     if (this==&other) return *this;
     cPacket::operator=(other);
@@ -62,51 +55,51 @@ MessageCR& MessageCR::operator=(const MessageCR& other)
     return *this;
 }
 
-void MessageCR::copy(const MessageCR& other)
+void Frame802154::copy(const Frame802154& other)
 {
-    this->msgType_var = other.msgType_var;
-    this->desMacAddr_var = other.desMacAddr_var;
+    this->srcAddr_var = other.srcAddr_var;
+    this->desAddr_var = other.desAddr_var;
 }
 
-void MessageCR::parsimPack(cCommBuffer *b)
+void Frame802154::parsimPack(cCommBuffer *b)
 {
     cPacket::parsimPack(b);
-    doPacking(b,this->msgType_var);
-    doPacking(b,this->desMacAddr_var);
+    doPacking(b,this->srcAddr_var);
+    doPacking(b,this->desAddr_var);
 }
 
-void MessageCR::parsimUnpack(cCommBuffer *b)
+void Frame802154::parsimUnpack(cCommBuffer *b)
 {
     cPacket::parsimUnpack(b);
-    doUnpacking(b,this->msgType_var);
-    doUnpacking(b,this->desMacAddr_var);
+    doUnpacking(b,this->srcAddr_var);
+    doUnpacking(b,this->desAddr_var);
 }
 
-int MessageCR::getMsgType() const
+int Frame802154::getSrcAddr() const
 {
-    return msgType_var;
+    return srcAddr_var;
 }
 
-void MessageCR::setMsgType(int msgType)
+void Frame802154::setSrcAddr(int srcAddr)
 {
-    this->msgType_var = msgType;
+    this->srcAddr_var = srcAddr;
 }
 
-int MessageCR::getDesMacAddr() const
+int Frame802154::getDesAddr() const
 {
-    return desMacAddr_var;
+    return desAddr_var;
 }
 
-void MessageCR::setDesMacAddr(int desMacAddr)
+void Frame802154::setDesAddr(int desAddr)
 {
-    this->desMacAddr_var = desMacAddr;
+    this->desAddr_var = desAddr;
 }
 
-class MessageCRDescriptor : public cClassDescriptor
+class Frame802154Descriptor : public cClassDescriptor
 {
   public:
-    MessageCRDescriptor();
-    virtual ~MessageCRDescriptor();
+    Frame802154Descriptor();
+    virtual ~Frame802154Descriptor();
 
     virtual bool doesSupport(cObject *obj) const;
     virtual const char *getProperty(const char *propertyname) const;
@@ -125,34 +118,34 @@ class MessageCRDescriptor : public cClassDescriptor
     virtual void *getFieldStructPointer(void *object, int field, int i) const;
 };
 
-Register_ClassDescriptor(MessageCRDescriptor);
+Register_ClassDescriptor(Frame802154Descriptor);
 
-MessageCRDescriptor::MessageCRDescriptor() : cClassDescriptor("MessageCR", "cPacket")
+Frame802154Descriptor::Frame802154Descriptor() : cClassDescriptor("Frame802154", "cPacket")
 {
 }
 
-MessageCRDescriptor::~MessageCRDescriptor()
+Frame802154Descriptor::~Frame802154Descriptor()
 {
 }
 
-bool MessageCRDescriptor::doesSupport(cObject *obj) const
+bool Frame802154Descriptor::doesSupport(cObject *obj) const
 {
-    return dynamic_cast<MessageCR *>(obj)!=NULL;
+    return dynamic_cast<Frame802154 *>(obj)!=NULL;
 }
 
-const char *MessageCRDescriptor::getProperty(const char *propertyname) const
+const char *Frame802154Descriptor::getProperty(const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     return basedesc ? basedesc->getProperty(propertyname) : NULL;
 }
 
-int MessageCRDescriptor::getFieldCount(void *object) const
+int Frame802154Descriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     return basedesc ? 2+basedesc->getFieldCount(object) : 2;
 }
 
-unsigned int MessageCRDescriptor::getFieldTypeFlags(void *object, int field) const
+unsigned int Frame802154Descriptor::getFieldTypeFlags(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -167,7 +160,7 @@ unsigned int MessageCRDescriptor::getFieldTypeFlags(void *object, int field) con
     return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
 }
 
-const char *MessageCRDescriptor::getFieldName(void *object, int field) const
+const char *Frame802154Descriptor::getFieldName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -176,22 +169,22 @@ const char *MessageCRDescriptor::getFieldName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldNames[] = {
-        "msgType",
-        "desMacAddr",
+        "srcAddr",
+        "desAddr",
     };
     return (field>=0 && field<2) ? fieldNames[field] : NULL;
 }
 
-int MessageCRDescriptor::findField(void *object, const char *fieldName) const
+int Frame802154Descriptor::findField(void *object, const char *fieldName) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
-    if (fieldName[0]=='m' && strcmp(fieldName, "msgType")==0) return base+0;
-    if (fieldName[0]=='d' && strcmp(fieldName, "desMacAddr")==0) return base+1;
+    if (fieldName[0]=='s' && strcmp(fieldName, "srcAddr")==0) return base+0;
+    if (fieldName[0]=='d' && strcmp(fieldName, "desAddr")==0) return base+1;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
-const char *MessageCRDescriptor::getFieldTypeString(void *object, int field) const
+const char *Frame802154Descriptor::getFieldTypeString(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -206,7 +199,7 @@ const char *MessageCRDescriptor::getFieldTypeString(void *object, int field) con
     return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
 }
 
-const char *MessageCRDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+const char *Frame802154Descriptor::getFieldProperty(void *object, int field, const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -219,7 +212,7 @@ const char *MessageCRDescriptor::getFieldProperty(void *object, int field, const
     }
 }
 
-int MessageCRDescriptor::getArraySize(void *object, int field) const
+int Frame802154Descriptor::getArraySize(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -227,13 +220,13 @@ int MessageCRDescriptor::getArraySize(void *object, int field) const
             return basedesc->getArraySize(object, field);
         field -= basedesc->getFieldCount(object);
     }
-    MessageCR *pp = (MessageCR *)object; (void)pp;
+    Frame802154 *pp = (Frame802154 *)object; (void)pp;
     switch (field) {
         default: return 0;
     }
 }
 
-std::string MessageCRDescriptor::getFieldAsString(void *object, int field, int i) const
+std::string Frame802154Descriptor::getFieldAsString(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -241,15 +234,15 @@ std::string MessageCRDescriptor::getFieldAsString(void *object, int field, int i
             return basedesc->getFieldAsString(object,field,i);
         field -= basedesc->getFieldCount(object);
     }
-    MessageCR *pp = (MessageCR *)object; (void)pp;
+    Frame802154 *pp = (Frame802154 *)object; (void)pp;
     switch (field) {
-        case 0: return long2string(pp->getMsgType());
-        case 1: return long2string(pp->getDesMacAddr());
+        case 0: return long2string(pp->getSrcAddr());
+        case 1: return long2string(pp->getDesAddr());
         default: return "";
     }
 }
 
-bool MessageCRDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+bool Frame802154Descriptor::setFieldAsString(void *object, int field, int i, const char *value) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -257,15 +250,15 @@ bool MessageCRDescriptor::setFieldAsString(void *object, int field, int i, const
             return basedesc->setFieldAsString(object,field,i,value);
         field -= basedesc->getFieldCount(object);
     }
-    MessageCR *pp = (MessageCR *)object; (void)pp;
+    Frame802154 *pp = (Frame802154 *)object; (void)pp;
     switch (field) {
-        case 0: pp->setMsgType(string2long(value)); return true;
-        case 1: pp->setDesMacAddr(string2long(value)); return true;
+        case 0: pp->setSrcAddr(string2long(value)); return true;
+        case 1: pp->setDesAddr(string2long(value)); return true;
         default: return false;
     }
 }
 
-const char *MessageCRDescriptor::getFieldStructName(void *object, int field) const
+const char *Frame802154Descriptor::getFieldStructName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -280,7 +273,7 @@ const char *MessageCRDescriptor::getFieldStructName(void *object, int field) con
     return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
 }
 
-void *MessageCRDescriptor::getFieldStructPointer(void *object, int field, int i) const
+void *Frame802154Descriptor::getFieldStructPointer(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -288,7 +281,7 @@ void *MessageCRDescriptor::getFieldStructPointer(void *object, int field, int i)
             return basedesc->getFieldStructPointer(object, field, i);
         field -= basedesc->getFieldCount(object);
     }
-    MessageCR *pp = (MessageCR *)object; (void)pp;
+    Frame802154 *pp = (Frame802154 *)object; (void)pp;
     switch (field) {
         default: return NULL;
     }

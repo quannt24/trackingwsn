@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from sensereq.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from other/sensereq.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:

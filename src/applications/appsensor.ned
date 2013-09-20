@@ -13,15 +13,17 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+package trackingwsn.applications;
 
 //
-// Module for simulating and managing energy.
+// Sensor's Application Layer
 //
-simple Energy
+simple AppSensor
 {
     parameters:
-        bool hasLinePower = default(false); // If module having line power supply (infinite)
-        double initCap @unit(J) = default(1J); // Initial capacity
-        @display("i=block/plug");
+        double senseInterval = default(0.5);
+        @display("i=block/app");
+    gates:
+        inout ssGate; // Connect acoustic signal sensor (ass)
+        inout netGate; // Connect network layer
 }

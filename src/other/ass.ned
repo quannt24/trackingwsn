@@ -13,17 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+package trackingwsn.other;
 
 //
-// Sensor's Application Layer
+// Acoustic signal sensor
 //
-simple AppSensor
+simple Ass
 {
-    parameters:
-        double senseInterval = default(0.5);
-        @display("i=block/app");
+    @display("i=block/wrx");
     gates:
-        inout ssGate; // Connect acoustic signal sensor (ass)
-        inout netGate; // Connect network layer
+        input sigIn @directIn; // Gate for receiving target's signal
+        inout appGate;
 }

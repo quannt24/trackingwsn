@@ -13,13 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+package trackingwsn.util;
 
 //
-// This module represent an entity in the network
+// Utilities about simulation world
 //
-module Entity
+simple WorldUtil
 {
-    submodules:
-        mobility: Mobility;
+    @display("i=misc/globe;p=-4,2");
 }

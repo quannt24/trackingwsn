@@ -13,15 +13,18 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+package trackingwsn.nodes;
 
-//
-// Base station's Application Layer
-//
-simple AppBaseStation
+import trackingwsn.linklayer.Link802154;
+import trackingwsn.networklayer.NetEMRP;
+import trackingwsn.energy.Energy;
+
+module Node802154 extends Entity
 {
-    parameters:
-        @display("i=block/app");
-    gates:
-        inout netGate; // Connect network layer
+    submodules:
+        net: NetEMRP;
+        link: Link802154;
+        energy: Energy;
+    connections:
+        net.linkGate <--> link.netGate;
 }

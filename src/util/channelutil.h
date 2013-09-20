@@ -38,9 +38,16 @@ class ChannelUtil : public cSimpleModule
     public:
         ChannelUtil();
         ~ChannelUtil();
-        bool checkChannel(Link802154 *host); // Check if channel around a host is busy or not: true = available, false = busy
-        int acquireChannel(Link802154 *host); // Acquire channel to transmit data. Return 0 on success.
-        void releaseChannel(Link802154 *host); // Release channel acquired by a host
+        /* Check if channel around a host is busy or not: true = available, false = busy */
+        bool checkChannel(Link802154 *host);
+        /* Check if channel around a host has collisions. Collisions occur when two or more other
+         * hosts' signals are transmitted in this area. This function can be used for issued host
+         * when it is receiving packet to simulate packet lost. */
+        bool hasCollision(Link802154 *host);
+        /* Acquire channel to transmit data. Return 0 on success. */
+        int acquireChannel(Link802154 *host);
+        /* Release channel acquired by a host */
+        void releaseChannel(Link802154 *host);
 };
 
 #endif

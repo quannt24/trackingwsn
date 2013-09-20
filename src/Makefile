@@ -14,7 +14,16 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
 #USERIF_LIBS = $(TKENV_LIBS)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I.
+INCLUDE_PATH = \
+    -I. \
+    -Iapplications \
+    -Ienergy \
+    -Ilinklayer \
+    -Imobility \
+    -Inetworklayer \
+    -Inodes \
+    -Iother \
+    -Iutil
 
 # Additional object and library files to link with
 EXTRA_OBJS =
@@ -29,31 +38,31 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc and .msg files
 OBJS = \
-    $O/appbasestation.o \
-    $O/appsensor.o \
-    $O/asg.o \
-    $O/worldutil.o \
-    $O/mobility.o \
-    $O/energy.o \
-    $O/link802154.o \
-    $O/ass.o \
-    $O/channelutil.o \
-    $O/netemrp.o \
-    $O/packet802154_m.o \
-    $O/packetemrp_m.o \
-    $O/sensereq_m.o \
-    $O/frame802154_m.o \
-    $O/sensedsignal_m.o \
-    $O/messagecr_m.o
+    $O/applications/appbasestation.o \
+    $O/applications/appsensor.o \
+    $O/energy/energy.o \
+    $O/linklayer/link802154.o \
+    $O/mobility/mobility.o \
+    $O/networklayer/netemrp.o \
+    $O/other/asg.o \
+    $O/other/ass.o \
+    $O/util/worldutil.o \
+    $O/util/channelutil.o \
+    $O/linklayer/packet802154_m.o \
+    $O/linklayer/frame802154_m.o \
+    $O/networklayer/packetemrp_m.o \
+    $O/networklayer/messagecr_m.o \
+    $O/other/sensereq_m.o \
+    $O/other/sensedsignal_m.o
 
 # Message files
 MSGFILES = \
-    packet802154.msg \
-    packetemrp.msg \
-    sensereq.msg \
-    frame802154.msg \
-    sensedsignal.msg \
-    messagecr.msg
+    linklayer/packet802154.msg \
+    linklayer/frame802154.msg \
+    networklayer/packetemrp.msg \
+    networklayer/messagecr.msg \
+    other/sensereq.msg \
+    other/sensedsignal.msg
 
 #------------------------------------------------------------------------------
 
@@ -127,85 +136,93 @@ clean:
 	$(Q)-rm -rf $O
 	$(Q)-rm -f TrackingWSN TrackingWSN.exe libTrackingWSN.so libTrackingWSN.a libTrackingWSN.dll libTrackingWSN.dylib
 	$(Q)-rm -f ./*_m.cc ./*_m.h
+	$(Q)-rm -f applications/*_m.cc applications/*_m.h
+	$(Q)-rm -f energy/*_m.cc energy/*_m.h
+	$(Q)-rm -f linklayer/*_m.cc linklayer/*_m.h
+	$(Q)-rm -f mobility/*_m.cc mobility/*_m.h
+	$(Q)-rm -f networklayer/*_m.cc networklayer/*_m.h
+	$(Q)-rm -f nodes/*_m.cc nodes/*_m.h
+	$(Q)-rm -f other/*_m.cc other/*_m.h
+	$(Q)-rm -f util/*_m.cc util/*_m.h
 
 cleanall: clean
 	$(Q)-rm -rf $(PROJECT_OUTPUT_DIR)
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc energy/*.cc linklayer/*.cc mobility/*.cc networklayer/*.cc nodes/*.cc other/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-$O/appbasestation.o: appbasestation.cc \
-	appbasestation.h
-$O/appsensor.o: appsensor.cc \
-	appsensor.h \
-	messagecr_m.h \
-	msgkind.h
-$O/asg.o: asg.cc \
-	asg.h \
-	ass.h \
+$O/applications/appbasestation.o: applications/appbasestation.cc \
+	applications/appbasestation.h
+$O/applications/appsensor.o: applications/appsensor.cc \
+	applications/appsensor.h \
 	msgkind.h \
-	sensedsignal_m.h \
-	sensereq_m.h
-$O/ass.o: ass.cc \
-	ass.h \
-	mobility.h \
-	msgkind.h \
-	sensedsignal_m.h \
-	sensereq_m.h \
-	worldutil.h
-$O/channelutil.o: channelutil.cc \
-	channelutil.h \
-	frame802154_m.h \
-	link802154.h \
-	mobility.h \
-	packet802154_m.h \
-	worldutil.h
-$O/energy.o: energy.cc \
-	energy.h
-$O/frame802154_m.o: frame802154_m.cc \
-	frame802154_m.h
-$O/link802154.o: link802154.cc \
-	channelutil.h \
-	energy.h \
-	frame802154_m.h \
-	link802154.h \
-	packet802154_m.h \
+	networklayer/messagecr_m.h
+$O/energy/energy.o: energy/energy.cc \
+	energy/energy.h
+$O/linklayer/frame802154_m.o: linklayer/frame802154_m.cc \
+	linklayer/frame802154_m.h
+$O/linklayer/link802154.o: linklayer/link802154.cc \
+	energy/energy.h \
+	linklayer/frame802154_m.h \
+	linklayer/link802154.h \
+	linklayer/packet802154_m.h \
+	util/channelutil.h \
 	wsnexception.h
-$O/messagecr_m.o: messagecr_m.cc \
-	messagecr_m.h
-$O/mobility.o: mobility.cc \
-	mobility.h
-$O/netemrp.o: netemrp.cc \
-	energy.h \
-	frame802154_m.h \
-	link802154.h \
-	messagecr_m.h \
-	mobility.h \
+$O/linklayer/packet802154_m.o: linklayer/packet802154_m.cc \
+	linklayer/packet802154_m.h
+$O/mobility/mobility.o: mobility/mobility.cc \
+	mobility/mobility.h
+$O/networklayer/messagecr_m.o: networklayer/messagecr_m.cc \
+	networklayer/messagecr_m.h
+$O/networklayer/netemrp.o: networklayer/netemrp.cc \
+	energy/energy.h \
+	linklayer/frame802154_m.h \
+	linklayer/link802154.h \
+	linklayer/packet802154_m.h \
+	mobility/mobility.h \
 	msgkind.h \
-	netemrp.h \
-	packet802154_m.h \
-	packetemrp_m.h \
-	worldutil.h
-$O/packet802154_m.o: packet802154_m.cc \
-	packet802154_m.h
-$O/packetemrp_m.o: packetemrp_m.cc \
-	packet802154_m.h \
-	packetemrp_m.h
-$O/sensedsignal_m.o: sensedsignal_m.cc \
-	sensedsignal_m.h
-$O/sensereq_m.o: sensereq_m.cc \
-	ass.h \
-	sensedsignal_m.h \
-	sensereq_m.h
-$O/worldutil.o: worldutil.cc \
-	frame802154_m.h \
-	link802154.h \
-	messagecr_m.h \
-	mobility.h \
-	netemrp.h \
-	packet802154_m.h \
-	packetemrp_m.h \
-	worldutil.h
+	networklayer/messagecr_m.h \
+	networklayer/netemrp.h \
+	networklayer/packetemrp_m.h \
+	util/worldutil.h
+$O/networklayer/packetemrp_m.o: networklayer/packetemrp_m.cc \
+	linklayer/packet802154_m.h \
+	networklayer/packetemrp_m.h
+$O/other/asg.o: other/asg.cc \
+	msgkind.h \
+	other/asg.h \
+	other/ass.h \
+	other/sensedsignal_m.h \
+	other/sensereq_m.h
+$O/other/ass.o: other/ass.cc \
+	mobility/mobility.h \
+	msgkind.h \
+	other/ass.h \
+	other/sensedsignal_m.h \
+	other/sensereq_m.h \
+	util/worldutil.h
+$O/other/sensedsignal_m.o: other/sensedsignal_m.cc \
+	other/sensedsignal_m.h
+$O/other/sensereq_m.o: other/sensereq_m.cc \
+	other/ass.h \
+	other/sensedsignal_m.h \
+	other/sensereq_m.h
+$O/util/channelutil.o: util/channelutil.cc \
+	linklayer/frame802154_m.h \
+	linklayer/link802154.h \
+	linklayer/packet802154_m.h \
+	mobility/mobility.h \
+	util/channelutil.h \
+	util/worldutil.h
+$O/util/worldutil.o: util/worldutil.cc \
+	linklayer/frame802154_m.h \
+	linklayer/link802154.h \
+	linklayer/packet802154_m.h \
+	mobility/mobility.h \
+	networklayer/messagecr_m.h \
+	networklayer/netemrp.h \
+	networklayer/packetemrp_m.h \
+	util/worldutil.h
 

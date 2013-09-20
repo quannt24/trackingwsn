@@ -13,16 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+package trackingwsn.nodes;
+
+import trackingwsn.mobility.Mobility;
 
 //
-// Utility module for checking status of channel, used to simulate channel sensing. Each instance
-// of this module can be used to track the using of a channel (just like a register table, no
-// mechanism to control the behaviors of other modules is provided).
-// Other modules should register with this module if they are going to use/release channel; and
-// they can check the status of the channel.
+// This module represent an entity in the network
 //
-simple ChannelUtil
+module Entity
 {
-    @display("i=block/network;p=-4,10");
+    submodules:
+        mobility: Mobility;
 }

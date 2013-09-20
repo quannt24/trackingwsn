@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from messagecr.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from networklayer/messagecr.msg.
 //
 
 #ifndef _MESSAGECR_M_H_
@@ -16,7 +16,7 @@
 
 
 /**
- * Enum generated from <tt>messagecr.msg</tt> by opp_msgc.
+ * Enum generated from <tt>networklayer/messagecr.msg</tt> by opp_msgc.
  * <pre>
  * enum MsgType {
  *     MSG_TO_AN = 0; 
@@ -30,7 +30,7 @@ enum MsgType {
 };
 
 /**
- * Class generated from <tt>messagecr.msg</tt> by opp_msgc.
+ * Class generated from <tt>networklayer/messagecr.msg</tt> by opp_msgc.
  * <pre>
  * packet MessageCR {
  *     int msgType; 

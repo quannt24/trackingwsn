@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from frame802154.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from linklayer/frame802154.msg.
 //
 
 #ifndef _FRAME802154_M_H_
@@ -16,7 +16,7 @@
 
 
 /**
- * Class generated from <tt>frame802154.msg</tt> by opp_msgc.
+ * Class generated from <tt>linklayer/frame802154.msg</tt> by opp_msgc.
  * <pre>
  * packet Frame802154 {
  *     int srcAddr; 

@@ -22,7 +22,7 @@ Define_Module(AppSensor);
 void AppSensor::initialize()
 {
     // TODO Test Start sensing
-    scheduleAt(22 + uniform(0, 5), senseMsg);
+    //scheduleAt(22 + uniform(0, 5), senseMsg);
 }
 
 void AppSensor::handleMessage(cMessage *msg)

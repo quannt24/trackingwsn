@@ -46,6 +46,7 @@ OBJS = \
     $O/networklayer/netemrp.o \
     $O/other/asg.o \
     $O/other/ass.o \
+    $O/util/matrix.o \
     $O/util/worldutil.o \
     $O/util/channelutil.o \
     $O/linklayer/packet802154_m.o \
@@ -216,6 +217,8 @@ $O/util/channelutil.o: util/channelutil.cc \
 	mobility/mobility.h \
 	util/channelutil.h \
 	util/worldutil.h
+$O/util/matrix.o: util/matrix.cc \
+	util/matrix.h
 $O/util/worldutil.o: util/worldutil.cc \
 	linklayer/frame802154_m.h \
 	linklayer/link802154.h \

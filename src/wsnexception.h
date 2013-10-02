@@ -11,6 +11,6 @@
 /*
  * Exceptions in WSN
  */
-enum Exception {PACKET_TOO_LONG};
+enum WsnException {PACKET_TOO_LONG};
 
 #endif /* WSNEXCEPTION_H_ */

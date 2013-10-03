@@ -30,7 +30,10 @@ simple Link802154
         
         // Transmission range
         double txRange @unit(m) = default(10m);
+        // Bit rate
         int bitRate @unit(bps) = default(250000bps);
+        // Random frame lost probability (0 ~ 1)
+        double ranFrameLossProb = default(0.0);
         
         int maxFrameSize = default(127); // Max size of a link layer frame in byte, not including physical layer header
         int phyHeaderSize = default(6); // Physical layer header size in byte

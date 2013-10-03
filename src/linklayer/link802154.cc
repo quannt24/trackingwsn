@@ -140,9 +140,20 @@ void Link802154::queueFrame(Frame802154 *frame)
 void Link802154::recvFrame(Frame802154* frame)
 {
     ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
+
+    /* Frame loss when collision still occurs at time when the frame is received completely. */
     if (cu->hasCollision(this)) {
-        // Packet lost
-        bubble("Packet Lost");
+        getParentModule()->bubble("Lost frame by collision");
+        EV << "Lost frame by collision";
+        delete frame;
+        return;
+    }
+
+    /* Random frame loss by environment */
+    double rand = uniform(0, 1);
+    if (rand < par("ranFrameLossProb").doubleValue()) {
+        getParentModule()->bubble("Lost frame");
+        EV << "Lost frame";
         delete frame;
         return;
     }
@@ -152,6 +163,23 @@ void Link802154::recvFrame(Frame802154* frame)
     // Forward to upper layer
     send(frame->decapsulate(), "netGate$o");
     delete frame;
+}
+
+/* Wrapper for sendDirect() */
+void Link802154::sendFrame(Frame802154 *frame, simtime_t propagationDelay, simtime_t duration, Link802154 *desNode,
+        const char *inputGateName, int gateIndex)
+{
+    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
+    if (cu->hasCollision(desNode)) {
+        /* At this time, this node has acquired channel and collision by hidden node problem may occur.
+         * In simulation, collision may be gone before this frame is sent completely;
+         * therefore frame loss in this situation is simulated here. */
+        desNode->getParentModule()->bubble("Lost frame by collision");
+        EV << "Lost frame by collision";
+        delete frame;
+    } else {
+        sendDirect(frame, propagationDelay, duration, desNode, inputGateName, gateIndex);
+    }
 }
 
 /*
@@ -239,7 +267,7 @@ void Link802154::transmit()
                 des = (Link802154*) simulation.getModule(adjNode[i]);
                 if (des != NULL) {
                     copy = txFrame->dup();
-                    sendDirect(copy, 0, txDuration, des, "radioIn");
+                    sendFrame(copy, 0, txDuration, des, "radioIn");
                 } else {
                     EV << "Link802154::transmitFrames : destination error, ID " << adjNode[i] << '\n';
                     delete copy;
@@ -250,7 +278,7 @@ void Link802154::transmit()
             // Transmit to specific destination
             des = (Link802154*) simulation.getModule(desAddr);
             if (des != NULL) {
-                sendDirect(txFrame, 0, txDuration, des, "radioIn");
+                sendFrame(txFrame, 0, txDuration, des, "radioIn");
             } else {
                 EV << "Link802154::transmitFrames : destination error, ID " << desAddr << '\n';
                 delete txFrame;

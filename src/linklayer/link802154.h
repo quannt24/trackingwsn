@@ -57,6 +57,8 @@ class Link802154 : public cSimpleModule
         Frame802154* createFrame(Packet802154 *packet);
         void queueFrame(Frame802154 *frame);
         void recvFrame(Frame802154 *frame);
+        void sendFrame(Frame802154 *frame, simtime_t propagationDelay, simtime_t duration, Link802154 *desNode,
+                const char *inputGateName, int gateIndex = -1);
 
         void csmaTransmit();
         bool performCCA();

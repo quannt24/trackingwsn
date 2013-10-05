@@ -16,8 +16,9 @@
 #ifndef __TRACKINGWSN_ASS_H_
 #define __TRACKINGWSN_ASS_H_
 
-#include <omnetpp.h>
+#include "measurement.h"
 #include "sensedsignal_m.h"
+#include <omnetpp.h>
 
 /**
  * Acoustic signal sensor
@@ -25,12 +26,23 @@
 class Ass : public cSimpleModule
 {
     private:
+        int nSensedTarget; // Number of sensed targets
+        int nMeasurement; // Number of measurements currently created
+        /* Measurement list, storing measurements of a sensing action. This list will be cleared
+         * before executing new sensing. */
+        std::list<Measurement> meaList;
+        cMessage *responseTimer; // Timer for responding measurement
+
         void reqTargets();
         void recvSenseData(SensedSignal *sig);
 
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
+
+    public:
+        Ass();
+        ~Ass();
 };
 
 #endif

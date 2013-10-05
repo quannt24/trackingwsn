@@ -37,7 +37,7 @@ void AppSensor::handleMessage(cMessage *msg)
         }
     } else {
         if (msg->getArrivalGate() == gate("ssGate$i")) {
-            if (msg->getKind() == SS_SIGNAL) {
+            if (msg->getKind() == SS_RESULT) {
                 // Sensed signal:
                 // TODO Test, change to use MessageTracking
                 MessageCR *data = new MessageCR("SensedData");

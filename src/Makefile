@@ -45,6 +45,7 @@ OBJS = \
     $O/mobility/mobility.o \
     $O/networklayer/netemrp.o \
     $O/other/asg.o \
+    $O/other/measurement.o \
     $O/other/ass.o \
     $O/util/matrix.o \
     $O/util/worldutil.o \
@@ -53,6 +54,7 @@ OBJS = \
     $O/linklayer/frame802154_m.o \
     $O/networklayer/packetemrp_m.o \
     $O/networklayer/messagecr_m.o \
+    $O/other/sensedresult_m.o \
     $O/other/sensereq_m.o \
     $O/other/sensedsignal_m.o
 
@@ -62,6 +64,7 @@ MSGFILES = \
     linklayer/frame802154.msg \
     networklayer/packetemrp.msg \
     networklayer/messagecr.msg \
+    other/sensedresult.msg \
     other/sensereq.msg \
     other/sensedsignal.msg
 
@@ -195,19 +198,28 @@ $O/other/asg.o: other/asg.cc \
 	msgkind.h \
 	other/asg.h \
 	other/ass.h \
+	other/measurement.h \
 	other/sensedsignal_m.h \
 	other/sensereq_m.h
 $O/other/ass.o: other/ass.cc \
 	mobility/mobility.h \
 	msgkind.h \
 	other/ass.h \
+	other/measurement.h \
+	other/sensedresult_m.h \
 	other/sensedsignal_m.h \
 	other/sensereq_m.h \
 	util/worldutil.h
+$O/other/measurement.o: other/measurement.cc \
+	other/measurement.h
+$O/other/sensedresult_m.o: other/sensedresult_m.cc \
+	other/measurement.h \
+	other/sensedresult_m.h
 $O/other/sensedsignal_m.o: other/sensedsignal_m.cc \
 	other/sensedsignal_m.h
 $O/other/sensereq_m.o: other/sensereq_m.cc \
 	other/ass.h \
+	other/measurement.h \
 	other/sensedsignal_m.h \
 	other/sensereq_m.h
 $O/util/channelutil.o: util/channelutil.cc \

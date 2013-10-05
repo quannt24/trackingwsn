@@ -16,6 +16,8 @@
 #ifndef __TRACKINGWSN_APPSENSOR_H_
 #define __TRACKINGWSN_APPSENSOR_H_
 
+#include "sensedresult_m.h"
+#include "messagetracking_m.h"
 #include <omnetpp.h>
 
 /**
@@ -24,7 +26,14 @@
 class AppSensor : public cSimpleModule
 {
     private:
-        cMessage *senseMsg; // Self message for start sensing
+        bool syncSense;
+        cMessage *senseTimer; // Self message for start sensing
+        cMessage *reportTimer; // Timer for reporting measurement
+        cMessage *collTimer; // Timer for collecting measurements
+        int nResult; // Number of collected measure results
+
+        void recvSensedResult(SensedResult *result);
+        void recvMessage(MsgTracking *msg); // Receive message from other node
 
     protected:
         virtual void initialize();

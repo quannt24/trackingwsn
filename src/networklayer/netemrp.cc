@@ -376,7 +376,7 @@ void NetEMRP::switchRN()
  */
 void NetEMRP::sendMsgDown(MessageCR *msg)
 {
-    if (msg->getMsgType() == MSG_TO_BS && bsAddr <= 0 && rnAddr <= 0) {
+    if (msg->getRoutingType() == RT_TO_BS && bsAddr <= 0 && rnAddr <= 0) {
         // If at the time having a message need to be sent to BS, relay info is not ready
         // (may be due to incomplete initializing stage), send a request for relay info,
         // and delay sending this message for a short time.
@@ -388,13 +388,18 @@ void NetEMRP::sendMsgDown(MessageCR *msg)
     }
 
     PacketEMRP *pkt = new PacketEMRP();
-    pkt->setTxType(TX_PPP);
-    if (msg->getMsgType() == MSG_TO_AN) {
+    if (msg->getRoutingType() == RT_TO_AN) {
+        pkt->setTxType(TX_PPP);
         pkt->setPkType(PK_PAYLOAD_TO_AN);
         pkt->setDesMacAddr(msg->getDesMacAddr());
-    } else {
+    } else if (msg->getRoutingType() == RT_TO_BS) {
+        pkt->setTxType(TX_PPP);
         pkt->setPkType(PK_PAYLOAD_TO_BS);
         pkt->setDesMacAddr(rnAddr);
+    } else if (msg->getRoutingType() == RT_BROADCAST) {
+        pkt->setTxType(TX_BROADCAST);
+        pkt->setPkType(PK_PAYLOAD_TO_AN);
+        // No need to set desMacAddr here
     }
     pkt->setSrcMacAddr(getMacAddr());
 

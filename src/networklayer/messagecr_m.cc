@@ -31,17 +31,18 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 EXECUTE_ON_STARTUP(
-    cEnum *e = cEnum::find("MsgType");
-    if (!e) enums.getInstance()->add(e = new cEnum("MsgType"));
-    e->insert(MSG_TO_AN, "MSG_TO_AN");
-    e->insert(MSG_TO_BS, "MSG_TO_BS");
+    cEnum *e = cEnum::find("RoutingType");
+    if (!e) enums.getInstance()->add(e = new cEnum("RoutingType"));
+    e->insert(RT_TO_AN, "RT_TO_AN");
+    e->insert(RT_TO_BS, "RT_TO_BS");
+    e->insert(RT_BROADCAST, "RT_BROADCAST");
 );
 
 Register_Class(MessageCR);
 
 MessageCR::MessageCR(const char *name, int kind) : cPacket(name,kind)
 {
-    this->msgType_var = 0;
+    this->routingType_var = 0;
     this->desMacAddr_var = 0;
 }
 
@@ -64,32 +65,32 @@ MessageCR& MessageCR::operator=(const MessageCR& other)
 
 void MessageCR::copy(const MessageCR& other)
 {
-    this->msgType_var = other.msgType_var;
+    this->routingType_var = other.routingType_var;
     this->desMacAddr_var = other.desMacAddr_var;
 }
 
 void MessageCR::parsimPack(cCommBuffer *b)
 {
     cPacket::parsimPack(b);
-    doPacking(b,this->msgType_var);
+    doPacking(b,this->routingType_var);
     doPacking(b,this->desMacAddr_var);
 }
 
 void MessageCR::parsimUnpack(cCommBuffer *b)
 {
     cPacket::parsimUnpack(b);
-    doUnpacking(b,this->msgType_var);
+    doUnpacking(b,this->routingType_var);
     doUnpacking(b,this->desMacAddr_var);
 }
 
-int MessageCR::getMsgType() const
+int MessageCR::getRoutingType() const
 {
-    return msgType_var;
+    return routingType_var;
 }
 
-void MessageCR::setMsgType(int msgType)
+void MessageCR::setRoutingType(int routingType)
 {
-    this->msgType_var = msgType;
+    this->routingType_var = routingType;
 }
 
 int MessageCR::getDesMacAddr() const
@@ -176,7 +177,7 @@ const char *MessageCRDescriptor::getFieldName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldNames[] = {
-        "msgType",
+        "routingType",
         "desMacAddr",
     };
     return (field>=0 && field<2) ? fieldNames[field] : NULL;
@@ -186,7 +187,7 @@ int MessageCRDescriptor::findField(void *object, const char *fieldName) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
-    if (fieldName[0]=='m' && strcmp(fieldName, "msgType")==0) return base+0;
+    if (fieldName[0]=='r' && strcmp(fieldName, "routingType")==0) return base+0;
     if (fieldName[0]=='d' && strcmp(fieldName, "desMacAddr")==0) return base+1;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
@@ -243,7 +244,7 @@ std::string MessageCRDescriptor::getFieldAsString(void *object, int field, int i
     }
     MessageCR *pp = (MessageCR *)object; (void)pp;
     switch (field) {
-        case 0: return long2string(pp->getMsgType());
+        case 0: return long2string(pp->getRoutingType());
         case 1: return long2string(pp->getDesMacAddr());
         default: return "";
     }
@@ -259,7 +260,7 @@ bool MessageCRDescriptor::setFieldAsString(void *object, int field, int i, const
     }
     MessageCR *pp = (MessageCR *)object; (void)pp;
     switch (field) {
-        case 0: pp->setMsgType(string2long(value)); return true;
+        case 0: pp->setRoutingType(string2long(value)); return true;
         case 1: pp->setDesMacAddr(string2long(value)); return true;
         default: return false;
     }

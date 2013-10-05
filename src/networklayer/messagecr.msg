@@ -13,9 +13,10 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 //
 
-enum MsgType {
-    MSG_TO_AN = 0; // Message to adjacent node
-    MSG_TO_BS = 1; // Message to base station
+enum RoutingType {
+    RT_TO_AN = 0; // Message to adjacent node
+    RT_TO_BS = 1; // Message to base station
+    RT_BROADCAST = 2; // Message to broadcast
 };
 
 //
@@ -23,6 +24,6 @@ enum MsgType {
 // implementing a cluster routing protocol
 //
 packet MessageCR {
-    int msgType; // Message type
+    int routingType; // Routing type
     int desMacAddr; // Destination MAC address, use when msgType is MSG_TO_AN
 }

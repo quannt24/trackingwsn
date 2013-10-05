@@ -50,6 +50,7 @@ OBJS = \
     $O/util/matrix.o \
     $O/util/worldutil.o \
     $O/util/channelutil.o \
+    $O/applications/messagetracking_m.o \
     $O/linklayer/packet802154_m.o \
     $O/linklayer/frame802154_m.o \
     $O/networklayer/packetemrp_m.o \
@@ -60,6 +61,7 @@ OBJS = \
 
 # Message files
 MSGFILES = \
+    applications/messagetracking.msg \
     linklayer/packet802154.msg \
     linklayer/frame802154.msg \
     networklayer/packetemrp.msg \
@@ -161,7 +163,13 @@ $O/applications/appbasestation.o: applications/appbasestation.cc \
 	applications/appbasestation.h
 $O/applications/appsensor.o: applications/appsensor.cc \
 	applications/appsensor.h \
+	applications/messagetracking_m.h \
 	msgkind.h \
+	networklayer/messagecr_m.h \
+	other/measurement.h \
+	other/sensedresult_m.h
+$O/applications/messagetracking_m.o: applications/messagetracking_m.cc \
+	applications/messagetracking_m.h \
 	networklayer/messagecr_m.h
 $O/energy/energy.o: energy/energy.cc \
 	energy/energy.h

@@ -74,24 +74,24 @@ void Ass::reqTargets()
     Mobility *mob1, *mob2;
     double d; // Distance from the sensor to target
 
-            // If the sensor is in range of one target, send request
-            mob1 = check_and_cast<Mobility*>(getParentModule()->getSubmodule("mobility"));
-            nSensedTarget = 0;
-            nMeasurement = 0;
-            meaList.clear();
-            for (i = 0; i < numTargets; i++) {
-                tar = check_and_cast<cCompoundModule*>(wsn->getSubmodule("target", i));
-                mob2 = check_and_cast<Mobility*>(tar->getSubmodule("mobility"));
-                d = distance(mob1, mob2);
-                if (d < tar->par("range").doubleValue()) {
-                    nSensedTarget++; // Calculate number of sensed targets
-                    // Send request
-                    SenseReq *senseReq = new SenseReq("SenseReq", SS_REQ);
-                    senseReq->setSrcAss(this);
-                    sendDirect(senseReq, tar->getSubmodule("asg"), "reqIn");
-                }
-            }
+    // If the sensor is in range of one target, send request
+    mob1 = check_and_cast<Mobility*>(getParentModule()->getSubmodule("mobility"));
+    nSensedTarget = 0;
+    nMeasurement = 0;
+    meaList.clear();
+    for (i = 0; i < numTargets; i++) {
+        tar = check_and_cast<cCompoundModule*>(wsn->getSubmodule("target", i));
+        mob2 = check_and_cast<Mobility*>(tar->getSubmodule("mobility"));
+        d = distance(mob1, mob2);
+        if (d < tar->par("range").doubleValue()) {
+            nSensedTarget++; // Calculate number of sensed targets
+            // Send request
+            SenseReq *senseReq = new SenseReq("SenseReq", SS_REQ);
+            senseReq->setSrcAss(this);
+            sendDirect(senseReq, tar->getSubmodule("asg"), "reqIn");
         }
+    }
+}
 
 void Ass::recvSenseData(SensedSignal* sig)
 {
@@ -100,6 +100,8 @@ void Ass::recvSenseData(SensedSignal* sig)
     nMeasurement++;
     if (nMeasurement == nSensedTarget) {
         // All signals are received, set delay timer to send result out
+        cancelEvent(responseTimer);
         scheduleAt(simTime() + par("responseDelay").doubleValue(), responseTimer);
     }
+    delete sig;
 }

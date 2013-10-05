@@ -18,22 +18,24 @@
 /**
  * Enum generated from <tt>networklayer/messagecr.msg</tt> by opp_msgc.
  * <pre>
- * enum MsgType {
- *     MSG_TO_AN = 0; 
- *     MSG_TO_BS = 1; 
+ * enum RoutingType {
+ *     RT_TO_AN = 0; 
+ *     RT_TO_BS = 1; 
+ *     RT_BROADCAST = 2; 
  * };
  * </pre>
  */
-enum MsgType {
-    MSG_TO_AN = 0,
-    MSG_TO_BS = 1
+enum RoutingType {
+    RT_TO_AN = 0,
+    RT_TO_BS = 1,
+    RT_BROADCAST = 2
 };
 
 /**
  * Class generated from <tt>networklayer/messagecr.msg</tt> by opp_msgc.
  * <pre>
  * packet MessageCR {
- *     int msgType; 
+ *     int routingType; 
  *     int desMacAddr; 
  * }
  * </pre>
@@ -41,7 +43,7 @@ enum MsgType {
 class MessageCR : public ::cPacket
 {
   protected:
-    int msgType_var;
+    int routingType_var;
     int desMacAddr_var;
 
   private:
@@ -61,8 +63,8 @@ class MessageCR : public ::cPacket
     virtual void parsimUnpack(cCommBuffer *b);
 
     // field getter/setter methods
-    virtual int getMsgType() const;
-    virtual void setMsgType(int msgType);
+    virtual int getRoutingType() const;
+    virtual void setRoutingType(int routingType);
     virtual int getDesMacAddr() const;
     virtual void setDesMacAddr(int desMacAddr);
 };

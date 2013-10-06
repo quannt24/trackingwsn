@@ -108,7 +108,7 @@ Frame802154* Link802154::createFrame(Packet802154* packet)
     // TODO Process long packet
     if (packet->getByteLength() > par("maxPacketSize").longValue()) throw PACKET_TOO_LONG;
 
-    Frame802154 *frm = new Frame802154("Frame802154");
+    Frame802154 *frm = new Frame802154();
     frm->setSrcAddr(macAddress);
     if (packet->getTxType() == TX_BROADCAST) {
         // This packet is intended to be broadcasted

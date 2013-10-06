@@ -47,8 +47,7 @@ void AppSensor::handleMessage(cMessage *msg)
                 EV << "Evaluate CH\n";
             } else {
                 // Not enough measurements try to re-synchronize
-                getParentModule()->bubble("Nah");
-                syncSense = false;
+                getParentModule()->bubble("NEM");
             }
         }
     } else {
@@ -90,20 +89,18 @@ void AppSensor::recvSensedResult(SensedResult *result)
     } else {
         if (!syncSense) {
             EV << "Synchronizing sensing\n";
-            MsgSenseNotify *notify = new MsgSenseNotify("SenseNotify");
+            MsgSyncRequest *notify = new MsgSyncRequest("SyncRequest");
             send(notify, "netGate$o");
-            // Plant timer to sense again immediately after broadcast notify finished
             syncSense = true;
-            cancelEvent(senseTimer);
-            scheduleAt(simTime() + 0.005, senseTimer); // TODO 127 byte / 250kbps
+            // Do nothing except change to synchronized state
         } else {
             // Sensing is synchronized locally, collect measurements
             EV << "Sensing is synchronized, collecting measurements\n";
             nResult = 0;
             cancelEvent(collTimer);
-            scheduleAt(simTime() + 0.1, collTimer); // TODO Number of expected results * tx time
+            scheduleAt(simTime() + 0.05, collTimer); // TODO Number of expected results * tx time + 2 * tx time (round up)
             cancelEvent(reportTimer);
-            scheduleAt(simTime() + uniform(0, 0.08), reportTimer); // TODO Based on collTimer and tx time
+            scheduleAt(simTime() + uniform(0, 0.04), reportTimer); // TODO Based on collTimer and tx time
         }
     }
 
@@ -115,14 +112,13 @@ void AppSensor::recvSensedResult(SensedResult *result)
  */
 void AppSensor::recvMessage(MsgTracking *msg)
 {
-    if (msg->getMsgType() == MSG_SENSE_NOTIFY) {
-        if (!syncSense) {
-            EV<< "Synchronized sensing by notify\n";
-            syncSense = true;
-            cancelEvent (senseTimer);
-            scheduleAt(simTime() + 0.04, senseTimer); // TODO calculate period
-        }
-        // If synchronized, do nothing
+    if (msg->getMsgType() == MSG_SYNC_REQUEST) {
+        EV<< "Synchronized sensing by notify\n";
+        syncSense = true;
+        cancelEvent (senseTimer);
+        scheduleAt(simTime() + par("senseInterval").doubleValue()
+                - this->getParentModule()->getSubmodule("ass")->par("responseDelay").doubleValue(),
+                senseTimer); // TODO calculate period
     } else if (msg->getMsgType() == MSG_SENSE_RESULT) {
         nResult++;
     }

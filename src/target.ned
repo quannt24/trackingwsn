@@ -24,7 +24,7 @@ import trackingwsn.other.Asg;
 module Target extends Entity
 {
     parameters:
-        double range @unit(m) = default(8m);
+        double range @unit(m) = default(12m);
         mobility.moving = true;
         mobility.startMovingTime = 22;
         @display("i=block/broadcast;is=s;r=$range");

@@ -19,7 +19,7 @@ cplusplus {{
 packet MessageCR;
 
 enum MessageType {
-    MSG_SENSE_NOTIFY = 0; // Nofity other node about target existence
+    MSG_SYNC_REQUEST = 0; // Nofity other nodes to synchronize sensing
     MSG_SENSE_RESULT = 1; // Raw measurements
 };
 
@@ -30,11 +30,11 @@ packet MsgTracking extends MessageCR {
 }
 
 //
-// Nofity other node about target existence
+// Nofity other nodes to synchronize sensing
 //
-packet MsgSenseNotify extends MsgTracking {
+packet MsgSyncRequest extends MsgTracking {
     int routingType = RT_BROADCAST;
-    int msgType = MSG_SENSE_NOTIFY;
+    int msgType = MSG_SYNC_REQUEST;
     // No new field, use default size
 }
 

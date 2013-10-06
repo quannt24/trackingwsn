@@ -33,7 +33,7 @@ void doUnpacking(cCommBuffer *, T& t) {
 EXECUTE_ON_STARTUP(
     cEnum *e = cEnum::find("MessageType");
     if (!e) enums.getInstance()->add(e = new cEnum("MessageType"));
-    e->insert(MSG_SENSE_NOTIFY, "MSG_SENSE_NOTIFY");
+    e->insert(MSG_SYNC_REQUEST, "MSG_SYNC_REQUEST");
     e->insert(MSG_SENSE_RESULT, "MSG_SENSE_RESULT");
 );
 
@@ -294,24 +294,24 @@ void *MsgTrackingDescriptor::getFieldStructPointer(void *object, int field, int 
     }
 }
 
-Register_Class(MsgSenseNotify);
+Register_Class(MsgSyncRequest);
 
-MsgSenseNotify::MsgSenseNotify(const char *name, int kind) : MsgTracking(name,kind)
+MsgSyncRequest::MsgSyncRequest(const char *name, int kind) : MsgTracking(name,kind)
 {
     this->routingType_var = RT_BROADCAST;
-    this->msgType_var = MSG_SENSE_NOTIFY;
+    this->msgType_var = MSG_SYNC_REQUEST;
 }
 
-MsgSenseNotify::MsgSenseNotify(const MsgSenseNotify& other) : MsgTracking(other)
+MsgSyncRequest::MsgSyncRequest(const MsgSyncRequest& other) : MsgTracking(other)
 {
     copy(other);
 }
 
-MsgSenseNotify::~MsgSenseNotify()
+MsgSyncRequest::~MsgSyncRequest()
 {
 }
 
-MsgSenseNotify& MsgSenseNotify::operator=(const MsgSenseNotify& other)
+MsgSyncRequest& MsgSyncRequest::operator=(const MsgSyncRequest& other)
 {
     if (this==&other) return *this;
     MsgTracking::operator=(other);
@@ -319,51 +319,51 @@ MsgSenseNotify& MsgSenseNotify::operator=(const MsgSenseNotify& other)
     return *this;
 }
 
-void MsgSenseNotify::copy(const MsgSenseNotify& other)
+void MsgSyncRequest::copy(const MsgSyncRequest& other)
 {
     this->routingType_var = other.routingType_var;
     this->msgType_var = other.msgType_var;
 }
 
-void MsgSenseNotify::parsimPack(cCommBuffer *b)
+void MsgSyncRequest::parsimPack(cCommBuffer *b)
 {
     MsgTracking::parsimPack(b);
     doPacking(b,this->routingType_var);
     doPacking(b,this->msgType_var);
 }
 
-void MsgSenseNotify::parsimUnpack(cCommBuffer *b)
+void MsgSyncRequest::parsimUnpack(cCommBuffer *b)
 {
     MsgTracking::parsimUnpack(b);
     doUnpacking(b,this->routingType_var);
     doUnpacking(b,this->msgType_var);
 }
 
-int MsgSenseNotify::getRoutingType() const
+int MsgSyncRequest::getRoutingType() const
 {
     return routingType_var;
 }
 
-void MsgSenseNotify::setRoutingType(int routingType)
+void MsgSyncRequest::setRoutingType(int routingType)
 {
     this->routingType_var = routingType;
 }
 
-int MsgSenseNotify::getMsgType() const
+int MsgSyncRequest::getMsgType() const
 {
     return msgType_var;
 }
 
-void MsgSenseNotify::setMsgType(int msgType)
+void MsgSyncRequest::setMsgType(int msgType)
 {
     this->msgType_var = msgType;
 }
 
-class MsgSenseNotifyDescriptor : public cClassDescriptor
+class MsgSyncRequestDescriptor : public cClassDescriptor
 {
   public:
-    MsgSenseNotifyDescriptor();
-    virtual ~MsgSenseNotifyDescriptor();
+    MsgSyncRequestDescriptor();
+    virtual ~MsgSyncRequestDescriptor();
 
     virtual bool doesSupport(cObject *obj) const;
     virtual const char *getProperty(const char *propertyname) const;
@@ -382,34 +382,34 @@ class MsgSenseNotifyDescriptor : public cClassDescriptor
     virtual void *getFieldStructPointer(void *object, int field, int i) const;
 };
 
-Register_ClassDescriptor(MsgSenseNotifyDescriptor);
+Register_ClassDescriptor(MsgSyncRequestDescriptor);
 
-MsgSenseNotifyDescriptor::MsgSenseNotifyDescriptor() : cClassDescriptor("MsgSenseNotify", "MsgTracking")
+MsgSyncRequestDescriptor::MsgSyncRequestDescriptor() : cClassDescriptor("MsgSyncRequest", "MsgTracking")
 {
 }
 
-MsgSenseNotifyDescriptor::~MsgSenseNotifyDescriptor()
+MsgSyncRequestDescriptor::~MsgSyncRequestDescriptor()
 {
 }
 
-bool MsgSenseNotifyDescriptor::doesSupport(cObject *obj) const
+bool MsgSyncRequestDescriptor::doesSupport(cObject *obj) const
 {
-    return dynamic_cast<MsgSenseNotify *>(obj)!=NULL;
+    return dynamic_cast<MsgSyncRequest *>(obj)!=NULL;
 }
 
-const char *MsgSenseNotifyDescriptor::getProperty(const char *propertyname) const
+const char *MsgSyncRequestDescriptor::getProperty(const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     return basedesc ? basedesc->getProperty(propertyname) : NULL;
 }
 
-int MsgSenseNotifyDescriptor::getFieldCount(void *object) const
+int MsgSyncRequestDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     return basedesc ? 2+basedesc->getFieldCount(object) : 2;
 }
 
-unsigned int MsgSenseNotifyDescriptor::getFieldTypeFlags(void *object, int field) const
+unsigned int MsgSyncRequestDescriptor::getFieldTypeFlags(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -424,7 +424,7 @@ unsigned int MsgSenseNotifyDescriptor::getFieldTypeFlags(void *object, int field
     return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
 }
 
-const char *MsgSenseNotifyDescriptor::getFieldName(void *object, int field) const
+const char *MsgSyncRequestDescriptor::getFieldName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -439,7 +439,7 @@ const char *MsgSenseNotifyDescriptor::getFieldName(void *object, int field) cons
     return (field>=0 && field<2) ? fieldNames[field] : NULL;
 }
 
-int MsgSenseNotifyDescriptor::findField(void *object, const char *fieldName) const
+int MsgSyncRequestDescriptor::findField(void *object, const char *fieldName) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
@@ -448,7 +448,7 @@ int MsgSenseNotifyDescriptor::findField(void *object, const char *fieldName) con
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
-const char *MsgSenseNotifyDescriptor::getFieldTypeString(void *object, int field) const
+const char *MsgSyncRequestDescriptor::getFieldTypeString(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -463,7 +463,7 @@ const char *MsgSenseNotifyDescriptor::getFieldTypeString(void *object, int field
     return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
 }
 
-const char *MsgSenseNotifyDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+const char *MsgSyncRequestDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -476,7 +476,7 @@ const char *MsgSenseNotifyDescriptor::getFieldProperty(void *object, int field, 
     }
 }
 
-int MsgSenseNotifyDescriptor::getArraySize(void *object, int field) const
+int MsgSyncRequestDescriptor::getArraySize(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -484,13 +484,13 @@ int MsgSenseNotifyDescriptor::getArraySize(void *object, int field) const
             return basedesc->getArraySize(object, field);
         field -= basedesc->getFieldCount(object);
     }
-    MsgSenseNotify *pp = (MsgSenseNotify *)object; (void)pp;
+    MsgSyncRequest *pp = (MsgSyncRequest *)object; (void)pp;
     switch (field) {
         default: return 0;
     }
 }
 
-std::string MsgSenseNotifyDescriptor::getFieldAsString(void *object, int field, int i) const
+std::string MsgSyncRequestDescriptor::getFieldAsString(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -498,7 +498,7 @@ std::string MsgSenseNotifyDescriptor::getFieldAsString(void *object, int field, 
             return basedesc->getFieldAsString(object,field,i);
         field -= basedesc->getFieldCount(object);
     }
-    MsgSenseNotify *pp = (MsgSenseNotify *)object; (void)pp;
+    MsgSyncRequest *pp = (MsgSyncRequest *)object; (void)pp;
     switch (field) {
         case 0: return long2string(pp->getRoutingType());
         case 1: return long2string(pp->getMsgType());
@@ -506,7 +506,7 @@ std::string MsgSenseNotifyDescriptor::getFieldAsString(void *object, int field, 
     }
 }
 
-bool MsgSenseNotifyDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+bool MsgSyncRequestDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -514,7 +514,7 @@ bool MsgSenseNotifyDescriptor::setFieldAsString(void *object, int field, int i, 
             return basedesc->setFieldAsString(object,field,i,value);
         field -= basedesc->getFieldCount(object);
     }
-    MsgSenseNotify *pp = (MsgSenseNotify *)object; (void)pp;
+    MsgSyncRequest *pp = (MsgSyncRequest *)object; (void)pp;
     switch (field) {
         case 0: pp->setRoutingType(string2long(value)); return true;
         case 1: pp->setMsgType(string2long(value)); return true;
@@ -522,7 +522,7 @@ bool MsgSenseNotifyDescriptor::setFieldAsString(void *object, int field, int i, 
     }
 }
 
-const char *MsgSenseNotifyDescriptor::getFieldStructName(void *object, int field) const
+const char *MsgSyncRequestDescriptor::getFieldStructName(void *object, int field) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -537,7 +537,7 @@ const char *MsgSenseNotifyDescriptor::getFieldStructName(void *object, int field
     return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
 }
 
-void *MsgSenseNotifyDescriptor::getFieldStructPointer(void *object, int field, int i) const
+void *MsgSyncRequestDescriptor::getFieldStructPointer(void *object, int field, int i) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -545,7 +545,7 @@ void *MsgSenseNotifyDescriptor::getFieldStructPointer(void *object, int field, i
             return basedesc->getFieldStructPointer(object, field, i);
         field -= basedesc->getFieldCount(object);
     }
-    MsgSenseNotify *pp = (MsgSenseNotify *)object; (void)pp;
+    MsgSyncRequest *pp = (MsgSyncRequest *)object; (void)pp;
     switch (field) {
         default: return NULL;
     }

@@ -23,13 +23,13 @@
  * Enum generated from <tt>applications/messagetracking.msg</tt> by opp_msgc.
  * <pre>
  * enum MessageType {
- *     MSG_SENSE_NOTIFY = 0; 
+ *     MSG_SYNC_REQUEST = 0; 
  *     MSG_SENSE_RESULT = 1; 
  * };
  * </pre>
  */
 enum MessageType {
-    MSG_SENSE_NOTIFY = 0,
+    MSG_SYNC_REQUEST = 0,
     MSG_SENSE_RESULT = 1
 };
 
@@ -77,32 +77,32 @@ inline void doUnpacking(cCommBuffer *b, MsgTracking& obj) {obj.parsimUnpack(b);}
 /**
  * Class generated from <tt>applications/messagetracking.msg</tt> by opp_msgc.
  * <pre>
- * packet MsgSenseNotify extends MsgTracking {
+ * packet MsgSyncRequest extends MsgTracking {
  *     int routingType = RT_BROADCAST;
- *     int msgType = MSG_SENSE_NOTIFY;
+ *     int msgType = MSG_SYNC_REQUEST;
  *     
  * }
  * </pre>
  */
-class MsgSenseNotify : public ::MsgTracking
+class MsgSyncRequest : public ::MsgTracking
 {
   protected:
     int routingType_var;
     int msgType_var;
 
   private:
-    void copy(const MsgSenseNotify& other);
+    void copy(const MsgSyncRequest& other);
 
   protected:
     // protected and unimplemented operator==(), to prevent accidental usage
-    bool operator==(const MsgSenseNotify&);
+    bool operator==(const MsgSyncRequest&);
 
   public:
-    MsgSenseNotify(const char *name=NULL, int kind=0);
-    MsgSenseNotify(const MsgSenseNotify& other);
-    virtual ~MsgSenseNotify();
-    MsgSenseNotify& operator=(const MsgSenseNotify& other);
-    virtual MsgSenseNotify *dup() const {return new MsgSenseNotify(*this);}
+    MsgSyncRequest(const char *name=NULL, int kind=0);
+    MsgSyncRequest(const MsgSyncRequest& other);
+    virtual ~MsgSyncRequest();
+    MsgSyncRequest& operator=(const MsgSyncRequest& other);
+    virtual MsgSyncRequest *dup() const {return new MsgSyncRequest(*this);}
     virtual void parsimPack(cCommBuffer *b);
     virtual void parsimUnpack(cCommBuffer *b);
 
@@ -113,8 +113,8 @@ class MsgSenseNotify : public ::MsgTracking
     virtual void setMsgType(int msgType);
 };
 
-inline void doPacking(cCommBuffer *b, MsgSenseNotify& obj) {obj.parsimPack(b);}
-inline void doUnpacking(cCommBuffer *b, MsgSenseNotify& obj) {obj.parsimUnpack(b);}
+inline void doPacking(cCommBuffer *b, MsgSyncRequest& obj) {obj.parsimPack(b);}
+inline void doUnpacking(cCommBuffer *b, MsgSyncRequest& obj) {obj.parsimUnpack(b);}
 
 /**
  * Class generated from <tt>applications/messagetracking.msg</tt> by opp_msgc.

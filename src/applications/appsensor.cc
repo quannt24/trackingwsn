@@ -115,12 +115,17 @@ void AppSensor::recvMessage(MsgTracking *msg)
     if (msg->getMsgType() == MSG_SYNC_REQUEST) {
         EV<< "Synchronized sensing by notify\n";
         syncSense = true;
-        cancelEvent (senseTimer);
+
+        // If in sense delay period, cancel the sensing
+        cMessage *cancelSense = new cMessage();
+        cancelSense->setKind(SS_CANCEL);
+        send(cancelSense, "ssGate$o");
+
+        // Reset sensing timer with synchronized value
+        cancelEvent(senseTimer);
         scheduleAt(simTime() + par("senseInterval").doubleValue()
-                - this->getParentModule()->getSubmodule("ass")->par("responseDelay").doubleValue(),
+                - this->getParentModule()->getSubmodule("ass")->par("responseDelay").doubleValue() - 0.005,
                 senseTimer);
-        // TODO calculate period. WARNING: senseInterval must be long enough to cope with the case
-        // when notification is received when this node is waiting for result from 'ass'
     } else if (msg->getMsgType() == MSG_SENSE_RESULT) {
         nResult++;
     }

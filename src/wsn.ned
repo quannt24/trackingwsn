@@ -20,15 +20,15 @@ import trackingwsn.util.*;
 network Wsn
 {
     parameters:
-        double width @unit(m) = default(100m);
-        double height @unit(m) = default(100m);
+        double width @unit(m) = default(400m);
+        double height @unit(m) = default(400m);
         int numTargets;
         int numSensors;
         int ssRows; // Number of sensor rows
         int ssCols; // Number of sensor columns
         // Note: First ssRows * ssCols sensors will be arranged, the rest is randomly distributed
 
-        @display("bgs=10,m;bgb=$width,$height;"); // 1m ~ 10px
+        @display("bgs=2,m;bgb=$width,$height;"); // 1m ~ 2px
 
     submodules:
         target[numTargets]: Target;

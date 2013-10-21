@@ -48,6 +48,9 @@ void Ass::handleMessage(cMessage *msg)
             // Signal from target, add to measurement list
             SensedSignal *sig = check_and_cast<SensedSignal*>(msg);
             recvSenseData(sig);
+        } else if (msg->getKind() == SS_CANCEL) {
+            cancelEvent(responseTimer);
+            delete msg;
         }
     }
 }

@@ -13,38 +13,23 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __TRACKINGWSN_APPSENSOR_H_
-#define __TRACKINGWSN_APPSENSOR_H_
+#ifndef __TRACKINGWSN_ESTIMATOR_H_
+#define __TRACKINGWSN_ESTIMATOR_H_
 
-#include "sensedresult_m.h"
-#include "messagetracking_m.h"
-#include "meacoll.h"
 #include <omnetpp.h>
 
 /**
- * Sensor's Application Layer
+ * Estimator for tracking position. This module work like a plug-in for application layer.
  */
-class AppSensor : public cSimpleModule
+class Estimator : public cSimpleModule
 {
-    private:
-        bool syncSense;
-        cMessage *senseTimer; // Self message for start sensing
-        cMessage *reportTimer; // Timer for reporting measurement
-        cMessage *collTimer; // Timer for collecting measurements
-        std::list<Measurement> meaList; // Measurement list of recent sensing
-        MeaColl mc; // Measurement collection
-
-        void recvSensedResult(SensedResult *result);
-        void recvMessage(MsgTracking *msg); // Receive message from other node
-        void trackTargets();
-
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
 
     public:
-        AppSensor();
-        ~AppSensor();
+        /* Minimum number of measurements so that the estimator can work properly */
+        virtual unsigned int minNumMeasurement() { return par("minNumMeasurement").longValue(); }
 };
 
 #endif

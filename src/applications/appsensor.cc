@@ -16,6 +16,9 @@
 #include "appsensor.h"
 #include "messagetracking_m.h"
 #include "msgkind.h"
+#include "energy.h"
+#include "estimator.h"
+#include "measurement.h"
 
 Define_Module(AppSensor);
 
@@ -38,9 +41,11 @@ void AppSensor::handleMessage(cMessage *msg)
             // Report measurements (broadcast)
             MsgSenseResult *msgResult = new MsgSenseResult();
             msgResult->setMeaList(meaList);
+            // TODO Set message size
             send(msgResult, "netGate$o");
         } else if (msg == collTimer) {
-            // TODO Finish measurement collection. Evaluate result.
+            // Finish measurement collection. Evaluate result.
+            trackTargets();
         }
     } else {
         if (msg->getArrivalGate() == gate("ssGate$i")) {
@@ -133,4 +138,65 @@ void AppSensor::recvMessage(MsgTracking *msg)
     }
 
     delete msg;
+}
+
+/*
+ * Promote this node to CH (if appropriate). Then estimate targets' positions (if is CH).
+ */
+void AppSensor::trackTargets()
+{
+    std::list<TargetEntry>* el = mc.getEntryList(); // Entry list of collection
+    std::list<TargetEntry>::iterator ite; // Iterator for entry list
+    std::list<Measurement> ml; // Measurement list of a target
+    std::list<Measurement>::iterator itm; // Iterator for measurement list
+    std::list<Measurement>::iterator itmo; // Iterator for own measurement list of this node
+
+    bool hasMea;
+    Estimator *est = (Estimator*) getParentModule()->getSubmodule("est");
+    double myCHValue; // Evaluated CH value of this node for a target
+    bool isCH = false;
+
+    for (ite = el->begin(); ite != el->end(); ++ite) {
+        // Check if this node has its own measurement of a target (in range of that target)
+        hasMea = false;
+        for (itmo = meaList.begin(); itmo != meaList.end(); ++itmo) {
+            if ((*itmo).getTarId() == (*ite).tarId) hasMea = true;
+        }
+        if (!hasMea) continue;
+
+        // Check if having enough measurements for a target
+        ml = (*ite).meaList;
+        if (ml.size() >= est->minNumMeasurement()) {
+            // Promote this node to CH if appropriate
+            (*ite).flagCH = true;
+            // First measurement belongs to this node
+            myCHValue = ml.front().getNodeEnergy() / ml.front().getMeasuredDistance();
+            EV << "My measure " << ml.front().getMeasuredDistance() << '\n';
+            EV << "my CH Value " << myCHValue << "\n";
+
+            for (itm = ++ml.begin(); itm != ml.end(); ++itm) {
+                EV << "other CH value " << (*itm).getNodeEnergy() / (*itm).getMeasuredDistance() << "\n";
+                if (myCHValue < (*itm).getNodeEnergy() / (*itm).getMeasuredDistance()) {
+                    (*ite).flagCH = false;
+                    break;
+                }
+            }
+        }
+    }
+
+    for (ite = el->begin(); ite != el->end(); ++ite) {
+        if ((*ite).flagCH) {
+            isCH = true; // This node is CH of at least one target
+            // TODO Estimate targets' positions
+        }
+    }
+
+    if (isCH) {
+        getParentModule()->bubble("CH");
+        // Send result to base station
+        MsgTrackResult *msgResult = new MsgTrackResult();
+        send(msgResult, "netGate$o");
+    } else {
+        getParentModule()->bubble("Nope");
+    }
 }

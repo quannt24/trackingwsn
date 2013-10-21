@@ -27,12 +27,14 @@
  * enum MessageType {
  *     MSG_SYNC_REQUEST = 0; 
  *     MSG_SENSE_RESULT = 1; 
+ *     MSG_TRACK_RESULT = 2; 
  * };
  * </pre>
  */
 enum MessageType {
     MSG_SYNC_REQUEST = 0,
-    MSG_SENSE_RESULT = 1
+    MSG_SENSE_RESULT = 1,
+    MSG_TRACK_RESULT = 2
 };
 
 /**
@@ -124,7 +126,8 @@ inline void doUnpacking(cCommBuffer *b, MsgSyncRequest& obj) {obj.parsimUnpack(b
  * packet MsgSenseResult extends MsgTracking {
  *     int routingType = RT_BROADCAST;
  *     int msgType = MSG_SENSE_RESULT;
- *     MeasurementList meaList;
+ *     
+ *     MeasurementList meaList; 
  * }
  * </pre>
  */
@@ -163,6 +166,47 @@ class MsgSenseResult : public ::MsgTracking
 
 inline void doPacking(cCommBuffer *b, MsgSenseResult& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, MsgSenseResult& obj) {obj.parsimUnpack(b);}
+
+/**
+ * Class generated from <tt>applications/messagetracking.msg</tt> by opp_msgc.
+ * <pre>
+ * packet MsgTrackResult extends MsgTracking {
+ *     int routingType = RT_TO_BS;
+ *     int msgType = MSG_TRACK_RESULT;
+ * }
+ * </pre>
+ */
+class MsgTrackResult : public ::MsgTracking
+{
+  protected:
+    int routingType_var;
+    int msgType_var;
+
+  private:
+    void copy(const MsgTrackResult& other);
+
+  protected:
+    // protected and unimplemented operator==(), to prevent accidental usage
+    bool operator==(const MsgTrackResult&);
+
+  public:
+    MsgTrackResult(const char *name=NULL, int kind=0);
+    MsgTrackResult(const MsgTrackResult& other);
+    virtual ~MsgTrackResult();
+    MsgTrackResult& operator=(const MsgTrackResult& other);
+    virtual MsgTrackResult *dup() const {return new MsgTrackResult(*this);}
+    virtual void parsimPack(cCommBuffer *b);
+    virtual void parsimUnpack(cCommBuffer *b);
+
+    // field getter/setter methods
+    virtual int getRoutingType() const;
+    virtual void setRoutingType(int routingType);
+    virtual int getMsgType() const;
+    virtual void setMsgType(int msgType);
+};
+
+inline void doPacking(cCommBuffer *b, MsgTrackResult& obj) {obj.parsimPack(b);}
+inline void doUnpacking(cCommBuffer *b, MsgTrackResult& obj) {obj.parsimUnpack(b);}
 
 
 #endif // _MESSAGETRACKING_M_H_

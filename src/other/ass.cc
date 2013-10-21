@@ -17,6 +17,7 @@
 #include "msgkind.h"
 #include "worldutil.h"
 #include "mobility.h"
+#include "energy.h"
 #include "sensereq_m.h"
 #include "sensedsignal_m.h"
 #include "sensedresult_m.h"
@@ -99,7 +100,9 @@ void Ass::reqTargets()
 
 void Ass::recvSenseData(SensedSignal* sig)
 {
-    Measurement m(sig->getTarId(), sig->getDistance()); // TODO Add noise to distance
+    Measurement m(sig->getTarId(),
+            sig->getDistance(),
+            ((Energy*) getParentModule()->getSubmodule("energy"))->getCapacity()); // TODO Add noise to distance
     meaList.push_back(m);
     nMeasurement++;
     if (nMeasurement == nSensedTarget) {

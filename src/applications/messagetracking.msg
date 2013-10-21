@@ -25,28 +25,32 @@ packet MessageCR;
 enum MessageType {
     MSG_SYNC_REQUEST = 0; // Nofity other nodes to synchronize sensing
     MSG_SENSE_RESULT = 1; // Raw measurements
+    MSG_TRACK_RESULT = 2; // Tracked postions of targets
 };
 
-// Application level message for tracking
+// Application level message for tracking. Extend MessageCR defined by network layer.
 packet MsgTracking extends MessageCR {
     int msgType;
     int msgSize = 10; // Message size in byte. Default is 10 for routingType, desMacAddr and msgType
 }
 
-//
 // Nofity other nodes to synchronize sensing
-//
 packet MsgSyncRequest extends MsgTracking {
     int routingType = RT_BROADCAST;
     int msgType = MSG_SYNC_REQUEST;
     // No new field, use default size
 }
 
-//
-// Message carries raw measurements
-//
+// Message carries raw measurements 
 packet MsgSenseResult extends MsgTracking {
     int routingType = RT_BROADCAST;
     int msgType = MSG_SENSE_RESULT;
-    MeasurementList meaList;
+    
+    MeasurementList meaList; // List of measurements
+}
+
+// Message carries tracked positions of targets to send to base station
+packet MsgTrackResult extends MsgTracking {
+    int routingType = RT_TO_BS;
+    int msgType = MSG_TRACK_RESULT;
 }

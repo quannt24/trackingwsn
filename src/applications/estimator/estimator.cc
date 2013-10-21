@@ -13,24 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+#include "estimator.h"
 
-import trackingwsn.nodes.Node802154;
-import trackingwsn.applications.AppSensor;
-import trackingwsn.applications.estimator.Estimator;
-import trackingwsn.other.Ass;
+Define_Module(Estimator);
 
-module Sensor extends Node802154
+void Estimator::initialize()
 {
-    parameters:
-        mobility.moving = false;
-        net.isBaseStation = false;
-        @display("i=misc/node2;is=vs");
-    submodules:
-        ass: Ass;
-        app: AppSensor;
-        est: Estimator;
-    connections:
-        app.ssGate <--> ass.appGate;
-        app.netGate <--> net.appGate;
+    // TODO - Generated method body
+}
+
+void Estimator::handleMessage(cMessage *msg)
+{
+    // TODO - Generated method body
 }

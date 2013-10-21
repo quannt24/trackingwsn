@@ -17,6 +17,7 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
 INCLUDE_PATH = \
     -I. \
     -Iapplications \
+    -Iapplications/estimator \
     -Ienergy \
     -Ilinklayer \
     -Imobility \
@@ -41,6 +42,7 @@ OBJS = \
     $O/applications/appbasestation.o \
     $O/applications/appsensor.o \
     $O/applications/meacoll.o \
+    $O/applications/estimator/estimator.o \
     $O/energy/energy.o \
     $O/linklayer/link802154.o \
     $O/mobility/mobility.o \
@@ -144,6 +146,7 @@ clean:
 	$(Q)-rm -f TrackingWSN TrackingWSN.exe libTrackingWSN.so libTrackingWSN.a libTrackingWSN.dll libTrackingWSN.dylib
 	$(Q)-rm -f ./*_m.cc ./*_m.h
 	$(Q)-rm -f applications/*_m.cc applications/*_m.h
+	$(Q)-rm -f applications/estimator/*_m.cc applications/estimator/*_m.h
 	$(Q)-rm -f energy/*_m.cc energy/*_m.h
 	$(Q)-rm -f linklayer/*_m.cc linklayer/*_m.h
 	$(Q)-rm -f mobility/*_m.cc mobility/*_m.h
@@ -157,15 +160,17 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc energy/*.cc linklayer/*.cc mobility/*.cc networklayer/*.cc nodes/*.cc other/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc applications/estimator/*.cc energy/*.cc linklayer/*.cc mobility/*.cc networklayer/*.cc nodes/*.cc other/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/applications/appbasestation.o: applications/appbasestation.cc \
 	applications/appbasestation.h
 $O/applications/appsensor.o: applications/appsensor.cc \
 	applications/appsensor.h \
+	applications/estimator/estimator.h \
 	applications/meacoll.h \
 	applications/messagetracking_m.h \
+	energy/energy.h \
 	msgkind.h \
 	networklayer/messagecr_m.h \
 	other/measurement.h \
@@ -177,6 +182,8 @@ $O/applications/messagetracking_m.o: applications/messagetracking_m.cc \
 	applications/messagetracking_m.h \
 	networklayer/messagecr_m.h \
 	other/measurement.h
+$O/applications/estimator/estimator.o: applications/estimator/estimator.cc \
+	applications/estimator/estimator.h
 $O/energy/energy.o: energy/energy.cc \
 	energy/energy.h
 $O/linklayer/frame802154_m.o: linklayer/frame802154_m.cc \
@@ -218,6 +225,7 @@ $O/other/asg.o: other/asg.cc \
 	other/sensereq_m.h \
 	util/worldutil.h
 $O/other/ass.o: other/ass.cc \
+	energy/energy.h \
 	mobility/mobility.h \
 	msgkind.h \
 	other/ass.h \

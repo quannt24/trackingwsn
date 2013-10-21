@@ -22,6 +22,6 @@ simple Energy
 {
     parameters:
         bool hasLinePower = default(false); // If module having line power supply (infinite)
-        double initCap @unit(J) = default(1J); // Initial capacity
+        double initCap @unit(J) = default(10J); // Initial capacity
         @display("i=block/plug");
 }

@@ -13,24 +13,14 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+package trackingwsn.applications.estimator;
 
-import trackingwsn.nodes.Node802154;
-import trackingwsn.applications.AppSensor;
-import trackingwsn.applications.estimator.Estimator;
-import trackingwsn.other.Ass;
-
-module Sensor extends Node802154
+//
+// TODO auto-generated module
+//
+simple Estimator
 {
     parameters:
-        mobility.moving = false;
-        net.isBaseStation = false;
-        @display("i=misc/node2;is=vs");
-    submodules:
-        ass: Ass;
-        app: AppSensor;
-        est: Estimator;
-    connections:
-        app.ssGate <--> ass.appGate;
-        app.netGate <--> net.appGate;
+        int minNumMeasurement = default(3);
+        @display("i=block/app");
 }

@@ -35,6 +35,7 @@ EXECUTE_ON_STARTUP(
     if (!e) enums.getInstance()->add(e = new cEnum("MessageType"));
     e->insert(MSG_SYNC_REQUEST, "MSG_SYNC_REQUEST");
     e->insert(MSG_SENSE_RESULT, "MSG_SENSE_RESULT");
+    e->insert(MSG_TRACK_RESULT, "MSG_TRACK_RESULT");
 );
 
 Register_Class(MsgTracking);
@@ -824,6 +825,263 @@ void *MsgSenseResultDescriptor::getFieldStructPointer(void *object, int field, i
     MsgSenseResult *pp = (MsgSenseResult *)object; (void)pp;
     switch (field) {
         case 2: return (void *)(&pp->getMeaList()); break;
+        default: return NULL;
+    }
+}
+
+Register_Class(MsgTrackResult);
+
+MsgTrackResult::MsgTrackResult(const char *name, int kind) : MsgTracking(name,kind)
+{
+    this->routingType_var = RT_TO_BS;
+    this->msgType_var = MSG_TRACK_RESULT;
+}
+
+MsgTrackResult::MsgTrackResult(const MsgTrackResult& other) : MsgTracking(other)
+{
+    copy(other);
+}
+
+MsgTrackResult::~MsgTrackResult()
+{
+}
+
+MsgTrackResult& MsgTrackResult::operator=(const MsgTrackResult& other)
+{
+    if (this==&other) return *this;
+    MsgTracking::operator=(other);
+    copy(other);
+    return *this;
+}
+
+void MsgTrackResult::copy(const MsgTrackResult& other)
+{
+    this->routingType_var = other.routingType_var;
+    this->msgType_var = other.msgType_var;
+}
+
+void MsgTrackResult::parsimPack(cCommBuffer *b)
+{
+    MsgTracking::parsimPack(b);
+    doPacking(b,this->routingType_var);
+    doPacking(b,this->msgType_var);
+}
+
+void MsgTrackResult::parsimUnpack(cCommBuffer *b)
+{
+    MsgTracking::parsimUnpack(b);
+    doUnpacking(b,this->routingType_var);
+    doUnpacking(b,this->msgType_var);
+}
+
+int MsgTrackResult::getRoutingType() const
+{
+    return routingType_var;
+}
+
+void MsgTrackResult::setRoutingType(int routingType)
+{
+    this->routingType_var = routingType;
+}
+
+int MsgTrackResult::getMsgType() const
+{
+    return msgType_var;
+}
+
+void MsgTrackResult::setMsgType(int msgType)
+{
+    this->msgType_var = msgType;
+}
+
+class MsgTrackResultDescriptor : public cClassDescriptor
+{
+  public:
+    MsgTrackResultDescriptor();
+    virtual ~MsgTrackResultDescriptor();
+
+    virtual bool doesSupport(cObject *obj) const;
+    virtual const char *getProperty(const char *propertyname) const;
+    virtual int getFieldCount(void *object) const;
+    virtual const char *getFieldName(void *object, int field) const;
+    virtual int findField(void *object, const char *fieldName) const;
+    virtual unsigned int getFieldTypeFlags(void *object, int field) const;
+    virtual const char *getFieldTypeString(void *object, int field) const;
+    virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const;
+    virtual int getArraySize(void *object, int field) const;
+
+    virtual std::string getFieldAsString(void *object, int field, int i) const;
+    virtual bool setFieldAsString(void *object, int field, int i, const char *value) const;
+
+    virtual const char *getFieldStructName(void *object, int field) const;
+    virtual void *getFieldStructPointer(void *object, int field, int i) const;
+};
+
+Register_ClassDescriptor(MsgTrackResultDescriptor);
+
+MsgTrackResultDescriptor::MsgTrackResultDescriptor() : cClassDescriptor("MsgTrackResult", "MsgTracking")
+{
+}
+
+MsgTrackResultDescriptor::~MsgTrackResultDescriptor()
+{
+}
+
+bool MsgTrackResultDescriptor::doesSupport(cObject *obj) const
+{
+    return dynamic_cast<MsgTrackResult *>(obj)!=NULL;
+}
+
+const char *MsgTrackResultDescriptor::getProperty(const char *propertyname) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? basedesc->getProperty(propertyname) : NULL;
+}
+
+int MsgTrackResultDescriptor::getFieldCount(void *object) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
+}
+
+unsigned int MsgTrackResultDescriptor::getFieldTypeFlags(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldTypeFlags(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static unsigned int fieldTypeFlags[] = {
+        FD_ISEDITABLE,
+        FD_ISEDITABLE,
+    };
+    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
+}
+
+const char *MsgTrackResultDescriptor::getFieldName(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldName(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldNames[] = {
+        "routingType",
+        "msgType",
+    };
+    return (field>=0 && field<2) ? fieldNames[field] : NULL;
+}
+
+int MsgTrackResultDescriptor::findField(void *object, const char *fieldName) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    int base = basedesc ? basedesc->getFieldCount(object) : 0;
+    if (fieldName[0]=='r' && strcmp(fieldName, "routingType")==0) return base+0;
+    if (fieldName[0]=='m' && strcmp(fieldName, "msgType")==0) return base+1;
+    return basedesc ? basedesc->findField(object, fieldName) : -1;
+}
+
+const char *MsgTrackResultDescriptor::getFieldTypeString(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldTypeString(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldTypeStrings[] = {
+        "int",
+        "int",
+    };
+    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
+}
+
+const char *MsgTrackResultDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldProperty(object, field, propertyname);
+        field -= basedesc->getFieldCount(object);
+    }
+    switch (field) {
+        default: return NULL;
+    }
+}
+
+int MsgTrackResultDescriptor::getArraySize(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getArraySize(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    MsgTrackResult *pp = (MsgTrackResult *)object; (void)pp;
+    switch (field) {
+        default: return 0;
+    }
+}
+
+std::string MsgTrackResultDescriptor::getFieldAsString(void *object, int field, int i) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldAsString(object,field,i);
+        field -= basedesc->getFieldCount(object);
+    }
+    MsgTrackResult *pp = (MsgTrackResult *)object; (void)pp;
+    switch (field) {
+        case 0: return long2string(pp->getRoutingType());
+        case 1: return long2string(pp->getMsgType());
+        default: return "";
+    }
+}
+
+bool MsgTrackResultDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->setFieldAsString(object,field,i,value);
+        field -= basedesc->getFieldCount(object);
+    }
+    MsgTrackResult *pp = (MsgTrackResult *)object; (void)pp;
+    switch (field) {
+        case 0: pp->setRoutingType(string2long(value)); return true;
+        case 1: pp->setMsgType(string2long(value)); return true;
+        default: return false;
+    }
+}
+
+const char *MsgTrackResultDescriptor::getFieldStructName(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldStructName(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldStructNames[] = {
+        NULL,
+        NULL,
+    };
+    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
+}
+
+void *MsgTrackResultDescriptor::getFieldStructPointer(void *object, int field, int i) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldStructPointer(object, field, i);
+        field -= basedesc->getFieldCount(object);
+    }
+    MsgTrackResult *pp = (MsgTrackResult *)object; (void)pp;
+    switch (field) {
         default: return NULL;
     }
 }

@@ -24,7 +24,7 @@ module Sensor extends Node802154
     parameters:
         mobility.moving = false;
         net.isBaseStation = false;
-        @display("i=misc/node2;is=s");
+        @display("i=misc/node2");
     submodules:
         ass: Ass;
         app: AppSensor;

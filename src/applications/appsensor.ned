@@ -22,6 +22,10 @@ simple AppSensor
 {
     parameters:
         double senseInterval = default(0.5);
+        // Collect measurement period
+        double collMeaPeriod = default(0.05);
+        // Report measurement period (should shorter than collMeaPeriod
+        double repMeaPeriod = default(0.04);
         @display("i=block/app");
     gates:
         inout ssGate; // Connect acoustic signal sensor (ass)

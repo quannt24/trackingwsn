@@ -97,10 +97,10 @@ void AppSensor::recvSensedResult(SensedResult *result)
             // Sensing is synchronized locally, collect measurements
             EV << "Sensing is synchronized, collecting measurements\n";
             nResult = 0;
-            cancelEvent(collTimer);
-            scheduleAt(simTime() + 0.05, collTimer); // TODO Number of expected results * tx time + 2 * tx time (round up)
-            cancelEvent(reportTimer);
-            scheduleAt(simTime() + uniform(0, 0.04), reportTimer); // TODO Based on collTimer and tx time
+            // Set collect measurement timer
+            scheduleAt(simTime() + par("collMeaPeriod").doubleValue(), collTimer);
+            // Set report timer
+            scheduleAt(simTime() + uniform(0, par("repMeaPeriod").doubleValue()), reportTimer);
         }
     }
 
@@ -118,7 +118,9 @@ void AppSensor::recvMessage(MsgTracking *msg)
         cancelEvent (senseTimer);
         scheduleAt(simTime() + par("senseInterval").doubleValue()
                 - this->getParentModule()->getSubmodule("ass")->par("responseDelay").doubleValue(),
-                senseTimer); // TODO calculate period
+                senseTimer);
+        // TODO calculate period. WARNING: senseInterval must be long enough to cope with the case
+        // when notification is received when this node is waiting for result from 'ass'
     } else if (msg->getMsgType() == MSG_SENSE_RESULT) {
         nResult++;
     }

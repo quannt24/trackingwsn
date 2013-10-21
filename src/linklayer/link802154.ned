@@ -29,7 +29,7 @@ simple Link802154
         double e_fs = default(10e-12); // Unit J/bit/m2
         
         // Transmission range
-        double txRange @unit(m) = default(10m);
+        double txRange @unit(m) = default(70m);
         // Bit rate
         int bitRate @unit(bps) = default(250000bps);
         // Random frame lost probability (0 ~ 1)

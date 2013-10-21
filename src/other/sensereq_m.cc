@@ -56,18 +56,21 @@ SenseReq& SenseReq::operator=(const SenseReq& other)
 void SenseReq::copy(const SenseReq& other)
 {
     this->srcAss_var = other.srcAss_var;
+    this->srcMob_var = other.srcMob_var;
 }
 
 void SenseReq::parsimPack(cCommBuffer *b)
 {
     cMessage::parsimPack(b);
     doPacking(b,this->srcAss_var);
+    doPacking(b,this->srcMob_var);
 }
 
 void SenseReq::parsimUnpack(cCommBuffer *b)
 {
     cMessage::parsimUnpack(b);
     doUnpacking(b,this->srcAss_var);
+    doUnpacking(b,this->srcMob_var);
 }
 
 AssPtr& SenseReq::getSrcAss()
@@ -78,6 +81,16 @@ AssPtr& SenseReq::getSrcAss()
 void SenseReq::setSrcAss(const AssPtr& srcAss)
 {
     this->srcAss_var = srcAss;
+}
+
+MobPtr& SenseReq::getSrcMob()
+{
+    return srcMob_var;
+}
+
+void SenseReq::setSrcMob(const MobPtr& srcMob)
+{
+    this->srcMob_var = srcMob;
 }
 
 class SenseReqDescriptor : public cClassDescriptor
@@ -127,7 +140,7 @@ const char *SenseReqDescriptor::getProperty(const char *propertyname) const
 int SenseReqDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 1+basedesc->getFieldCount(object) : 1;
+    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
 }
 
 unsigned int SenseReqDescriptor::getFieldTypeFlags(void *object, int field) const
@@ -140,8 +153,9 @@ unsigned int SenseReqDescriptor::getFieldTypeFlags(void *object, int field) cons
     }
     static unsigned int fieldTypeFlags[] = {
         FD_ISCOMPOUND,
+        FD_ISCOMPOUND,
     };
-    return (field>=0 && field<1) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
 }
 
 const char *SenseReqDescriptor::getFieldName(void *object, int field) const
@@ -154,8 +168,9 @@ const char *SenseReqDescriptor::getFieldName(void *object, int field) const
     }
     static const char *fieldNames[] = {
         "srcAss",
+        "srcMob",
     };
-    return (field>=0 && field<1) ? fieldNames[field] : NULL;
+    return (field>=0 && field<2) ? fieldNames[field] : NULL;
 }
 
 int SenseReqDescriptor::findField(void *object, const char *fieldName) const
@@ -163,6 +178,7 @@ int SenseReqDescriptor::findField(void *object, const char *fieldName) const
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
     if (fieldName[0]=='s' && strcmp(fieldName, "srcAss")==0) return base+0;
+    if (fieldName[0]=='s' && strcmp(fieldName, "srcMob")==0) return base+1;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -176,8 +192,9 @@ const char *SenseReqDescriptor::getFieldTypeString(void *object, int field) cons
     }
     static const char *fieldTypeStrings[] = {
         "AssPtr",
+        "MobPtr",
     };
-    return (field>=0 && field<1) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *SenseReqDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -218,6 +235,7 @@ std::string SenseReqDescriptor::getFieldAsString(void *object, int field, int i)
     SenseReq *pp = (SenseReq *)object; (void)pp;
     switch (field) {
         case 0: {std::stringstream out; out << pp->getSrcAss(); return out.str();}
+        case 1: {std::stringstream out; out << pp->getSrcMob(); return out.str();}
         default: return "";
     }
 }
@@ -246,8 +264,9 @@ const char *SenseReqDescriptor::getFieldStructName(void *object, int field) cons
     }
     static const char *fieldStructNames[] = {
         "AssPtr",
+        "MobPtr",
     };
-    return (field>=0 && field<1) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
 }
 
 void *SenseReqDescriptor::getFieldStructPointer(void *object, int field, int i) const
@@ -261,6 +280,7 @@ void *SenseReqDescriptor::getFieldStructPointer(void *object, int field, int i) 
     SenseReq *pp = (SenseReq *)object; (void)pp;
     switch (field) {
         case 0: return (void *)(&pp->getSrcAss()); break;
+        case 1: return (void *)(&pp->getSrcMob()); break;
         default: return NULL;
     }
 }

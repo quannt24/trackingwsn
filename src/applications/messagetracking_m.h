@@ -15,6 +15,8 @@
 
 // cplusplus {{
 #include "messagecr_m.h"
+    #include "measurement.h"
+    typedef std::list<Measurement> MeasurementList;
 // }}
 
 
@@ -122,6 +124,7 @@ inline void doUnpacking(cCommBuffer *b, MsgSyncRequest& obj) {obj.parsimUnpack(b
  * packet MsgSenseResult extends MsgTracking {
  *     int routingType = RT_BROADCAST;
  *     int msgType = MSG_SENSE_RESULT;
+ *     MeasurementList meaList;
  * }
  * </pre>
  */
@@ -130,6 +133,7 @@ class MsgSenseResult : public ::MsgTracking
   protected:
     int routingType_var;
     int msgType_var;
+    MeasurementList meaList_var;
 
   private:
     void copy(const MsgSenseResult& other);
@@ -152,6 +156,9 @@ class MsgSenseResult : public ::MsgTracking
     virtual void setRoutingType(int routingType);
     virtual int getMsgType() const;
     virtual void setMsgType(int msgType);
+    virtual MeasurementList& getMeaList();
+    virtual const MeasurementList& getMeaList() const {return const_cast<MsgSenseResult*>(this)->getMeaList();}
+    virtual void setMeaList(const MeasurementList& meaList);
 };
 
 inline void doPacking(cCommBuffer *b, MsgSenseResult& obj) {obj.parsimPack(b);}

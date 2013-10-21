@@ -580,6 +580,7 @@ void MsgSenseResult::copy(const MsgSenseResult& other)
 {
     this->routingType_var = other.routingType_var;
     this->msgType_var = other.msgType_var;
+    this->meaList_var = other.meaList_var;
 }
 
 void MsgSenseResult::parsimPack(cCommBuffer *b)
@@ -587,6 +588,7 @@ void MsgSenseResult::parsimPack(cCommBuffer *b)
     MsgTracking::parsimPack(b);
     doPacking(b,this->routingType_var);
     doPacking(b,this->msgType_var);
+    doPacking(b,this->meaList_var);
 }
 
 void MsgSenseResult::parsimUnpack(cCommBuffer *b)
@@ -594,6 +596,7 @@ void MsgSenseResult::parsimUnpack(cCommBuffer *b)
     MsgTracking::parsimUnpack(b);
     doUnpacking(b,this->routingType_var);
     doUnpacking(b,this->msgType_var);
+    doUnpacking(b,this->meaList_var);
 }
 
 int MsgSenseResult::getRoutingType() const
@@ -614,6 +617,16 @@ int MsgSenseResult::getMsgType() const
 void MsgSenseResult::setMsgType(int msgType)
 {
     this->msgType_var = msgType;
+}
+
+MeasurementList& MsgSenseResult::getMeaList()
+{
+    return meaList_var;
+}
+
+void MsgSenseResult::setMeaList(const MeasurementList& meaList)
+{
+    this->meaList_var = meaList;
 }
 
 class MsgSenseResultDescriptor : public cClassDescriptor
@@ -663,7 +676,7 @@ const char *MsgSenseResultDescriptor::getProperty(const char *propertyname) cons
 int MsgSenseResultDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
+    return basedesc ? 3+basedesc->getFieldCount(object) : 3;
 }
 
 unsigned int MsgSenseResultDescriptor::getFieldTypeFlags(void *object, int field) const
@@ -677,8 +690,9 @@ unsigned int MsgSenseResultDescriptor::getFieldTypeFlags(void *object, int field
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISCOMPOUND,
     };
-    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
 }
 
 const char *MsgSenseResultDescriptor::getFieldName(void *object, int field) const
@@ -692,8 +706,9 @@ const char *MsgSenseResultDescriptor::getFieldName(void *object, int field) cons
     static const char *fieldNames[] = {
         "routingType",
         "msgType",
+        "meaList",
     };
-    return (field>=0 && field<2) ? fieldNames[field] : NULL;
+    return (field>=0 && field<3) ? fieldNames[field] : NULL;
 }
 
 int MsgSenseResultDescriptor::findField(void *object, const char *fieldName) const
@@ -702,6 +717,7 @@ int MsgSenseResultDescriptor::findField(void *object, const char *fieldName) con
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
     if (fieldName[0]=='r' && strcmp(fieldName, "routingType")==0) return base+0;
     if (fieldName[0]=='m' && strcmp(fieldName, "msgType")==0) return base+1;
+    if (fieldName[0]=='m' && strcmp(fieldName, "meaList")==0) return base+2;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -716,8 +732,9 @@ const char *MsgSenseResultDescriptor::getFieldTypeString(void *object, int field
     static const char *fieldTypeStrings[] = {
         "int",
         "int",
+        "MeasurementList",
     };
-    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<3) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *MsgSenseResultDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -759,6 +776,7 @@ std::string MsgSenseResultDescriptor::getFieldAsString(void *object, int field, 
     switch (field) {
         case 0: return long2string(pp->getRoutingType());
         case 1: return long2string(pp->getMsgType());
+        case 2: {std::stringstream out; out << pp->getMeaList(); return out.str();}
         default: return "";
     }
 }
@@ -790,8 +808,9 @@ const char *MsgSenseResultDescriptor::getFieldStructName(void *object, int field
     static const char *fieldStructNames[] = {
         NULL,
         NULL,
+        "MeasurementList",
     };
-    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<3) ? fieldStructNames[field] : NULL;
 }
 
 void *MsgSenseResultDescriptor::getFieldStructPointer(void *object, int field, int i) const
@@ -804,6 +823,7 @@ void *MsgSenseResultDescriptor::getFieldStructPointer(void *object, int field, i
     }
     MsgSenseResult *pp = (MsgSenseResult *)object; (void)pp;
     switch (field) {
+        case 2: return (void *)(&pp->getMeaList()); break;
         default: return NULL;
     }
 }

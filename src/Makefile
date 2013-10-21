@@ -40,6 +40,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 OBJS = \
     $O/applications/appbasestation.o \
     $O/applications/appsensor.o \
+    $O/applications/meacoll.o \
     $O/energy/energy.o \
     $O/linklayer/link802154.o \
     $O/mobility/mobility.o \
@@ -163,14 +164,19 @@ $O/applications/appbasestation.o: applications/appbasestation.cc \
 	applications/appbasestation.h
 $O/applications/appsensor.o: applications/appsensor.cc \
 	applications/appsensor.h \
+	applications/meacoll.h \
 	applications/messagetracking_m.h \
 	msgkind.h \
 	networklayer/messagecr_m.h \
 	other/measurement.h \
 	other/sensedresult_m.h
+$O/applications/meacoll.o: applications/meacoll.cc \
+	applications/meacoll.h \
+	other/measurement.h
 $O/applications/messagetracking_m.o: applications/messagetracking_m.cc \
 	applications/messagetracking_m.h \
-	networklayer/messagecr_m.h
+	networklayer/messagecr_m.h \
+	other/measurement.h
 $O/energy/energy.o: energy/energy.cc \
 	energy/energy.h
 $O/linklayer/frame802154_m.o: linklayer/frame802154_m.cc \
@@ -203,12 +209,14 @@ $O/networklayer/packetemrp_m.o: networklayer/packetemrp_m.cc \
 	linklayer/packet802154_m.h \
 	networklayer/packetemrp_m.h
 $O/other/asg.o: other/asg.cc \
+	mobility/mobility.h \
 	msgkind.h \
 	other/asg.h \
 	other/ass.h \
 	other/measurement.h \
 	other/sensedsignal_m.h \
-	other/sensereq_m.h
+	other/sensereq_m.h \
+	util/worldutil.h
 $O/other/ass.o: other/ass.cc \
 	mobility/mobility.h \
 	msgkind.h \
@@ -226,6 +234,7 @@ $O/other/sensedresult_m.o: other/sensedresult_m.cc \
 $O/other/sensedsignal_m.o: other/sensedsignal_m.cc \
 	other/sensedsignal_m.h
 $O/other/sensereq_m.o: other/sensereq_m.cc \
+	mobility/mobility.h \
 	other/ass.h \
 	other/measurement.h \
 	other/sensedsignal_m.h \

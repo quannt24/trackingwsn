@@ -35,20 +35,12 @@ void AppSensor::handleMessage(cMessage *msg)
             // Schedule next sensing
             scheduleAt(simTime() + par("senseInterval"), senseTimer);
         } else if (msg == reportTimer) {
-            // TODO Report measurements (broadcast)
-            MsgSenseResult *msgResult = new MsgSenseResult("MsgSenseResult");
+            // Report measurements (broadcast)
+            MsgSenseResult *msgResult = new MsgSenseResult();
+            msgResult->setMeaList(meaList);
             send(msgResult, "netGate$o");
         } else if (msg == collTimer) {
-            // TODO Collect measurements
-            EV << "Number of result " << nResult << '\n';
-            if (nResult >= 4) {
-                // TODO
-                getParentModule()->bubble("Enough measurements");
-                EV << "Evaluate CH\n";
-            } else {
-                // Not enough measurements try to re-synchronize
-                getParentModule()->bubble("NEM");
-            }
+            // TODO Finish measurement collection. Evaluate result.
         }
     } else {
         if (msg->getArrivalGate() == gate("ssGate$i")) {
@@ -77,11 +69,12 @@ AppSensor::~AppSensor()
     cancelAndDelete(senseTimer);
     cancelAndDelete(reportTimer);
     cancelAndDelete(collTimer);
+    mc.clear(); // Clear collection
 }
 
 void AppSensor::recvSensedResult(SensedResult *result)
 {
-    std::list<Measurement> meaList = result->getMeaList();
+    meaList = result->getMeaList();
 
     if (meaList.size() == 0) {
         EV << "Nothing sensed\n";
@@ -94,9 +87,14 @@ void AppSensor::recvSensedResult(SensedResult *result)
             syncSense = true;
             // Do nothing except change to synchronized state
         } else {
-            // Sensing is synchronized locally, collect measurements
+            // Add sensed measurement to collection
+            mc.clear();
+            for (std::list<Measurement>::iterator it=meaList.begin(); it != meaList.end(); ++it) {
+                mc.addMeasurement(*it);
+            }
+
+            // Sensing is synchronized locally, collect measurements from other nodes
             EV << "Sensing is synchronized, collecting measurements\n";
-            nResult = 0;
             // Set collect measurement timer
             scheduleAt(simTime() + par("collMeaPeriod").doubleValue(), collTimer);
             // Set report timer
@@ -127,7 +125,11 @@ void AppSensor::recvMessage(MsgTracking *msg)
                 - this->getParentModule()->getSubmodule("ass")->par("responseDelay").doubleValue() - 0.005,
                 senseTimer);
     } else if (msg->getMsgType() == MSG_SENSE_RESULT) {
-        nResult++;
+        // Add measurements to collection
+        std::list<Measurement> ml = ((MsgSenseResult*) msg)->getMeaList();
+        for (std::list<Measurement>::iterator it=ml.begin(); it != ml.end(); ++it) {
+            mc.addMeasurement(*it);
+        }
     }
 
     delete msg;

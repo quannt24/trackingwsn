@@ -15,12 +15,16 @@
 
 cplusplus {{
     #include "ass.h"
-    typedef Ass *AssPtr; }} // C++ typedef
+    #include "mobility.h"
+    typedef Ass* AssPtr;
+    typedef Mobility* MobPtr; }} // C++ typedef
 class noncobject AssPtr; // announcement for the message compiler
+class noncobject MobPtr;
 
 //
 // Sense request
 //
 message SenseReq {
-    AssPtr srcAss;
+    AssPtr srcAss; // Pointer to Ass module
+    MobPtr srcMob; // Pointer to Mobility module
 }

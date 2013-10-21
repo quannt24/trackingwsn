@@ -14,7 +14,11 @@
 //
 cplusplus {{
 	#include "messagecr_m.h"
+    #include "measurement.h"
+    typedef std::list<Measurement> MeasurementList;
 }}
+class noncobject Measurement; // announcement for the message compiler
+class noncobject MeasurementList;
 
 packet MessageCR;
 
@@ -44,4 +48,5 @@ packet MsgSyncRequest extends MsgTracking {
 packet MsgSenseResult extends MsgTracking {
     int routingType = RT_BROADCAST;
     int msgType = MSG_SENSE_RESULT;
+    MeasurementList meaList;
 }

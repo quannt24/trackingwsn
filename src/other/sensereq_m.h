@@ -15,7 +15,9 @@
 
 // cplusplus {{
 #include "ass.h"
-    typedef Ass *AssPtr;
+    #include "mobility.h"
+    typedef Ass* AssPtr;
+    typedef Mobility* MobPtr;
 // }}
 
 
@@ -24,7 +26,8 @@
  * Class generated from <tt>other/sensereq.msg</tt> by opp_msgc.
  * <pre>
  * message SenseReq {
- *     AssPtr srcAss;
+ *     AssPtr srcAss; 
+ *     MobPtr srcMob; 
  * }
  * </pre>
  */
@@ -32,6 +35,7 @@ class SenseReq : public ::cMessage
 {
   protected:
     AssPtr srcAss_var;
+    MobPtr srcMob_var;
 
   private:
     void copy(const SenseReq& other);
@@ -53,6 +57,9 @@ class SenseReq : public ::cMessage
     virtual AssPtr& getSrcAss();
     virtual const AssPtr& getSrcAss() const {return const_cast<SenseReq*>(this)->getSrcAss();}
     virtual void setSrcAss(const AssPtr& srcAss);
+    virtual MobPtr& getSrcMob();
+    virtual const MobPtr& getSrcMob() const {return const_cast<SenseReq*>(this)->getSrcMob();}
+    virtual void setSrcMob(const MobPtr& srcMob);
 };
 
 inline void doPacking(cCommBuffer *b, SenseReq& obj) {obj.parsimPack(b);}

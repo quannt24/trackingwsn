@@ -91,6 +91,7 @@ void Ass::reqTargets()
             // Send request
             SenseReq *senseReq = new SenseReq("SenseReq", SS_REQ);
             senseReq->setSrcAss(this);
+            senseReq->setSrcMob(mob1);
             sendDirect(senseReq, tar->getSubmodule("asg"), "reqIn");
         }
     }

@@ -17,6 +17,7 @@
 #include "sensedsignal_m.h"
 #include "msgkind.h"
 #include "sensereq_m.h"
+#include "worldutil.h"
 
 Define_Module(Asg);
 
@@ -27,11 +28,14 @@ void Asg::initialize()
 
 void Asg::handleMessage(cMessage *msg)
 {
+    SenseReq *req = check_and_cast<SenseReq*>(msg);
+
     // Create signal message and send back to sensor
     SensedSignal *sig = new SensedSignal("SensedSignal", SS_SIGNAL);
-    // TODO Add content to message
+    sig->setTarId(getParentModule()->getId());
+    sig->setDistance(distance((Mobility*) getParentModule()->getSubmodule("mobility"), req->getSrcMob()));
+    // TODO Add signal string for analyzing
 
-    SenseReq *req = check_and_cast<SenseReq*>(msg);
     sendDirect(sig, req->getSrcAss(), "sigIn");
 
     // Delete requesting message

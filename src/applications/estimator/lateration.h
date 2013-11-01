@@ -13,14 +13,26 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "estimator.h"
+#ifndef __TRACKINGWSN_LATERATION_H_
+#define __TRACKINGWSN_LATERATION_H_
 
-Define_Module(Estimator);
+#include "targetpos.h"
+#include "measurement.h"
+#include <omnetpp.h>
 
-void Estimator::initialize()
+/**
+ * Lateration tracking algorithm
+ */
+class Lateration : public cSimpleModule
 {
-}
+    protected:
+        virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
 
-void Estimator::handleMessage(cMessage *msg)
-{
-}
+    public:
+        /* Minimum number of measurements so that the estimator can work properly */
+        virtual unsigned int minNumMeasurement() { return par("minNumMeasurement").longValue(); };
+        virtual TargetPos estimate(std::list<Measurement> meaList);
+};
+
+#endif

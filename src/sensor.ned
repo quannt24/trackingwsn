@@ -17,7 +17,7 @@ package trackingwsn;
 
 import trackingwsn.nodes.Node802154;
 import trackingwsn.applications.AppSensor;
-import trackingwsn.applications.estimator.Estimator;
+import trackingwsn.applications.estimator.IEstimator;
 import trackingwsn.other.Ass;
 
 module Sensor extends Node802154
@@ -25,11 +25,13 @@ module Sensor extends Node802154
     parameters:
         mobility.moving = false;
         net.isBaseStation = false;
+        // Tracking algorithm. Default estimator always return (0, 0).
+        string estimatorName = default("Estimator");
         @display("i=misc/node2;is=vs");
     submodules:
         ass: Ass;
         app: AppSensor;
-        est: Estimator;
+        est: <estimatorName> like IEstimator;
     connections:
         app.ssGate <--> ass.appGate;
         app.netGate <--> net.appGate;

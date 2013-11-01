@@ -16,9 +16,9 @@
 package trackingwsn.applications.estimator;
 
 //
-// TODO auto-generated module
+// Abstract module for a tracking estimator
 //
-simple Estimator
+simple Estimator like IEstimator
 {
     parameters:
         int minNumMeasurement = default(3);

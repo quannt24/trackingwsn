@@ -16,6 +16,8 @@
 #ifndef __TRACKINGWSN_ESTIMATOR_H_
 #define __TRACKINGWSN_ESTIMATOR_H_
 
+#include "targetpos.h"
+#include "measurement.h"
 #include <omnetpp.h>
 
 /**
@@ -30,6 +32,7 @@ class Estimator : public cSimpleModule
     public:
         /* Minimum number of measurements so that the estimator can work properly */
         virtual unsigned int minNumMeasurement() { return par("minNumMeasurement").longValue(); }
+        virtual TargetPos estimate(std::list<Measurement> meaList) { return TargetPos(); }
 };
 
 #endif

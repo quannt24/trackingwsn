@@ -42,6 +42,8 @@ OBJS = \
     $O/applications/appbasestation.o \
     $O/applications/appsensor.o \
     $O/applications/meacoll.o \
+    $O/applications/estimator/targetpos.o \
+    $O/applications/estimator/lateration.o \
     $O/applications/estimator/estimator.o \
     $O/energy/energy.o \
     $O/linklayer/link802154.o \
@@ -168,6 +170,7 @@ $O/applications/appbasestation.o: applications/appbasestation.cc \
 $O/applications/appsensor.o: applications/appsensor.cc \
 	applications/appsensor.h \
 	applications/estimator/estimator.h \
+	applications/estimator/targetpos.h \
 	applications/meacoll.h \
 	applications/messagetracking_m.h \
 	energy/energy.h \
@@ -183,7 +186,15 @@ $O/applications/messagetracking_m.o: applications/messagetracking_m.cc \
 	networklayer/messagecr_m.h \
 	other/measurement.h
 $O/applications/estimator/estimator.o: applications/estimator/estimator.cc \
-	applications/estimator/estimator.h
+	applications/estimator/estimator.h \
+	applications/estimator/targetpos.h \
+	other/measurement.h
+$O/applications/estimator/lateration.o: applications/estimator/lateration.cc \
+	applications/estimator/lateration.h \
+	applications/estimator/targetpos.h \
+	other/measurement.h
+$O/applications/estimator/targetpos.o: applications/estimator/targetpos.cc \
+	applications/estimator/targetpos.h
 $O/energy/energy.o: energy/energy.cc \
 	energy/energy.h
 $O/linklayer/frame802154_m.o: linklayer/frame802154_m.cc \

@@ -13,14 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "estimator.h"
+package trackingwsn.applications.estimator;
 
-Define_Module(Estimator);
-
-void Estimator::initialize()
+moduleinterface IEstimator
 {
-}
-
-void Estimator::handleMessage(cMessage *msg)
-{
+    parameters:
+        int minNumMeasurement;
+        @display("i=block/app");
 }

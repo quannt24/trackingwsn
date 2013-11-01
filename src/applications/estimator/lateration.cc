@@ -13,14 +13,19 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "estimator.h"
+#include "lateration.h"
 
-Define_Module(Estimator);
+Define_Module(Lateration);
 
-void Estimator::initialize()
+void Lateration::initialize()
 {
 }
 
-void Estimator::handleMessage(cMessage *msg)
+void Lateration::handleMessage(cMessage *msg)
 {
+}
+
+TargetPos Lateration::estimate(std::list<Measurement> meaList)
+{
+    return TargetPos(1, 1);
 }

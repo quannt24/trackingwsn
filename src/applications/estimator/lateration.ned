@@ -13,14 +13,14 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "estimator.h"
+package trackingwsn.applications.estimator;
 
-Define_Module(Estimator);
-
-void Estimator::initialize()
+//
+// Lateration tracking algorithm
+//
+simple Lateration like IEstimator
 {
-}
-
-void Estimator::handleMessage(cMessage *msg)
-{
+    parameters:
+        int minNumMeasurement = 3;
+        @display("i=block/app");
 }

@@ -154,7 +154,7 @@ void AppSensor::trackTargets()
     bool hasMea;
     Estimator *est = (Estimator*) getParentModule()->getSubmodule("est");
     double myCHValue; // Evaluated CH value of this node for a target
-    bool isCH = false;
+    bool isCH = false; // True if this node is CH of at least one target (global CH flag)
 
     for (ite = el->begin(); ite != el->end(); ++ite) {
         // Check if this node has its own measurement of a target (in range of that target)
@@ -163,6 +163,7 @@ void AppSensor::trackTargets()
             if ((*itmo).getTarId() == (*ite).tarId) hasMea = true;
         }
         if (!hasMea) continue;
+        // If this node does not have any measurements of this target, skip it
 
         // Check if having enough measurements for a target
         ml = (*ite).meaList;
@@ -188,6 +189,8 @@ void AppSensor::trackTargets()
         if ((*ite).flagCH) {
             isCH = true; // This node is CH of at least one target
             // TODO Estimate targets' positions
+            TargetPos tp = est->estimate((*ite).meaList);
+            EV << "Estimated pos: " << tp.getX() << " ; " << tp.getY();
         }
     }
 

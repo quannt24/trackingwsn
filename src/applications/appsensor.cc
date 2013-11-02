@@ -16,6 +16,7 @@
 #include "appsensor.h"
 #include "messagetracking_m.h"
 #include "msgkind.h"
+#include "mobility.h"
 #include "energy.h"
 #include "estimator.h"
 #include "measurement.h"
@@ -39,10 +40,7 @@ void AppSensor::handleMessage(cMessage *msg)
             scheduleAt(simTime() + par("senseInterval"), senseTimer);
         } else if (msg == reportTimer) {
             // Report measurements (broadcast)
-            MsgSenseResult *msgResult = new MsgSenseResult();
-            msgResult->setMeaList(meaList);
-            // TODO Set message size
-            send(msgResult, "netGate$o");
+            sendSenseResult();
         } else if (msg == collTimer) {
             // Finish measurement collection. Evaluate result.
             trackTargets();
@@ -51,7 +49,7 @@ void AppSensor::handleMessage(cMessage *msg)
         if (msg->getArrivalGate() == gate("ssGate$i")) {
             if (msg->getKind() == SS_RESULT) {
                 SensedResult *result = check_and_cast<SensedResult*>(msg);
-                recvSensedResult(result);
+                recvSenseResult(result);
             }
         } else if (msg->getArrivalGate() == gate("netGate$i")) {
             MsgTracking *m = check_and_cast<MsgTracking*>(msg);
@@ -77,8 +75,32 @@ AppSensor::~AppSensor()
     mc.clear(); // Clear collection
 }
 
-void AppSensor::recvSensedResult(SensedResult *result)
+void AppSensor::sendSenseResult()
 {
+    Mobility *mob = (Mobility*) getParentModule()->getSubmodule("mobility");
+    Energy *ener = (Energy*) getParentModule()->getSubmodule("energy");
+
+    MsgSenseResult *msgResult = new MsgSenseResult();
+
+    // Add node info
+    msgResult->setNodePosX(mob->getX());
+    msgResult->setNodePosY(mob->getY());
+    msgResult->setNodeEnergy(ener->getCapacity());
+
+    // Add measurement list
+    msgResult->setMeaList(meaList);
+
+    /* Set message size
+     * Each measurement contains target ID + measuredDistance will have size of 2 + 8 bytes
+     * Node info will have size of 8 + 8 + 8 bytes */
+    msgResult->setMsgSize(msgResult->getMsgSize() + 24 + 10 * meaList.size());
+    send(msgResult, "netGate$o");
+}
+
+void AppSensor::recvSenseResult(SensedResult *result)
+{
+    Mobility *mob;
+    Energy *ener;
     meaList = result->getMeaList();
 
     if (meaList.size() == 0) {
@@ -95,6 +117,22 @@ void AppSensor::recvSensedResult(SensedResult *result)
             // Add sensed measurement to collection
             mc.clear();
             for (std::list<Measurement>::iterator it=meaList.begin(); it != meaList.end(); ++it) {
+                /* Add node's information to measurement object for simulation convenience.
+                 * Note: Measurement object holds these information just for simulation programming convenience.
+                 * In theory, these information is not packed with every object in a MsgSenseResult message,
+                 * but is * stored separately in the message so that the size of the message is not
+                 * increased by the redundancy. However, each node adds these information to its
+                 * own Measurement objects in case it may become CH, then the objects is carried by
+                 * MsgSenseResult message (for programming convenience); so that the portion of
+                 * code to add these information to objects in recvMessage() seem to be redundant,
+                 * BUT IT'S NOT. The code is for demonstrating the full working mechanism. */
+                mob = (Mobility*) getParentModule()->getSubmodule("mobility");
+                ener = (Energy*) getParentModule()->getSubmodule("energy");
+                (*it).setNodePosX(mob->getX());
+                (*it).setNodePosY(mob->getY());
+                (*it).setNodeEnergy(ener->getCapacity());
+
+                // Add measurement object to collection
                 mc.addMeasurement(*it);
             }
 
@@ -130,9 +168,17 @@ void AppSensor::recvMessage(MsgTracking *msg)
                 - this->getParentModule()->getSubmodule("ass")->par("responseDelay").doubleValue() - 0.005,
                 senseTimer);
     } else if (msg->getMsgType() == MSG_SENSE_RESULT) {
-        // Add measurements to collection
-        std::list<Measurement> ml = ((MsgSenseResult*) msg)->getMeaList();
+        MsgSenseResult *msr = check_and_cast<MsgSenseResult*>(msg);
+        std::list<Measurement> ml = msr->getMeaList();
+
+        // Add sender information to Measurement objects then add them to collection
         for (std::list<Measurement>::iterator it=ml.begin(); it != ml.end(); ++it) {
+            // NOTE: THIS PORTION OF CODE IS NOT REDUNDANT. It demonstrates the working mechanism.
+            (*it).setNodePosX(msr->getNodePosX());
+            (*it).setNodePosY(msr->getNodePosY());
+            (*it).setNodeEnergy(msr->getNodeEnergy());
+
+            // Add Measurement object to collection
             mc.addMeasurement(*it);
         }
     }

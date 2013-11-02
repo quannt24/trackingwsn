@@ -174,6 +174,7 @@ $O/applications/appsensor.o: applications/appsensor.cc \
 	applications/meacoll.h \
 	applications/messagetracking_m.h \
 	energy/energy.h \
+	mobility/mobility.h \
 	msgkind.h \
 	networklayer/messagecr_m.h \
 	other/measurement.h \
@@ -190,9 +191,11 @@ $O/applications/estimator/estimator.o: applications/estimator/estimator.cc \
 	applications/estimator/targetpos.h \
 	other/measurement.h
 $O/applications/estimator/lateration.o: applications/estimator/lateration.cc \
+	applications/estimator/estimator.h \
 	applications/estimator/lateration.h \
 	applications/estimator/targetpos.h \
-	other/measurement.h
+	other/measurement.h \
+	util/matrix.h
 $O/applications/estimator/targetpos.o: applications/estimator/targetpos.cc \
 	applications/estimator/targetpos.h
 $O/energy/energy.o: energy/energy.cc \

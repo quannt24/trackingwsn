@@ -127,7 +127,11 @@ inline void doUnpacking(cCommBuffer *b, MsgSyncRequest& obj) {obj.parsimUnpack(b
  *     int routingType = RT_BROADCAST;
  *     int msgType = MSG_SENSE_RESULT;
  *     
- *     MeasurementList meaList; 
+ *     
+ *     MeasurementList meaList;
+ *     double nodePosX;
+ *     double nodePosY;
+ *     double nodeEnergy;
  * }
  * </pre>
  */
@@ -137,6 +141,9 @@ class MsgSenseResult : public ::MsgTracking
     int routingType_var;
     int msgType_var;
     MeasurementList meaList_var;
+    double nodePosX_var;
+    double nodePosY_var;
+    double nodeEnergy_var;
 
   private:
     void copy(const MsgSenseResult& other);
@@ -162,6 +169,12 @@ class MsgSenseResult : public ::MsgTracking
     virtual MeasurementList& getMeaList();
     virtual const MeasurementList& getMeaList() const {return const_cast<MsgSenseResult*>(this)->getMeaList();}
     virtual void setMeaList(const MeasurementList& meaList);
+    virtual double getNodePosX() const;
+    virtual void setNodePosX(double nodePosX);
+    virtual double getNodePosY() const;
+    virtual void setNodePosY(double nodePosY);
+    virtual double getNodeEnergy() const;
+    virtual void setNodeEnergy(double nodeEnergy);
 };
 
 inline void doPacking(cCommBuffer *b, MsgSenseResult& obj) {obj.parsimPack(b);}

@@ -101,8 +101,7 @@ void Ass::reqTargets()
 void Ass::recvSenseData(SensedSignal* sig)
 {
     Measurement m(sig->getTarId(),
-            sig->getDistance(),
-            ((Energy*) getParentModule()->getSubmodule("energy"))->getCapacity()); // TODO Add noise to distance
+            sig->getDistance()); // TODO Add noise to distance
     meaList.push_back(m);
     nMeasurement++;
     if (nMeasurement == nSensedTarget) {

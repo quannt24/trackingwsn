@@ -46,7 +46,11 @@ packet MsgSenseResult extends MsgTracking {
     int routingType = RT_BROADCAST;
     int msgType = MSG_SENSE_RESULT;
     
-    MeasurementList meaList; // List of measurements
+    // List of measurements (size of this list does not include size of node info packed along with each object
+    MeasurementList meaList;
+    double nodePosX;
+    double nodePosY;
+    double nodeEnergy;
 }
 
 // Message carries tracked positions of targets to send to base station

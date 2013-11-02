@@ -558,6 +558,9 @@ MsgSenseResult::MsgSenseResult(const char *name, int kind) : MsgTracking(name,ki
 {
     this->routingType_var = RT_BROADCAST;
     this->msgType_var = MSG_SENSE_RESULT;
+    this->nodePosX_var = 0;
+    this->nodePosY_var = 0;
+    this->nodeEnergy_var = 0;
 }
 
 MsgSenseResult::MsgSenseResult(const MsgSenseResult& other) : MsgTracking(other)
@@ -582,6 +585,9 @@ void MsgSenseResult::copy(const MsgSenseResult& other)
     this->routingType_var = other.routingType_var;
     this->msgType_var = other.msgType_var;
     this->meaList_var = other.meaList_var;
+    this->nodePosX_var = other.nodePosX_var;
+    this->nodePosY_var = other.nodePosY_var;
+    this->nodeEnergy_var = other.nodeEnergy_var;
 }
 
 void MsgSenseResult::parsimPack(cCommBuffer *b)
@@ -590,6 +596,9 @@ void MsgSenseResult::parsimPack(cCommBuffer *b)
     doPacking(b,this->routingType_var);
     doPacking(b,this->msgType_var);
     doPacking(b,this->meaList_var);
+    doPacking(b,this->nodePosX_var);
+    doPacking(b,this->nodePosY_var);
+    doPacking(b,this->nodeEnergy_var);
 }
 
 void MsgSenseResult::parsimUnpack(cCommBuffer *b)
@@ -598,6 +607,9 @@ void MsgSenseResult::parsimUnpack(cCommBuffer *b)
     doUnpacking(b,this->routingType_var);
     doUnpacking(b,this->msgType_var);
     doUnpacking(b,this->meaList_var);
+    doUnpacking(b,this->nodePosX_var);
+    doUnpacking(b,this->nodePosY_var);
+    doUnpacking(b,this->nodeEnergy_var);
 }
 
 int MsgSenseResult::getRoutingType() const
@@ -628,6 +640,36 @@ MeasurementList& MsgSenseResult::getMeaList()
 void MsgSenseResult::setMeaList(const MeasurementList& meaList)
 {
     this->meaList_var = meaList;
+}
+
+double MsgSenseResult::getNodePosX() const
+{
+    return nodePosX_var;
+}
+
+void MsgSenseResult::setNodePosX(double nodePosX)
+{
+    this->nodePosX_var = nodePosX;
+}
+
+double MsgSenseResult::getNodePosY() const
+{
+    return nodePosY_var;
+}
+
+void MsgSenseResult::setNodePosY(double nodePosY)
+{
+    this->nodePosY_var = nodePosY;
+}
+
+double MsgSenseResult::getNodeEnergy() const
+{
+    return nodeEnergy_var;
+}
+
+void MsgSenseResult::setNodeEnergy(double nodeEnergy)
+{
+    this->nodeEnergy_var = nodeEnergy;
 }
 
 class MsgSenseResultDescriptor : public cClassDescriptor
@@ -677,7 +719,7 @@ const char *MsgSenseResultDescriptor::getProperty(const char *propertyname) cons
 int MsgSenseResultDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 3+basedesc->getFieldCount(object) : 3;
+    return basedesc ? 6+basedesc->getFieldCount(object) : 6;
 }
 
 unsigned int MsgSenseResultDescriptor::getFieldTypeFlags(void *object, int field) const
@@ -692,8 +734,11 @@ unsigned int MsgSenseResultDescriptor::getFieldTypeFlags(void *object, int field
         FD_ISEDITABLE,
         FD_ISEDITABLE,
         FD_ISCOMPOUND,
+        FD_ISEDITABLE,
+        FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<6) ? fieldTypeFlags[field] : 0;
 }
 
 const char *MsgSenseResultDescriptor::getFieldName(void *object, int field) const
@@ -708,8 +753,11 @@ const char *MsgSenseResultDescriptor::getFieldName(void *object, int field) cons
         "routingType",
         "msgType",
         "meaList",
+        "nodePosX",
+        "nodePosY",
+        "nodeEnergy",
     };
-    return (field>=0 && field<3) ? fieldNames[field] : NULL;
+    return (field>=0 && field<6) ? fieldNames[field] : NULL;
 }
 
 int MsgSenseResultDescriptor::findField(void *object, const char *fieldName) const
@@ -719,6 +767,9 @@ int MsgSenseResultDescriptor::findField(void *object, const char *fieldName) con
     if (fieldName[0]=='r' && strcmp(fieldName, "routingType")==0) return base+0;
     if (fieldName[0]=='m' && strcmp(fieldName, "msgType")==0) return base+1;
     if (fieldName[0]=='m' && strcmp(fieldName, "meaList")==0) return base+2;
+    if (fieldName[0]=='n' && strcmp(fieldName, "nodePosX")==0) return base+3;
+    if (fieldName[0]=='n' && strcmp(fieldName, "nodePosY")==0) return base+4;
+    if (fieldName[0]=='n' && strcmp(fieldName, "nodeEnergy")==0) return base+5;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -734,8 +785,11 @@ const char *MsgSenseResultDescriptor::getFieldTypeString(void *object, int field
         "int",
         "int",
         "MeasurementList",
+        "double",
+        "double",
+        "double",
     };
-    return (field>=0 && field<3) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<6) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *MsgSenseResultDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -778,6 +832,9 @@ std::string MsgSenseResultDescriptor::getFieldAsString(void *object, int field, 
         case 0: return long2string(pp->getRoutingType());
         case 1: return long2string(pp->getMsgType());
         case 2: {std::stringstream out; out << pp->getMeaList(); return out.str();}
+        case 3: return double2string(pp->getNodePosX());
+        case 4: return double2string(pp->getNodePosY());
+        case 5: return double2string(pp->getNodeEnergy());
         default: return "";
     }
 }
@@ -794,6 +851,9 @@ bool MsgSenseResultDescriptor::setFieldAsString(void *object, int field, int i, 
     switch (field) {
         case 0: pp->setRoutingType(string2long(value)); return true;
         case 1: pp->setMsgType(string2long(value)); return true;
+        case 3: pp->setNodePosX(string2double(value)); return true;
+        case 4: pp->setNodePosY(string2double(value)); return true;
+        case 5: pp->setNodeEnergy(string2double(value)); return true;
         default: return false;
     }
 }
@@ -810,8 +870,11 @@ const char *MsgSenseResultDescriptor::getFieldStructName(void *object, int field
         NULL,
         NULL,
         "MeasurementList",
+        NULL,
+        NULL,
+        NULL,
     };
-    return (field>=0 && field<3) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<6) ? fieldStructNames[field] : NULL;
 }
 
 void *MsgSenseResultDescriptor::getFieldStructPointer(void *object, int field, int i) const

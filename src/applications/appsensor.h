@@ -34,7 +34,8 @@ class AppSensor : public cSimpleModule
         std::list<Measurement> meaList; // Measurement list of recent sensing
         MeaColl mc; // Measurement collection
 
-        void recvSensedResult(SensedResult *result);
+        void sendSenseResult();
+        void recvSenseResult(SensedResult *result);
         void recvMessage(MsgTracking *msg); // Receive message from other node
         void trackTargets();
 

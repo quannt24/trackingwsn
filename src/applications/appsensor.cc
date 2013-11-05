@@ -201,6 +201,7 @@ void AppSensor::trackTargets()
     Estimator *est = (Estimator*) getParentModule()->getSubmodule("est");
     double myCHValue; // Evaluated CH value of this node for a target
     bool isCH = false; // True if this node is CH of at least one target (global CH flag)
+    std::list<TargetPos> tpList;
 
     for (ite = el->begin(); ite != el->end(); ++ite) {
         // Check if this node has its own measurement of a target (in range of that target)
@@ -237,16 +238,21 @@ void AppSensor::trackTargets()
             // Estimate targets' positions
             TargetPos tp = est->estimate((*ite).meaList);
             tp.setTarId((*ite).tarId); // Label the position with target's ID
-            EV << "Estimated pos: " << tp.getX() << " ; " << tp.getY();
+            //EV << "Estimated pos: " << tp.getX() << " ; " << tp.getY();
+            tpList.push_back(tp);
         }
     }
 
     if (isCH) {
         getParentModule()->bubble("CH");
+        // Create a tracking result message
+        MsgTrackResult *msgTrackResult = new MsgTrackResult();
+        msgTrackResult->setTpList(tpList);
+        /* Set message size
+         * Each TargetPos contains target ID + x + y will have size of 2 + 8 + 8 bytes */
+        msgTrackResult->setMsgSize(msgTrackResult->getMsgSize() + 18 * tpList.size());
         // Send result to base station
-        MsgTrackResult *msgResult = new MsgTrackResult();
-        // TODO Add tracked target's position, set message size
-        send(msgResult, "netGate$o");
+        send(msgTrackResult, "netGate$o");
     } else {
         getParentModule()->bubble("Nope");
     }

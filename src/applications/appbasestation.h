@@ -16,6 +16,7 @@
 #ifndef __TRACKINGWSN_APPBASESTATION_H_
 #define __TRACKINGWSN_APPBASESTATION_H_
 
+#include "messagetracking_m.h"
 #include <omnetpp.h>
 
 /**
@@ -23,9 +24,11 @@
  */
 class AppBaseStation : public cSimpleModule
 {
-  protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
+    private:
+        void recvMessage(MsgTracking *msg);
+    protected:
+        virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
 };
 
 #endif

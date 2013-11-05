@@ -921,6 +921,7 @@ void MsgTrackResult::copy(const MsgTrackResult& other)
 {
     this->routingType_var = other.routingType_var;
     this->msgType_var = other.msgType_var;
+    this->tpList_var = other.tpList_var;
 }
 
 void MsgTrackResult::parsimPack(cCommBuffer *b)
@@ -928,6 +929,7 @@ void MsgTrackResult::parsimPack(cCommBuffer *b)
     MsgTracking::parsimPack(b);
     doPacking(b,this->routingType_var);
     doPacking(b,this->msgType_var);
+    doPacking(b,this->tpList_var);
 }
 
 void MsgTrackResult::parsimUnpack(cCommBuffer *b)
@@ -935,6 +937,7 @@ void MsgTrackResult::parsimUnpack(cCommBuffer *b)
     MsgTracking::parsimUnpack(b);
     doUnpacking(b,this->routingType_var);
     doUnpacking(b,this->msgType_var);
+    doUnpacking(b,this->tpList_var);
 }
 
 int MsgTrackResult::getRoutingType() const
@@ -955,6 +958,16 @@ int MsgTrackResult::getMsgType() const
 void MsgTrackResult::setMsgType(int msgType)
 {
     this->msgType_var = msgType;
+}
+
+TargetPosList& MsgTrackResult::getTpList()
+{
+    return tpList_var;
+}
+
+void MsgTrackResult::setTpList(const TargetPosList& tpList)
+{
+    this->tpList_var = tpList;
 }
 
 class MsgTrackResultDescriptor : public cClassDescriptor
@@ -1004,7 +1017,7 @@ const char *MsgTrackResultDescriptor::getProperty(const char *propertyname) cons
 int MsgTrackResultDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
+    return basedesc ? 3+basedesc->getFieldCount(object) : 3;
 }
 
 unsigned int MsgTrackResultDescriptor::getFieldTypeFlags(void *object, int field) const
@@ -1018,8 +1031,9 @@ unsigned int MsgTrackResultDescriptor::getFieldTypeFlags(void *object, int field
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISCOMPOUND,
     };
-    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
 }
 
 const char *MsgTrackResultDescriptor::getFieldName(void *object, int field) const
@@ -1033,8 +1047,9 @@ const char *MsgTrackResultDescriptor::getFieldName(void *object, int field) cons
     static const char *fieldNames[] = {
         "routingType",
         "msgType",
+        "tpList",
     };
-    return (field>=0 && field<2) ? fieldNames[field] : NULL;
+    return (field>=0 && field<3) ? fieldNames[field] : NULL;
 }
 
 int MsgTrackResultDescriptor::findField(void *object, const char *fieldName) const
@@ -1043,6 +1058,7 @@ int MsgTrackResultDescriptor::findField(void *object, const char *fieldName) con
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
     if (fieldName[0]=='r' && strcmp(fieldName, "routingType")==0) return base+0;
     if (fieldName[0]=='m' && strcmp(fieldName, "msgType")==0) return base+1;
+    if (fieldName[0]=='t' && strcmp(fieldName, "tpList")==0) return base+2;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -1057,8 +1073,9 @@ const char *MsgTrackResultDescriptor::getFieldTypeString(void *object, int field
     static const char *fieldTypeStrings[] = {
         "int",
         "int",
+        "TargetPosList",
     };
-    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<3) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *MsgTrackResultDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -1100,6 +1117,7 @@ std::string MsgTrackResultDescriptor::getFieldAsString(void *object, int field, 
     switch (field) {
         case 0: return long2string(pp->getRoutingType());
         case 1: return long2string(pp->getMsgType());
+        case 2: {std::stringstream out; out << pp->getTpList(); return out.str();}
         default: return "";
     }
 }
@@ -1131,8 +1149,9 @@ const char *MsgTrackResultDescriptor::getFieldStructName(void *object, int field
     static const char *fieldStructNames[] = {
         NULL,
         NULL,
+        "TargetPosList",
     };
-    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<3) ? fieldStructNames[field] : NULL;
 }
 
 void *MsgTrackResultDescriptor::getFieldStructPointer(void *object, int field, int i) const
@@ -1145,6 +1164,7 @@ void *MsgTrackResultDescriptor::getFieldStructPointer(void *object, int field, i
     }
     MsgTrackResult *pp = (MsgTrackResult *)object; (void)pp;
     switch (field) {
+        case 2: return (void *)(&pp->getTpList()); break;
         default: return NULL;
     }
 }

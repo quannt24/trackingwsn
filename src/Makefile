@@ -166,7 +166,11 @@ depend:
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/applications/appbasestation.o: applications/appbasestation.cc \
-	applications/appbasestation.h
+	applications/appbasestation.h \
+	applications/estimator/targetpos.h \
+	applications/messagetracking_m.h \
+	networklayer/messagecr_m.h \
+	other/measurement.h
 $O/applications/appsensor.o: applications/appsensor.cc \
 	applications/appsensor.h \
 	applications/estimator/estimator.h \
@@ -183,6 +187,7 @@ $O/applications/meacoll.o: applications/meacoll.cc \
 	applications/meacoll.h \
 	other/measurement.h
 $O/applications/messagetracking_m.o: applications/messagetracking_m.cc \
+	applications/estimator/targetpos.h \
 	applications/messagetracking_m.h \
 	networklayer/messagecr_m.h \
 	other/measurement.h

@@ -19,12 +19,26 @@ Define_Module(AppBaseStation);
 
 void AppBaseStation::initialize()
 {
-    // TODO - Generated method body
 }
 
 void AppBaseStation::handleMessage(cMessage *msg)
 {
-    // TODO - Generated method body
-    EV << msg->getName() << "\n";
+    if (msg->getArrivalGate() == gate("netGate$i")) {
+        MsgTracking *m = check_and_cast<MsgTracking*>(msg);
+        recvMessage(m);
+    }
+}
+
+void AppBaseStation::recvMessage(MsgTracking *msg)
+{
+    if (msg->getMsgType() == MSG_TRACK_RESULT) {
+        EV << "Tracking result\n";
+        std::list<TargetPos> tpList = ((MsgTrackResult*) msg)->getTpList();
+        TargetPos tp;
+        for (std::list<TargetPos>::iterator it = tpList.begin(); it != tpList.end(); it++) {
+            tp = (*it);
+            EV << tp.getTarId() << ' ' << tp.getX() << ' ' << tp.getY() << '\n';
+        }
+    }
     delete msg;
 }

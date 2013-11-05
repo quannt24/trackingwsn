@@ -19,6 +19,16 @@ TargetPos::TargetPos(double x, double y)
     this->y = y;
 }
 
+int TargetPos::getTarId() const
+{
+    return tarId;
+}
+
+void TargetPos::setTarId(int tarId)
+{
+    this->tarId = tarId;
+}
+
 double TargetPos::getX() const
 {
     return x;

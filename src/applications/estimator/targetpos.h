@@ -14,12 +14,15 @@
 class TargetPos
 {
     private:
+        int tarId;
         double x;
         double y;
 
     public:
         TargetPos();
         TargetPos(double x, double y);
+        int getTarId() const;
+        void setTarId(int tarId);
         double getX() const;
         void setX(double x);
         double getY() const;

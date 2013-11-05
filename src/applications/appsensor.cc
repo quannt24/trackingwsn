@@ -236,6 +236,7 @@ void AppSensor::trackTargets()
             isCH = true; // This node is CH of at least one target
             // Estimate targets' positions
             TargetPos tp = est->estimate((*ite).meaList);
+            tp.setTarId((*ite).tarId); // Label the position with target's ID
             EV << "Estimated pos: " << tp.getX() << " ; " << tp.getY();
         }
     }
@@ -244,7 +245,7 @@ void AppSensor::trackTargets()
         getParentModule()->bubble("CH");
         // Send result to base station
         MsgTrackResult *msgResult = new MsgTrackResult();
-        // TODO Add tracked target's position
+        // TODO Add tracked target's position, set message size
         send(msgResult, "netGate$o");
     } else {
         getParentModule()->bubble("Nope");

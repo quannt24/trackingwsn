@@ -16,6 +16,7 @@
 #ifndef __TRACKINGWSN_LATERATION_H_
 #define __TRACKINGWSN_LATERATION_H_
 
+#include "estimator.h"
 #include "targetpos.h"
 #include "measurement.h"
 #include <omnetpp.h>
@@ -23,7 +24,7 @@
 /**
  * Lateration tracking algorithm
  */
-class Lateration : public cSimpleModule
+class Lateration : public Estimator
 {
     protected:
         virtual void initialize();

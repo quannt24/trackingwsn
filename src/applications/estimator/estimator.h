@@ -20,6 +20,8 @@
 #include "measurement.h"
 #include <omnetpp.h>
 
+enum EstimatorException {NOT_ENOUGH_MEASUREMENT};
+
 /**
  * Estimator for tracking position. This module work like a plug-in for application layer.
  */

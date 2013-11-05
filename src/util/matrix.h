@@ -41,6 +41,10 @@ class Matrix
         /* Multiply two matrices */
         Matrix operator*(const Matrix &mat);
 
+        /* Get number of rows */
+        int getRows();
+        /* Get number of columns */
+        int getCols();
         /* Get data in a cell */
         double getCell(int row, int col);
         /* Set data in a cell */

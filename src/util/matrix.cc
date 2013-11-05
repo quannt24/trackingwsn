@@ -149,6 +149,18 @@ Matrix Matrix::operator*(const Matrix &mat)
     return X;
 }
 
+/* Get number of rows */
+int Matrix::getRows()
+{
+    return rows;
+}
+
+/* Get number of columns */
+int Matrix::getCols()
+{
+    return cols;
+}
+
 /* Get data in a cell */
 double Matrix::getCell(int row, int col)
 {
@@ -166,7 +178,7 @@ void Matrix::setCell(int row, int col, double value)
 /* Get a transposed matrix */
 Matrix Matrix::transpose()
 {
-    Matrix X(this->rows, this->cols);
+    Matrix X(this->cols, this->rows);
     for (int r = 0; r < X.rows; r++)
         for (int c = 0; c < X.cols; c++)
             X.cell[r][c] = this->cell[c][r];

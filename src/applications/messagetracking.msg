@@ -54,6 +54,8 @@ packet MsgSenseResult extends MsgTracking {
     double nodePosX;
     double nodePosY;
     double nodeEnergy;
+    
+    // Message size should be calculated in application
 }
 
 // Message carries tracked positions of targets to send to base station
@@ -63,4 +65,6 @@ packet MsgTrackResult extends MsgTracking {
     
     // List of tracked result (positions of targets)
     TargetPosList tpList;
+    
+    // Message size should be calculated in application
 }

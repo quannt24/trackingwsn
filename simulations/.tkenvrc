@@ -1,4 +1,3 @@
 # Partial Tkenv config file -- see $HOME/.tkenvrc as well
 inspector "Wsn" "Wsn" "2" "713x712+0+25:normal"
-inspector "Wsn.bs" "BaseStation" "3" "580x269+622+183:normal"
 

@@ -177,7 +177,7 @@ void NetEMRP::requestRelay()
     pkt->setSrcMacAddr(getMacAddr());
     // No need to set desMacAddr here
 
-    pkt->setByteLength(86); // TODO hard code
+    pkt->setByteLength(pkt->getPkSize());
 
     send(pkt, "linkGate$o");
 }
@@ -205,7 +205,7 @@ void NetEMRP::sendRelayInfo(PacketEMRP *reqPkt)
     pkt->setPosY(mob->getX());
     pkt->setDBS(dBS);
 
-    pkt->setByteLength(86); // TODO hard code
+    pkt->setByteLength(pkt->getPkSize());
 
     send(pkt, "linkGate$o");
     delete reqPkt;
@@ -315,7 +315,7 @@ void NetEMRP::sendEnergyInfo(int addr)
 
     //ei->setEnergy(((Energy*) getParentModule()->getSubmodule("energy"))->getCapacity());
     ei->setConsumedEnergy(0.05); // TODO Calculate
-    ei->setByteLength(86); // TODO hard code
+    ei->setByteLength(ei->getPkSize()); // TODO hard code
 
     send(ei, "linkGate$o");
 }
@@ -403,7 +403,7 @@ void NetEMRP::sendMsgDown(MessageCR *msg)
     }
     pkt->setSrcMacAddr(getMacAddr());
 
-    pkt->setByteLength(18); // TODO hard code network header size
+    pkt->setByteLength(pkt->getPkSize());
     pkt->encapsulate(msg); // Packet length will be increased by message length
 
     send(pkt, "linkGate$o");

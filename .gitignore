@@ -4,3 +4,5 @@
 out/
 src/TrackingWSN
 simulations/.tkenvlog
+simulations/output/
+results/

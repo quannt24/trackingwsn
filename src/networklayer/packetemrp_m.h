@@ -44,6 +44,8 @@ enum PacketType {
  * <pre>
  * packet PacketEMRP extends Packet802154 {
  *     int pkType; 
+ *     
+ *     int pkSize = 18; 
  * }
  * </pre>
  */
@@ -51,6 +53,7 @@ class PacketEMRP : public ::Packet802154
 {
   protected:
     int pkType_var;
+    int pkSize_var;
 
   private:
     void copy(const PacketEMRP& other);
@@ -71,6 +74,8 @@ class PacketEMRP : public ::Packet802154
     // field getter/setter methods
     virtual int getPkType() const;
     virtual void setPkType(int pkType);
+    virtual int getPkSize() const;
+    virtual void setPkSize(int pkSize);
 };
 
 inline void doPacking(cCommBuffer *b, PacketEMRP& obj) {obj.parsimPack(b);}
@@ -86,6 +91,8 @@ inline void doUnpacking(cCommBuffer *b, PacketEMRP& obj) {obj.parsimUnpack(b);}
  *     double posX; 
  *     double posY; 
  *     double dBS; 
+ *     
+ *     pkSize = 35; 
  * }
  * </pre>
  */
@@ -137,6 +144,8 @@ inline void doUnpacking(cCommBuffer *b, PacketEMRP_RelayInfo& obj) {obj.parsimUn
  *     pkType = PK_ENERGY_INFO;
  *     double energy; 
  *     double consumedEnergy; 
+ *     
+ *     pkSize = 26; 
  * }
  * </pre>
  */

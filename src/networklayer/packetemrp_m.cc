@@ -45,6 +45,7 @@ Register_Class(PacketEMRP);
 PacketEMRP::PacketEMRP(const char *name, int kind) : Packet802154(name,kind)
 {
     this->pkType_var = 0;
+    this->pkSize_var = 18;
 }
 
 PacketEMRP::PacketEMRP(const PacketEMRP& other) : Packet802154(other)
@@ -67,18 +68,21 @@ PacketEMRP& PacketEMRP::operator=(const PacketEMRP& other)
 void PacketEMRP::copy(const PacketEMRP& other)
 {
     this->pkType_var = other.pkType_var;
+    this->pkSize_var = other.pkSize_var;
 }
 
 void PacketEMRP::parsimPack(cCommBuffer *b)
 {
     Packet802154::parsimPack(b);
     doPacking(b,this->pkType_var);
+    doPacking(b,this->pkSize_var);
 }
 
 void PacketEMRP::parsimUnpack(cCommBuffer *b)
 {
     Packet802154::parsimUnpack(b);
     doUnpacking(b,this->pkType_var);
+    doUnpacking(b,this->pkSize_var);
 }
 
 int PacketEMRP::getPkType() const
@@ -89,6 +93,16 @@ int PacketEMRP::getPkType() const
 void PacketEMRP::setPkType(int pkType)
 {
     this->pkType_var = pkType;
+}
+
+int PacketEMRP::getPkSize() const
+{
+    return pkSize_var;
+}
+
+void PacketEMRP::setPkSize(int pkSize)
+{
+    this->pkSize_var = pkSize;
 }
 
 class PacketEMRPDescriptor : public cClassDescriptor
@@ -138,7 +152,7 @@ const char *PacketEMRPDescriptor::getProperty(const char *propertyname) const
 int PacketEMRPDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 1+basedesc->getFieldCount(object) : 1;
+    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
 }
 
 unsigned int PacketEMRPDescriptor::getFieldTypeFlags(void *object, int field) const
@@ -151,8 +165,9 @@ unsigned int PacketEMRPDescriptor::getFieldTypeFlags(void *object, int field) co
     }
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<1) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
 }
 
 const char *PacketEMRPDescriptor::getFieldName(void *object, int field) const
@@ -165,8 +180,9 @@ const char *PacketEMRPDescriptor::getFieldName(void *object, int field) const
     }
     static const char *fieldNames[] = {
         "pkType",
+        "pkSize",
     };
-    return (field>=0 && field<1) ? fieldNames[field] : NULL;
+    return (field>=0 && field<2) ? fieldNames[field] : NULL;
 }
 
 int PacketEMRPDescriptor::findField(void *object, const char *fieldName) const
@@ -174,6 +190,7 @@ int PacketEMRPDescriptor::findField(void *object, const char *fieldName) const
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
     if (fieldName[0]=='p' && strcmp(fieldName, "pkType")==0) return base+0;
+    if (fieldName[0]=='p' && strcmp(fieldName, "pkSize")==0) return base+1;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -187,8 +204,9 @@ const char *PacketEMRPDescriptor::getFieldTypeString(void *object, int field) co
     }
     static const char *fieldTypeStrings[] = {
         "int",
+        "int",
     };
-    return (field>=0 && field<1) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *PacketEMRPDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -229,6 +247,7 @@ std::string PacketEMRPDescriptor::getFieldAsString(void *object, int field, int 
     PacketEMRP *pp = (PacketEMRP *)object; (void)pp;
     switch (field) {
         case 0: return long2string(pp->getPkType());
+        case 1: return long2string(pp->getPkSize());
         default: return "";
     }
 }
@@ -244,6 +263,7 @@ bool PacketEMRPDescriptor::setFieldAsString(void *object, int field, int i, cons
     PacketEMRP *pp = (PacketEMRP *)object; (void)pp;
     switch (field) {
         case 0: pp->setPkType(string2long(value)); return true;
+        case 1: pp->setPkSize(string2long(value)); return true;
         default: return false;
     }
 }
@@ -258,8 +278,9 @@ const char *PacketEMRPDescriptor::getFieldStructName(void *object, int field) co
     }
     static const char *fieldStructNames[] = {
         NULL,
+        NULL,
     };
-    return (field>=0 && field<1) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
 }
 
 void *PacketEMRPDescriptor::getFieldStructPointer(void *object, int field, int i) const
@@ -281,6 +302,7 @@ Register_Class(PacketEMRP_RelayInfo);
 PacketEMRP_RelayInfo::PacketEMRP_RelayInfo(const char *name, int kind) : PacketEMRP(name,kind)
 {
     this->setPkType(PK_RELAY_INFO);
+    this->setPkSize(35);
 
     this->bsFlag_var = 0;
     this->energy_var = 0;
@@ -603,6 +625,7 @@ Register_Class(PacketEMRP_EnergyInfo);
 PacketEMRP_EnergyInfo::PacketEMRP_EnergyInfo(const char *name, int kind) : PacketEMRP(name,kind)
 {
     this->setPkType(PK_ENERGY_INFO);
+    this->setPkSize(26);
 
     this->energy_var = 0;
     this->consumedEnergy_var = 0;

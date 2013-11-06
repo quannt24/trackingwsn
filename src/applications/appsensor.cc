@@ -91,9 +91,10 @@ void AppSensor::sendSenseResult()
     msgResult->setMeaList(meaList);
 
     /* Set message size
-     * Each measurement contains target ID + measuredDistance will have size of 2 + 8 bytes
-     * Node info will have size of 8 + 8 + 8 bytes */
-    msgResult->setMsgSize(msgResult->getMsgSize() + 24 + 10 * meaList.size());
+     * Each measurement contains target ID + measuredDistance will have size of 1 + 8 bytes
+     * Node info will have size of 4 + 4 + 4 bytes for x, y, energy. */
+    msgResult->setMsgSize(msgResult->getMsgSize() + 12 + 9 * meaList.size());
+    msgResult->setByteLength(msgResult->getMsgSize());
     send(msgResult, "netGate$o");
 }
 
@@ -110,6 +111,7 @@ void AppSensor::recvSenseResult(SensedResult *result)
         if (!syncSense) {
             EV << "Synchronizing sensing\n";
             MsgSyncRequest *notify = new MsgSyncRequest("SyncRequest");
+            notify->setByteLength(notify->getMsgSize());
             send(notify, "netGate$o");
             syncSense = true;
             // Do nothing except change to synchronized state
@@ -249,11 +251,12 @@ void AppSensor::trackTargets()
         MsgTrackResult *msgTrackResult = new MsgTrackResult();
         msgTrackResult->setTpList(tpList);
         /* Set message size
-         * Each TargetPos contains target ID + x + y will have size of 2 + 8 + 8 bytes */
-        msgTrackResult->setMsgSize(msgTrackResult->getMsgSize() + 18 * tpList.size());
+         * Each TargetPos contains target ID + x + y will have size of 1 + 8 + 8 bytes */
+        msgTrackResult->setMsgSize(msgTrackResult->getMsgSize() + 17 * tpList.size());
+        msgTrackResult->setByteLength(msgTrackResult->getMsgSize());
         // Send result to base station
         send(msgTrackResult, "netGate$o");
     } else {
-        getParentModule()->bubble("Nope");
+        getParentModule()->bubble("Non-CH");
     }
 }

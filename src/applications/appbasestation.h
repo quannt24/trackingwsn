@@ -25,7 +25,11 @@
 class AppBaseStation : public cSimpleModule
 {
     private:
+        simsignal_t trackResultSignal;
+
         void recvMessage(MsgTracking *msg);
+        void output(int tarId, double x, double y);
+
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);

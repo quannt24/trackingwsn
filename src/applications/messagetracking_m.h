@@ -134,6 +134,8 @@ inline void doUnpacking(cCommBuffer *b, MsgSyncRequest& obj) {obj.parsimUnpack(b
  *     double nodePosX;
  *     double nodePosY;
  *     double nodeEnergy;
+ *     
+ *     
  * }
  * </pre>
  */
@@ -191,6 +193,8 @@ inline void doUnpacking(cCommBuffer *b, MsgSenseResult& obj) {obj.parsimUnpack(b
  *     
  *     
  *     TargetPosList tpList;
+ *     
+ *     
  * }
  * </pre>
  */

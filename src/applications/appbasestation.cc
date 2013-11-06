@@ -14,11 +14,15 @@
 // 
 
 #include "appbasestation.h"
+#include <sstream>
+#include <iostream>
+#include <fstream>
 
 Define_Module(AppBaseStation);
 
 void AppBaseStation::initialize()
 {
+    trackResultSignal = registerSignal("TrackResult");
 }
 
 void AppBaseStation::handleMessage(cMessage *msg)
@@ -38,7 +42,25 @@ void AppBaseStation::recvMessage(MsgTracking *msg)
         for (std::list<TargetPos>::iterator it = tpList.begin(); it != tpList.end(); it++) {
             tp = (*it);
             EV << tp.getTarId() << ' ' << tp.getX() << ' ' << tp.getY() << '\n';
+            // Output tracking result to file
+            output(tp.getTarId(), tp.getX(), tp.getY());
         }
     }
     delete msg;
+}
+
+void AppBaseStation::output(int tarId, double x, double y)
+{
+    using namespace std;
+
+    stringstream ssOut;
+    ssOut << "output/bs-output-" << tarId << ".txt";
+
+    ofstream out(ssOut.str().c_str(), ios::app);
+    if (!out) {
+        cerr << "BaseStation: Cannot output to file\n";
+        return;
+    }
+    out << x << ' ' << y << '\n';
+    out.close();
 }

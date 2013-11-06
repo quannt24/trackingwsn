@@ -30,16 +30,20 @@ enum PacketType {
 // EMRP network packet
 packet PacketEMRP extends Packet802154 {
     int pkType; // Packet type
+    
+    int pkSize = 18; // 17 bytes from 3 fields of Packet802154 + 1 byte pkType
 }
 
 // EMRP relay info packet
 packet PacketEMRP_RelayInfo extends PacketEMRP {
     pkType = PK_RELAY_INFO;
-    bool bsFlag; // Flag on if sender is base station
-    double energy; // Current energy
+    bool bsFlag; // Flag on if sender is base station, 1 byte
+    double energy; // Current energy, 4 bytes
     double posX; // Coordination x in meter
     double posY; // Coordination y in meter
     double dBS; // Distance to base station
+    
+    pkSize = 35; // 18 + 17
 }
 
 // EMRP energy report packet
@@ -47,4 +51,6 @@ packet PacketEMRP_EnergyInfo extends PacketEMRP {
     pkType = PK_ENERGY_INFO;
     double energy; // Current energy
     double consumedEnergy; // Predicted energy to send relayed packet
+    
+    pkSize = 26; // 18 + 8
 }

@@ -100,8 +100,9 @@ void Ass::reqTargets()
 
 void Ass::recvSenseData(SensedSignal* sig)
 {
+    double noiseRange = sig->getDistance() * 0.2;
     Measurement m(sig->getTarId(),
-            sig->getDistance()); // TODO Add noise to distance
+            sig->getDistance() + uniform(-noiseRange, noiseRange)); // TODO Add noise to distance
     meaList.push_back(m);
     nMeasurement++;
     if (nMeasurement == nSensedTarget) {

@@ -39,6 +39,7 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc and .msg files
 OBJS = \
+    $O/applications/targetposvectorset.o \
     $O/applications/appbasestation.o \
     $O/applications/appsensor.o \
     $O/applications/meacoll.o \
@@ -54,6 +55,7 @@ OBJS = \
     $O/other/ass.o \
     $O/util/matrix.o \
     $O/util/worldutil.o \
+    $O/util/gaussiannoise.o \
     $O/util/channelutil.o \
     $O/applications/messagetracking_m.o \
     $O/linklayer/packet802154_m.o \
@@ -169,6 +171,7 @@ $O/applications/appbasestation.o: applications/appbasestation.cc \
 	applications/appbasestation.h \
 	applications/estimator/targetpos.h \
 	applications/messagetracking_m.h \
+	applications/targetposvectorset.h \
 	networklayer/messagecr_m.h \
 	other/measurement.h
 $O/applications/appsensor.o: applications/appsensor.cc \
@@ -191,6 +194,8 @@ $O/applications/messagetracking_m.o: applications/messagetracking_m.cc \
 	applications/messagetracking_m.h \
 	networklayer/messagecr_m.h \
 	other/measurement.h
+$O/applications/targetposvectorset.o: applications/targetposvectorset.cc \
+	applications/targetposvectorset.h
 $O/applications/estimator/estimator.o: applications/estimator/estimator.cc \
 	applications/estimator/estimator.h \
 	applications/estimator/targetpos.h \
@@ -273,6 +278,8 @@ $O/util/channelutil.o: util/channelutil.cc \
 	mobility/mobility.h \
 	util/channelutil.h \
 	util/worldutil.h
+$O/util/gaussiannoise.o: util/gaussiannoise.cc \
+	util/gaussiannoise.h
 $O/util/matrix.o: util/matrix.cc \
 	util/matrix.h
 $O/util/worldutil.o: util/worldutil.cc \

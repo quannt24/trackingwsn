@@ -17,6 +17,7 @@
 #define __TRACKINGWSN_APPBASESTATION_H_
 
 #include "messagetracking_m.h"
+#include "targetposvectorset.h"
 #include <omnetpp.h>
 
 /**
@@ -25,12 +26,12 @@
 class AppBaseStation : public cSimpleModule
 {
     private:
-        simsignal_t trackResultSignal;
+        std::list<TargetPosVectorSet*> tpvsList;
 
         void recvMessage(MsgTracking *msg);
-        void output(int tarId, double x, double y);
 
     protected:
+        ~AppBaseStation();
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
 };

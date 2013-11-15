@@ -20,9 +20,25 @@
 
 Define_Module(AppBaseStation);
 
+AppBaseStation::~AppBaseStation()
+{
+    for (std::list<TargetPosVectorSet*>::iterator tpvsIt = tpvsList.begin(); tpvsIt != tpvsList.end(); tpvsIt++) {
+        delete *tpvsIt;
+    }
+}
+
 void AppBaseStation::initialize()
 {
-    trackResultSignal = registerSignal("TrackResult");
+    cModule *wsn = simulation.getModuleByPath("Wsn");
+    cModule *tar;
+    int i;
+
+    // Prepare output vectors
+    for (i = 0; i < wsn->par("numTargets").longValue(); i++) {
+        tar = wsn->getSubmodule("target", i);
+        TargetPosVectorSet *tpvs = new TargetPosVectorSet(tar->getId());
+        tpvsList.push_back(tpvs);
+    }
 }
 
 void AppBaseStation::handleMessage(cMessage *msg)
@@ -39,28 +55,21 @@ void AppBaseStation::recvMessage(MsgTracking *msg)
         EV << "Tracking result\n";
         std::list<TargetPos> tpList = ((MsgTrackResult*) msg)->getTpList();
         TargetPos tp;
+        TargetPosVectorSet *tpvs;
+
         for (std::list<TargetPos>::iterator it = tpList.begin(); it != tpList.end(); it++) {
-            tp = (*it);
+            tp = *it;
+
+            // Record tracked target position
             EV << tp.getTarId() << ' ' << tp.getX() << ' ' << tp.getY() << '\n';
-            // Output tracking result to file
-            output(tp.getTarId(), tp.getX(), tp.getY());
+            for (std::list<TargetPosVectorSet*>::iterator tpvsIt = tpvsList.begin(); tpvsIt != tpvsList.end(); tpvsIt++) {
+                tpvs = *tpvsIt;
+                if (tpvs->getTarId() == tp.getTarId()) {
+                    tpvs->record(tp.getX(), tp.getY());
+                    break;
+                }
+            }
         }
     }
     delete msg;
-}
-
-void AppBaseStation::output(int tarId, double x, double y)
-{
-    using namespace std;
-
-    stringstream ssOut;
-    ssOut << "output/bs-output-" << tarId << ".txt";
-
-    ofstream out(ssOut.str().c_str(), ios::app);
-    if (!out) {
-        cerr << "BaseStation: Cannot output to file\n";
-        return;
-    }
-    out << x << ' ' << y << '\n';
-    out.close();
 }

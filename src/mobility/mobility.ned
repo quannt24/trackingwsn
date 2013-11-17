@@ -30,7 +30,7 @@ simple Mobility
         // Parameters for moving Entity
         string pathFile = default("../simulations/path_1.txt"); // File that storing moving path
         double startMovingTime = default(0); // Time for start moving (from start of simulation)
-        double movingTimeStep = default(0.5); // Time for "jumping to next point" in the path
+        double movingTimeStep = default(0.25); // Time for "jumping to next point" in the path
 
         @display("i=block/cogwheel");
 }

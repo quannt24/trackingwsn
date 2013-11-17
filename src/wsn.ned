@@ -28,7 +28,7 @@ network Wsn
         int ssCols; // Number of sensor columns
         // Note: First ssRows * ssCols sensors will be arranged, the rest is randomly distributed
 
-        @display("bgs=2,m;bgb=$width,$height;"); // 1m ~ 2px
+        @display("bgs=3,m;bgb=$width,$height;"); // 1m ~ 3px
 
     submodules:
         target[numTargets]: Target;

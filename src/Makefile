@@ -247,6 +247,7 @@ $O/other/asg.o: other/asg.cc \
 	other/measurement.h \
 	other/sensedsignal_m.h \
 	other/sensereq_m.h \
+	util/gaussiannoise.h \
 	util/worldutil.h
 $O/other/ass.o: other/ass.cc \
 	energy/energy.h \
@@ -257,6 +258,7 @@ $O/other/ass.o: other/ass.cc \
 	other/sensedresult_m.h \
 	other/sensedsignal_m.h \
 	other/sensereq_m.h \
+	util/gaussiannoise.h \
 	util/worldutil.h
 $O/other/measurement.o: other/measurement.cc \
 	other/measurement.h
@@ -270,7 +272,8 @@ $O/other/sensereq_m.o: other/sensereq_m.cc \
 	other/ass.h \
 	other/measurement.h \
 	other/sensedsignal_m.h \
-	other/sensereq_m.h
+	other/sensereq_m.h \
+	util/gaussiannoise.h
 $O/util/channelutil.o: util/channelutil.cc \
 	linklayer/frame802154_m.h \
 	linklayer/link802154.h \

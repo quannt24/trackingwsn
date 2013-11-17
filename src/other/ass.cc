@@ -26,6 +26,8 @@ Define_Module(Ass);
 
 void Ass::initialize()
 {
+    // TODO Configure noise
+    noise = new GaussianNoise(0, simulation.getModuleByPath("Wsn.target[0]")->par("range").doubleValue() / 25);
     nSensedTarget = 0;
     nMeasurement = 0;
 }
@@ -64,6 +66,7 @@ Ass::Ass()
 Ass::~Ass()
 {
     cancelAndDelete(responseTimer);
+    delete noise;
 }
 
 /*
@@ -100,9 +103,7 @@ void Ass::reqTargets()
 
 void Ass::recvSenseData(SensedSignal* sig)
 {
-    double noiseRange = sig->getDistance() * 0.2;
-    Measurement m(sig->getTarId(),
-            sig->getDistance() + uniform(-noiseRange, noiseRange)); // TODO Add noise to distance
+    Measurement m(sig->getTarId(), sig->getDistance() + noise->nextNoise());
     meaList.push_back(m);
     nMeasurement++;
     if (nMeasurement == nSensedTarget) {

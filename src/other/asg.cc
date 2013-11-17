@@ -23,7 +23,6 @@ Define_Module(Asg);
 
 void Asg::initialize()
 {
-    // TODO - Generated method body
 }
 
 void Asg::handleMessage(cMessage *msg)

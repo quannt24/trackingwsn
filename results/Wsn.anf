@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="/TrackingWSN/simulations/results/Wsn-*.vec"/>
+    <inputs name="/TrackingWSN/simulations/results/Wsn-*.sca"/>
+  </inputs>
+  <datasets>
+    <datasets name="BS-Output-Target-ID2-Pos">
+      <items xsi:type="scave:Add" filterPattern="tracked_tid2_*" type="VECTOR"/>
+      <items xsi:type="scave:ScatterChart" name="Tracked-TID2-pos" xDataPattern="module(Wsn.bs.app) AND name(tracked_tid2_x)">
+        <properties name="Graph.Title" value="Tracked-Target-ID2-pos"/>
+        <properties name="X.Axis.Title" value="x"/>
+        <properties name="Y.Axis.Title" value="y"/>
+      </items>
+    </datasets>
+    <datasets name="BS-Output-Target-ID3-Pos">
+      <items xsi:type="scave:Add" filterPattern="tracked_tid3_*" type="VECTOR"/>
+      <items xsi:type="scave:ScatterChart" name="Tracked-TID3-Pos" xDataPattern="module(Wsn.bs.app) AND name(tracked_tid3_x)">
+        <properties name="Graph.Title" value="Tracked-Target-ID3-Pos"/>
+        <properties name="X.Axis.Title" value="x"/>
+        <properties name="Y.Axis.Title" value="y"/>
+      </items>
+    </datasets>
+    <datasets name="Entity-ID2-Pos">
+      <items xsi:type="scave:Add" filterPattern="id2_*" type="VECTOR"/>
+      <items xsi:type="scave:ScatterChart" name="Entity-ID2-Pos" xDataPattern="module(Wsn.target[0].mobility) AND name(id2_x)">
+        <properties name="Graph.Title" value="Entity-ID2-Pos"/>
+        <properties name="X.Axis.Title" value="x"/>
+        <properties name="Y.Axis.Title" value="y"/>
+      </items>
+    </datasets>
+    <datasets name="Entity-ID3-Pos">
+      <items xsi:type="scave:Add" filterPattern="id3_*" type="VECTOR"/>
+      <items xsi:type="scave:ScatterChart" name="Entity-ID3-Pos" xDataPattern="module(Wsn.target[1].mobility) AND name(id3_x)">
+        <properties name="Graph.Title" value="Entity-ID3-Pos"/>
+        <properties name="X.Axis.Title" value="x"/>
+        <properties name="Y.Axis.Title" value="y"/>
+      </items>
+    </datasets>
+  </datasets>
+  <chartSheets>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.2/@items.1 //@datasets/@datasets.3/@items.1"/>
+  </chartSheets>
+</scave:Analysis>

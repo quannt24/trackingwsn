@@ -33,6 +33,8 @@ class Mobility : public cSimpleModule
         int pathLen; // Number of point in path
         int posId; // Current index in path array
         int loadPath(); // Load path from file to coordinate arrays
+        cOutVector *vecPosX = NULL;
+        cOutVector *vecPosY = NULL;
 
     protected:
         virtual void initialize();

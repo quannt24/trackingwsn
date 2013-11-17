@@ -22,12 +22,10 @@ Define_Module(ChannelUtil);
 
 void ChannelUtil::initialize()
 {
-    // TODO - Generated method body
 }
 
 void ChannelUtil::handleMessage(cMessage *msg)
 {
-    // TODO - Generated method body
 }
 
 ChannelUtil::ChannelUtil()
@@ -99,8 +97,7 @@ bool ChannelUtil::hasCollision(Link802154 *host)
  * host will be removed from the acquiring list of the ChannelUtil object; this is for programming
  * purpose only, because in reality, the channel will be busy the next time these hosts sense.
  * If there are some hosts kicked out (usually when issuing host has larger txRange than them),
- * they may still transmitting data and collisions may occurs. TODO Collisions simulation is not
- * implemented.
+ * they may still transmitting data and collisions may occurs.
  */
 int ChannelUtil::acquireChannel(Link802154 *host)
 {

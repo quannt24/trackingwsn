@@ -38,9 +38,9 @@ void TargetPosVectorSet::setTarId(int tarId)
     char vecName[100];
 
     // Set vector names
-    sprintf(vecName, "target_%d_tracked_x", tarId);
+    sprintf(vecName, "tracked_tid%d_x", tarId);
     vecPosX->setName(vecName);
-    sprintf(vecName, "target_%d_tracked_y", tarId);
+    sprintf(vecName, "tracked_tid%d_y", tarId);
     vecPosY->setName(vecName);
 }
 

@@ -20,6 +20,12 @@ Define_Module(Mobility);
 
 void Mobility::initialize()
 {
+    char vecName[100];
+    sprintf(vecName, "id%d_x", getParentModule()->getId());
+    vecPosX = new cOutVector(vecName);
+    sprintf(vecName, "id%d_y", getParentModule()->getId());
+    vecPosY = new cOutVector(vecName);
+
     if (par("moving").boolValue()) {
         // Load path from file
         pathLen = loadPath();
@@ -31,6 +37,9 @@ void Mobility::initialize()
         posId = 0;
         setX(xArr[posId]);
         setY(yArr[posId]);
+        // Record position
+        vecPosX->record(getX());
+        vecPosY->record(getY());
 
         // Schedule first move
         scheduleAt(par("startMovingTime").doubleValue(), moveMsg);
@@ -51,6 +60,10 @@ void Mobility::handleMessage(cMessage *msg)
     posId++;
     setX(xArr[posId]);
     setY(yArr[posId]);
+    // Record position
+    vecPosX->record(getX());
+    vecPosY->record(getY());
+
     updateDisplay();
     if (posId < pathLen - 1) scheduleAt(simTime() + par("movingTimeStep").doubleValue(), msg);
 }
@@ -67,6 +80,8 @@ Mobility::~Mobility()
     cancelAndDelete(moveMsg);
     delete xArr;
     delete yArr;
+    delete vecPosX;
+    delete vecPosY;
 }
 
 double Mobility::getX()

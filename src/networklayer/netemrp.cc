@@ -16,7 +16,7 @@
 #include "netemrp.h"
 #include "packetemrp_m.h"
 #include "messagecr_m.h"
-#include "link802154.h" // TODO This should be module interface
+#include "link802154.h"
 #include "energy.h"
 #include "mobility.h"
 #include "worldutil.h"
@@ -315,7 +315,7 @@ void NetEMRP::sendEnergyInfo(int addr)
 
     //ei->setEnergy(((Energy*) getParentModule()->getSubmodule("energy"))->getCapacity());
     ei->setConsumedEnergy(0.05); // TODO Calculate
-    ei->setByteLength(ei->getPkSize()); // TODO hard code
+    ei->setByteLength(ei->getPkSize());
 
     send(ei, "linkGate$o");
 }

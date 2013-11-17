@@ -30,7 +30,6 @@ void WorldUtil::initialize()
 
 void WorldUtil::handleMessage(cMessage *msg)
 {
-    // TODO - Generated method body
 }
 
 /*

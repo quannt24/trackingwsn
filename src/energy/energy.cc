@@ -44,6 +44,7 @@ void Energy::setCapacity(double cap)
         capacity = cap;
     else
         capacity = 0;
+
     emit(energyDrawSignal, capacity);
 }
 

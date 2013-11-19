@@ -16,13 +16,15 @@
 package trackingwsn.util;
 
 //
-// Utility module for checking status of channel, used to simulate channel sensing. Each instance
-// of this module can be used to track the using of a channel (just like a register table, no
-// mechanism to control the behaviors of other modules is provided).
-// Other modules should register with this module if they are going to use/release channel; and
-// they can check the status of the channel.
+// Statistics Collector
 //
-simple ChannelUtil
+simple StatCollector
 {
-    @display("i=block/network;is=s");
+    parameters:
+        double pollTSEInterval = default(0.5);
+
+        @signal[total_sensor_energy](type="double");
+        @statistic[totalEnergy](title="Total energy"; source="total_sensor_energy"; record=vector);
+
+        @display("i=block/table2;is=s");
 }

@@ -54,6 +54,7 @@ OBJS = \
     $O/sensors/measurement.o \
     $O/sensors/ass.o \
     $O/util/matrix.o \
+    $O/util/statcollector.o \
     $O/util/worldutil.o \
     $O/util/gaussiannoise.o \
     $O/util/channelutil.o \
@@ -285,6 +286,9 @@ $O/util/gaussiannoise.o: util/gaussiannoise.cc \
 	util/gaussiannoise.h
 $O/util/matrix.o: util/matrix.cc \
 	util/matrix.h
+$O/util/statcollector.o: util/statcollector.cc \
+	energy/energy.h \
+	util/statcollector.h
 $O/util/worldutil.o: util/worldutil.cc \
 	linklayer/frame802154_m.h \
 	linklayer/link802154.h \

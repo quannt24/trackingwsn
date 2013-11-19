@@ -39,6 +39,13 @@ network Wsn
                 mobility.posY = height;
         }
         // These following modules are intended to initialize afterward
-        wu: WorldUtil;
-        cu: ChannelUtil;
+        wu: WorldUtil {
+            @display("p=-20,10");
+        }
+        cu: ChannelUtil {
+            @display("p=-20,40");
+        }
+        sc: StatCollector {
+            @display("p=-20,70");
+        }
 }

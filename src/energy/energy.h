@@ -26,11 +26,14 @@ class Energy : public cSimpleModule
     private:
         double capacity; // In J, non-negative
         simsignal_t energyDrawSignal;
+
+        void setCapacity(double cap);
+
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
+
     public:
-        void setCapacity(double cap);
         double getCapacity();
         double draw(double amount);
 };

@@ -13,16 +13,29 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.util;
+#ifndef __TRACKINGWSN_STATCOLLECTOR_H_
+#define __TRACKINGWSN_STATCOLLECTOR_H_
 
-//
-// Utility module for checking status of channel, used to simulate channel sensing. Each instance
-// of this module can be used to track the using of a channel (just like a register table, no
-// mechanism to control the behaviors of other modules is provided).
-// Other modules should register with this module if they are going to use/release channel; and
-// they can check the status of the channel.
-//
-simple ChannelUtil
+#include <omnetpp.h>
+
+/**
+ * Statistics Collector
+ */
+class StatCollector : public cSimpleModule
 {
-    @display("i=block/network;is=s");
-}
+    private:
+        cMessage *pollTSE; // Timer for polling total sensor energy
+        simsignal_t totalSensorEnergySignal;
+
+    protected:
+        virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
+
+    public:
+        StatCollector();
+        ~StatCollector();
+        /* Calculate total energy and emit it */
+        void pollTotalSensorEnergy();
+};
+
+#endif

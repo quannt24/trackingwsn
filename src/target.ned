@@ -16,7 +16,7 @@
 package trackingwsn;
 
 import trackingwsn.nodes.Entity;
-import trackingwsn.other.Asg;
+import trackingwsn.sensors.Asg;
 
 //
 // Target to be tracked

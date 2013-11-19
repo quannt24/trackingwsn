@@ -23,7 +23,7 @@ INCLUDE_PATH = \
     -Imobility \
     -Inetworklayer \
     -Inodes \
-    -Iother \
+    -Isensors \
     -Iutil
 
 # Additional object and library files to link with
@@ -50,9 +50,9 @@ OBJS = \
     $O/linklayer/link802154.o \
     $O/mobility/mobility.o \
     $O/networklayer/netemrp.o \
-    $O/other/asg.o \
-    $O/other/measurement.o \
-    $O/other/ass.o \
+    $O/sensors/asg.o \
+    $O/sensors/measurement.o \
+    $O/sensors/ass.o \
     $O/util/matrix.o \
     $O/util/worldutil.o \
     $O/util/gaussiannoise.o \
@@ -62,9 +62,9 @@ OBJS = \
     $O/linklayer/frame802154_m.o \
     $O/networklayer/packetemrp_m.o \
     $O/networklayer/messagecr_m.o \
-    $O/other/sensedresult_m.o \
-    $O/other/sensereq_m.o \
-    $O/other/sensedsignal_m.o
+    $O/sensors/sensedresult_m.o \
+    $O/sensors/sensereq_m.o \
+    $O/sensors/sensedsignal_m.o
 
 # Message files
 MSGFILES = \
@@ -73,9 +73,9 @@ MSGFILES = \
     linklayer/frame802154.msg \
     networklayer/packetemrp.msg \
     networklayer/messagecr.msg \
-    other/sensedresult.msg \
-    other/sensereq.msg \
-    other/sensedsignal.msg
+    sensors/sensedresult.msg \
+    sensors/sensereq.msg \
+    sensors/sensedsignal.msg
 
 #------------------------------------------------------------------------------
 
@@ -156,7 +156,7 @@ clean:
 	$(Q)-rm -f mobility/*_m.cc mobility/*_m.h
 	$(Q)-rm -f networklayer/*_m.cc networklayer/*_m.h
 	$(Q)-rm -f nodes/*_m.cc nodes/*_m.h
-	$(Q)-rm -f other/*_m.cc other/*_m.h
+	$(Q)-rm -f sensors/*_m.cc sensors/*_m.h
 	$(Q)-rm -f util/*_m.cc util/*_m.h
 
 cleanall: clean
@@ -164,7 +164,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc applications/estimator/*.cc energy/*.cc linklayer/*.cc mobility/*.cc networklayer/*.cc nodes/*.cc other/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc applications/estimator/*.cc energy/*.cc linklayer/*.cc mobility/*.cc networklayer/*.cc nodes/*.cc sensors/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/applications/appbasestation.o: applications/appbasestation.cc \
@@ -173,7 +173,7 @@ $O/applications/appbasestation.o: applications/appbasestation.cc \
 	applications/messagetracking_m.h \
 	applications/targetposvectorset.h \
 	networklayer/messagecr_m.h \
-	other/measurement.h
+	sensors/measurement.h
 $O/applications/appsensor.o: applications/appsensor.cc \
 	applications/appsensor.h \
 	applications/estimator/estimator.h \
@@ -184,27 +184,27 @@ $O/applications/appsensor.o: applications/appsensor.cc \
 	mobility/mobility.h \
 	msgkind.h \
 	networklayer/messagecr_m.h \
-	other/measurement.h \
-	other/sensedresult_m.h
+	sensors/measurement.h \
+	sensors/sensedresult_m.h
 $O/applications/meacoll.o: applications/meacoll.cc \
 	applications/meacoll.h \
-	other/measurement.h
+	sensors/measurement.h
 $O/applications/messagetracking_m.o: applications/messagetracking_m.cc \
 	applications/estimator/targetpos.h \
 	applications/messagetracking_m.h \
 	networklayer/messagecr_m.h \
-	other/measurement.h
+	sensors/measurement.h
 $O/applications/targetposvectorset.o: applications/targetposvectorset.cc \
 	applications/targetposvectorset.h
 $O/applications/estimator/estimator.o: applications/estimator/estimator.cc \
 	applications/estimator/estimator.h \
 	applications/estimator/targetpos.h \
-	other/measurement.h
+	sensors/measurement.h
 $O/applications/estimator/lateration.o: applications/estimator/lateration.cc \
 	applications/estimator/estimator.h \
 	applications/estimator/lateration.h \
 	applications/estimator/targetpos.h \
-	other/measurement.h \
+	sensors/measurement.h \
 	util/matrix.h
 $O/applications/estimator/targetpos.o: applications/estimator/targetpos.cc \
 	applications/estimator/targetpos.h
@@ -239,40 +239,40 @@ $O/networklayer/netemrp.o: networklayer/netemrp.cc \
 $O/networklayer/packetemrp_m.o: networklayer/packetemrp_m.cc \
 	linklayer/packet802154_m.h \
 	networklayer/packetemrp_m.h
-$O/other/asg.o: other/asg.cc \
+$O/sensors/asg.o: sensors/asg.cc \
 	mobility/mobility.h \
 	msgkind.h \
-	other/asg.h \
-	other/ass.h \
-	other/measurement.h \
-	other/sensedsignal_m.h \
-	other/sensereq_m.h \
+	sensors/asg.h \
+	sensors/ass.h \
+	sensors/measurement.h \
+	sensors/sensedsignal_m.h \
+	sensors/sensereq_m.h \
 	util/gaussiannoise.h \
 	util/worldutil.h
-$O/other/ass.o: other/ass.cc \
+$O/sensors/ass.o: sensors/ass.cc \
 	energy/energy.h \
 	mobility/mobility.h \
 	msgkind.h \
-	other/ass.h \
-	other/measurement.h \
-	other/sensedresult_m.h \
-	other/sensedsignal_m.h \
-	other/sensereq_m.h \
+	sensors/ass.h \
+	sensors/measurement.h \
+	sensors/sensedresult_m.h \
+	sensors/sensedsignal_m.h \
+	sensors/sensereq_m.h \
 	util/gaussiannoise.h \
 	util/worldutil.h
-$O/other/measurement.o: other/measurement.cc \
-	other/measurement.h
-$O/other/sensedresult_m.o: other/sensedresult_m.cc \
-	other/measurement.h \
-	other/sensedresult_m.h
-$O/other/sensedsignal_m.o: other/sensedsignal_m.cc \
-	other/sensedsignal_m.h
-$O/other/sensereq_m.o: other/sensereq_m.cc \
+$O/sensors/measurement.o: sensors/measurement.cc \
+	sensors/measurement.h
+$O/sensors/sensedresult_m.o: sensors/sensedresult_m.cc \
+	sensors/measurement.h \
+	sensors/sensedresult_m.h
+$O/sensors/sensedsignal_m.o: sensors/sensedsignal_m.cc \
+	sensors/sensedsignal_m.h
+$O/sensors/sensereq_m.o: sensors/sensereq_m.cc \
 	mobility/mobility.h \
-	other/ass.h \
-	other/measurement.h \
-	other/sensedsignal_m.h \
-	other/sensereq_m.h \
+	sensors/ass.h \
+	sensors/measurement.h \
+	sensors/sensedsignal_m.h \
+	sensors/sensereq_m.h \
 	util/gaussiannoise.h
 $O/util/channelutil.o: util/channelutil.cc \
 	linklayer/frame802154_m.h \

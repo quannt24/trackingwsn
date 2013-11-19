@@ -13,16 +13,18 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.other;
+package trackingwsn.sensors;
 
 //
-// Acoustic Signal Generator
+// Acoustic signal sensor
 //
-simple Asg
+simple Ass
 {
     parameters:
-        double ssRange @unit(m);
-        @display("i=block/wtx");
+        double responseDelay = default(0.05);
+        @display("i=block/wrx");
+
     gates:
-        input reqIn @directIn; // Gate for receiving sensing request
+        input sigIn @directIn; // Gate for receiving target's signal
+        inout appGate;
 }

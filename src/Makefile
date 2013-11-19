@@ -173,6 +173,9 @@ $O/applications/appbasestation.o: applications/appbasestation.cc \
 	applications/estimator/targetpos.h \
 	applications/messagetracking_m.h \
 	applications/targetposvectorset.h \
+	linklayer/frame802154_m.h \
+	linklayer/link802154.h \
+	linklayer/packet802154_m.h \
 	networklayer/messagecr_m.h \
 	sensors/measurement.h
 $O/applications/appsensor.o: applications/appsensor.cc \
@@ -182,6 +185,9 @@ $O/applications/appsensor.o: applications/appsensor.cc \
 	applications/meacoll.h \
 	applications/messagetracking_m.h \
 	energy/energy.h \
+	linklayer/frame802154_m.h \
+	linklayer/link802154.h \
+	linklayer/packet802154_m.h \
 	mobility/mobility.h \
 	msgkind.h \
 	networklayer/messagecr_m.h \

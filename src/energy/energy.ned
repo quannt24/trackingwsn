@@ -25,7 +25,7 @@ simple Energy
         double initCap @unit(J) = default(10J); // Initial capacity
         
         @signal[energy_draw](type="double");
-        @statistic[energy](title="energy"; source="energy_draw"; record=vector);
+        //@statistic[energy](title="energy"; source="energy_draw"; record=vector);
         
         @display("i=block/plug");
 }

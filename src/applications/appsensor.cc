@@ -16,6 +16,7 @@
 #include "appsensor.h"
 #include "messagetracking_m.h"
 #include "msgkind.h"
+#include "link802154.h"
 #include "mobility.h"
 #include "energy.h"
 #include "estimator.h"
@@ -27,6 +28,10 @@ void AppSensor::initialize()
 {
     // TODO Test Start sensing
     scheduleAt(22 + uniform(0, 5), senseTimer);
+
+    // Turn on tranceiver
+    Link802154 *link = check_and_cast<Link802154*>(getParentModule()->getSubmodule("link"));
+    link->setRadioMode(RADIO_ON);
 }
 
 void AppSensor::handleMessage(cMessage *msg)

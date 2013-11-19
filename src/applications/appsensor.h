@@ -21,12 +21,24 @@
 #include "meacoll.h"
 #include <omnetpp.h>
 
+/*
+ * Working modes of sensor
+ * WORK_MODE_OFF: Sensor will not do anything (mode for out of energy)
+ * WORK_MODE_SLEEP: Cannot sense for target or send/receive packets but can be waken up
+ * WORK_MODE_ACTIVE: Full features mode
+ */
+#define WORK_MODE_OFF 0
+#define WORK_MODE_SLEEP 1
+#define WORK_MODE_ACTIVE 2
+
 /**
  * Sensor's Application Layer
  */
 class AppSensor : public cSimpleModule
 {
     private:
+        int workMode;
+
         bool syncSense;
         cMessage *senseTimer; // Self message for start sensing
         cMessage *reportTimer; // Timer for reporting measurement

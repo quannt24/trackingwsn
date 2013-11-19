@@ -54,6 +54,9 @@ class Link802154 : public cSimpleModule
         cMessage *releaseChannelMsg; // Self message for releasing channel timer
         Frame802154 *txFrame; // Frame going to be transmitted
 
+        // Timer for calculating power consumed by transceiver listening
+        cMessage *rxConsumeTimer;
+
         Frame802154* createFrame(Packet802154 *packet);
         void queueFrame(Frame802154 *frame);
         void recvFrame(Frame802154 *frame);
@@ -68,6 +71,9 @@ class Link802154 : public cSimpleModule
 
         /* Calculate and draw energy from energy module for transmitting */
         void useEnergyTx(int nbits);
+        /* Calculate and draw energy for listening
+         * @param onTime Time interval that transceiver is turned on for listening signal */
+        void useEnergyRx(double onTime);
 
     protected:
         virtual void initialize();

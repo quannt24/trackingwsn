@@ -37,6 +37,13 @@ void Link802154::handleMessage(cMessage *msg)
             csmaTransmit();
         } else if (msg == releaseChannelMsg) {
             releaseChannel();
+        } else if (msg == rxConsumeTimer) {
+            // Calculate consumed energy for completed period
+            double period = par("rxConsumingPeriod");
+            useEnergyRx(period);
+            // Schedule next period
+            rxConsumeTimer->setTimestamp();
+            scheduleAt(simTime() + period, rxConsumeTimer);
         }
     } else {
         if (msg->getArrivalGate() == gate("netGate$i")) {
@@ -51,15 +58,17 @@ void Link802154::handleMessage(cMessage *msg)
 
 Link802154::Link802154()
 {
-    radioMode = RADIO_ON;
+    radioMode = RADIO_OFF;
     numAdjNode = 0;
     txFrame = NULL;
     csmaMsg = new cMessage("CSMAMsg");
     releaseChannelMsg = new cMessage("ReleaseChannelMsg");
+    rxConsumeTimer = new cMessage("RxConsumeTimer");
 }
 
 Link802154::~Link802154()
 {
+    cancelAndDelete(rxConsumeTimer);
     cancelAndDelete(csmaMsg);
     cancelAndDelete(releaseChannelMsg);
     if (txFrame != NULL) delete txFrame;
@@ -68,7 +77,22 @@ Link802154::~Link802154()
 
 void Link802154::setRadioMode(int mode)
 {
-    if (mode == RADIO_OFF || mode == RADIO_ON) radioMode = mode;
+    if (mode == RADIO_OFF || mode == RADIO_ON) {
+        radioMode = mode;
+
+        if (mode == RADIO_ON && !rxConsumeTimer->isScheduled()) {
+            // Turn on transceiver and set power consuming timer for simulation
+            rxConsumeTimer->setTimestamp();
+            scheduleAt(simTime() + par("rxConsumingPeriod").doubleValue(), rxConsumeTimer);
+        } else if (mode == RADIO_OFF && rxConsumeTimer->isScheduled()) {
+            // Turn off transceiver and calculate consumed energy of last incomplete timer's period
+            double onTime = SIMTIME_DBL(simTime() - rxConsumeTimer->getTimestamp());
+            if (onTime > 0) {
+                useEnergyRx(onTime);
+            }
+            cancelEvent(rxConsumeTimer);
+        }
+    }
 }
 
 /*
@@ -291,7 +315,7 @@ void Link802154::transmit()
 
     if (!outQueue.isEmpty()) {
         // Set a timer to transmit next frame in queue
-        scheduleAt(simTime() + txDuration, csmaMsg); // TODO A process time may need to be added to timer
+        scheduleAt(simTime() + txDuration, csmaMsg); // TODO A processing time may need to be added to timer
     }
 }
 
@@ -323,5 +347,18 @@ void Link802154::useEnergyTx(int nbits)
 
     Energy *energy = (Energy*) getParentModule()->getSubmodule("energy");
     energy->draw(ce);
-    EV << "Link802154::useEnergyTx : use " << ce << " J\n";
+    //EV << "Link802154::useEnergyTx : use " << ce << " J\n";
+}
+
+/*
+ * Calculate and draw energy for listening
+ * @param onTime Time interval that transceiver is turned on for listening signal
+ */
+void Link802154::useEnergyRx(double onTime)
+{
+    int bitRate = par("bitRate").longValue();
+    double e_elect = par("e_elec").doubleValue();
+    double ce = (double) bitRate * e_elect * onTime; // Consumed energy
+    Energy *energy = (Energy*) getParentModule()->getSubmodule("energy");
+    energy->draw(ce);
 }

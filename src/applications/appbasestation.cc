@@ -14,6 +14,7 @@
 // 
 
 #include "appbasestation.h"
+#include "link802154.h"
 #include <sstream>
 #include <iostream>
 #include <fstream>
@@ -39,6 +40,10 @@ void AppBaseStation::initialize()
         TargetPosVectorSet *tpvs = new TargetPosVectorSet(tar->getId());
         tpvsList.push_back(tpvs);
     }
+
+    // Turn on tranceiver
+    Link802154 *link = check_and_cast<Link802154*>(getParentModule()->getSubmodule("link"));
+    link->setRadioMode(RADIO_ON);
 }
 
 void AppBaseStation::handleMessage(cMessage *msg)

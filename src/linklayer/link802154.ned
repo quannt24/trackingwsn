@@ -22,11 +22,14 @@ simple Link802154
 {
     parameters:
         // Transmission range threshold. This parameter depends on environment and affects energy to transmit data.
-        double txRTh @unit(m) = default(20m);
+        double txRTh @unit(m) = default(50m);
         // Energy for encode/decode signal for 1 bit
         double e_elec = default(50e-9); // Unit J/bit
         // Energy for amplifying signal for 1 bit when txRange < txRTh
         double e_fs = default(10e-12); // Unit J/bit/m2
+        // Time period for calculating energy consumed by transceiver listening
+        // (for simulating continuously power consumtion)
+        double rxConsumingPeriod = default(0.1);
         
         // Transmission range
         double txRange @unit(m) = default(40m);

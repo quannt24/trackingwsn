@@ -22,6 +22,7 @@ module BaseStation extends Node802154
 {
     parameters:
         mobility.moving = false;
+        energy.hasLinePower = true;
         net.isBaseStation = true;
         @display("i=device/antennatower");
     submodules:

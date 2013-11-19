@@ -307,7 +307,7 @@ void Link802154::backoff()
 
 /*
  * Calculate and draw energy from energy module for transmitting.
-*/
+ */
 void Link802154::useEnergyTx(int nbits)
 {
     double ce; // Consumed energy

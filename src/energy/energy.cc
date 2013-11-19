@@ -19,6 +19,7 @@ Define_Module(Energy);
 
 void Energy::initialize()
 {
+    energyDrawSignal = registerSignal("energy_draw");
     setCapacity(par("initCap").doubleValue());
 }
 
@@ -43,6 +44,7 @@ void Energy::setCapacity(double cap)
         capacity = cap;
     else
         capacity = 0;
+    emit(energyDrawSignal, capacity);
 }
 
 /*
@@ -55,14 +57,20 @@ void Energy::setCapacity(double cap)
  */
 double Energy::draw(double amount)
 {
-    if (amount > 0 && amount <= capacity) {
-        capacity -= amount;
+    if (par("hasLinePower").boolValue()) {
         return amount;
-    } else if (amount > capacity) {
-        int oldCap = capacity;
-        capacity = 0;
-        return oldCap;
     } else {
-        return 0;
+        // Draw energy from battery
+        double cap = getCapacity();
+
+        if (amount > 0 && amount <= cap) {
+            setCapacity(cap - amount);
+            return amount;
+        } else if (amount > cap) {
+            setCapacity(0);
+            return cap;
+        } else {
+            return 0;
+        }
     }
 }

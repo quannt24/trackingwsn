@@ -25,6 +25,7 @@ class Energy : public cSimpleModule
 {
     private:
         double capacity; // In J, non-negative
+        simsignal_t energyDrawSignal;
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);

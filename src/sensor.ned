@@ -27,7 +27,7 @@ module Sensor extends Node802154
         net.isBaseStation = false;
         // Tracking algorithm. Default estimator always return (0, 0).
         string estimatorName = default("Estimator");
-        @display("i=misc/node2;is=vs");
+        @display("i=misc/node2;is=s");
     submodules:
         ass: Ass;
         app: AppSensor;

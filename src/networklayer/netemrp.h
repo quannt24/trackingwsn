@@ -54,6 +54,9 @@ class NetEMRP : public cSimpleModule
         void recvMessage(MessageCR *msg);
         /* Process received packet from lower layer */
         void recvPacket(PacketEMRP *pkt);
+        /* Create a message to notify application layer that some events occur but the content is
+         * not forwarded to application */
+        void notifyApp();
         /* Broadcast request for info of base station/relay/backup node */
         void requestRelay();
         /* Response to a request for relay node, given the requesting packet */

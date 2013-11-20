@@ -26,19 +26,22 @@ Define_Module(AppSensor);
 
 void AppSensor::initialize()
 {
-    // TODO Test Start sensing
-    scheduleAt(22 + uniform(0, 5), senseTimer);
-
-    // Turn on tranceiver
-    Link802154 *link = check_and_cast<Link802154*>(getParentModule()->getSubmodule("link"));
-    link->setRadioMode(RADIO_ON);
+    // At start, all nodes are active
+    setWorkMode(WORK_MODE_ACTIVE);
+    /* Modify sleep time so that sleep time of sensor nodes will be uniformly distributed over
+     * next 'idleTime' period to prevent "all sleepy nodes" phenomena. */
+    cancelEvent(sleepTimer);
+    scheduleAt(getParentModule()->getSubmodule("net")->par("initInterval").doubleValue() + uniform(0, par("idleTime").doubleValue()), sleepTimer);
 }
 
 void AppSensor::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
-        if (msg == senseTimer) {
-            // Sensing timer:
+        if (msg == activeTimer) {
+            setWorkMode(WORK_MODE_ACTIVE);
+        } else if (msg == sleepTimer) {
+            setWorkMode(WORK_MODE_SLEEP);
+        } else if (msg == senseTimer) {
             cMessage *ssStartMsg = new cMessage("ssStartMsg", SS_START);
             send(ssStartMsg, "ssGate$o");
             // Schedule next sensing
@@ -52,13 +55,27 @@ void AppSensor::handleMessage(cMessage *msg)
         }
     } else {
         if (msg->getArrivalGate() == gate("ssGate$i")) {
-            if (msg->getKind() == SS_RESULT) {
-                SensedResult *result = check_and_cast<SensedResult*>(msg);
-                recvSenseResult(result);
+            if (workMode == WORK_MODE_ACTIVE) {
+                // Only process sensing result when in active mode
+                if (msg->getKind() == SS_RESULT) {
+                    SensedResult *result = check_and_cast<SensedResult*>(msg);
+                    recvSenseResult(result);
+                }
+            } else {
+                delete msg;
             }
         } else if (msg->getArrivalGate() == gate("netGate$i")) {
             MsgTracking *m = check_and_cast<MsgTracking*>(msg);
             recvMessage(m);
+
+            /* Check if it is currently network initial period; if not, extend active time.
+             * In network initial interval, all nodes * should be active then sleep time should be
+             * uniformly distributed over next 'idleTime' period so that "all sleepy nodes" does
+             * not occur. */
+            if (simTime() > getParentModule()->getSubmodule("net")->par("initInterval").doubleValue()) {
+                // Extend active time when having event
+                setWorkMode(WORK_MODE_ACTIVE);
+            }
         }
     }
 }
@@ -67,6 +84,8 @@ AppSensor::AppSensor()
 {
     syncSense = false;
     // Create self messages for timers
+    activeTimer = new cMessage("ActiveTimer");
+    sleepTimer = new cMessage("SleepTimer");
     senseTimer = new cMessage("SenseTimer");
     reportTimer = new cMessage("ReportTimer");
     collTimer = new cMessage("CollTimer");
@@ -74,6 +93,8 @@ AppSensor::AppSensor()
 
 AppSensor::~AppSensor()
 {
+    cancelAndDelete(activeTimer);
+    cancelAndDelete(sleepTimer);
     cancelAndDelete(senseTimer);
     cancelAndDelete(reportTimer);
     cancelAndDelete(collTimer);
@@ -96,9 +117,9 @@ void AppSensor::sendSenseResult()
     msgResult->setMeaList(meaList);
 
     /* Set message size
-     * Each measurement contains target ID + measuredDistance will have size of 1 + 8 bytes
+     * Each measurement contains target ID + measuredDistance will have size of 1 + 4 bytes
      * Node info will have size of 4 + 4 + 4 bytes for x, y, energy. */
-    msgResult->setMsgSize(msgResult->getMsgSize() + 12 + 9 * meaList.size());
+    msgResult->setMsgSize(msgResult->getMsgSize() + 12 + 5 * meaList.size());
     msgResult->setByteLength(msgResult->getMsgSize());
     send(msgResult, "netGate$o");
 }
@@ -127,7 +148,7 @@ void AppSensor::recvSenseResult(SensedResult *result)
                 /* Add node's information to measurement object for simulation convenience.
                  * Note: Measurement object holds these information just for simulation programming convenience.
                  * In theory, these information is not packed with every object in a MsgSenseResult message,
-                 * but is * stored separately in the message so that the size of the message is not
+                 * but is stored separately in the message so that the size of the message is not
                  * increased by the redundancy. However, each node adds these information to its
                  * own Measurement objects in case it may become CH, then the objects is carried by
                  * MsgSenseResult message (for programming convenience); so that the portion of
@@ -263,5 +284,74 @@ void AppSensor::trackTargets()
         send(msgTrackResult, "netGate$o");
     } else {
         getParentModule()->bubble("Non-CH");
+    }
+}
+
+void AppSensor::setWorkMode(int mode)
+{
+    if (mode == WORK_MODE_OFF || mode == WORK_MODE_SLEEP || mode == WORK_MODE_ACTIVE) {
+        workMode = mode;
+        Link802154 *link = check_and_cast<Link802154*>(getParentModule()->getSubmodule("link"));
+
+        switch (workMode) {
+            case WORK_MODE_OFF:
+                // Turn off transceiver
+                link->setRadioMode(RADIO_OFF);
+                // Cancel all timers
+                cancelEvent(activeTimer);
+                cancelEvent(sleepTimer);
+                cancelEvent(senseTimer);
+                cancelEvent(reportTimer);
+                cancelEvent(collTimer);
+                break;
+
+            case WORK_MODE_SLEEP:
+                // Turn off transceiver
+                link->setRadioMode(RADIO_OFF);
+
+                // Plan for waking up after sleepTime
+                // If a working event occurs, wake up immediately and cancel this timer
+                cancelEvent(activeTimer);
+                scheduleAt(simTime() + par("sleepTime"), activeTimer);
+
+                // Cancel sensing timer
+                cancelEvent(senseTimer);
+                break;
+
+            case WORK_MODE_ACTIVE:
+                // Turn on transceiver
+                link->setRadioMode(RADIO_ON);
+
+                // Plan for sleeping after idleTime
+                // If a working event occurs, cancel this timer and plan new one
+                cancelEvent(sleepTimer);
+                scheduleAt(simTime() + par("idleTime"), sleepTimer);
+
+                // Start sensing immediately
+                if (!senseTimer->isScheduled()) scheduleAt(simTime(), senseTimer);
+                break;
+        }
+        updateDisplay();
+    }
+}
+
+/*
+ * Update display of sensor in simulation
+ */
+void AppSensor::updateDisplay()
+{
+    cDisplayString &ds = getParentModule()->getDisplayString();
+
+    // Set color according to working mode
+    switch (workMode) {
+        case WORK_MODE_OFF:
+            ds.setTagArg("i", 1, "black");
+            break;
+        case WORK_MODE_SLEEP:
+            ds.setTagArg("i", 1, "yellow");
+            break;
+        case WORK_MODE_ACTIVE:
+            ds.setTagArg("i", 1, "green");
+            break;
     }
 }

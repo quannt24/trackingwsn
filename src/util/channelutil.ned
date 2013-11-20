@@ -24,5 +24,5 @@ package trackingwsn.util;
 //
 simple ChannelUtil
 {
-    @display("i=block/network;is=s");
+    @display("i=block/network");
 }

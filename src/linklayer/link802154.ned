@@ -29,7 +29,7 @@ simple Link802154
         double e_fs = default(10e-12); // Unit J/bit/m2
         // Time period for calculating energy consumed by transceiver listening
         // (for simulating continuously power consumtion)
-        double rxConsumingPeriod = default(0.1);
+        double rxConsumingPeriod = default(0.5);
         
         // Transmission range
         double txRange @unit(m) = default(40m);

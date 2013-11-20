@@ -47,11 +47,21 @@ void Link802154::handleMessage(cMessage *msg)
         }
     } else {
         if (msg->getArrivalGate() == gate("netGate$i")) {
-            // Packet from upper layer, assemble frame and add to sending queue
-            queueFrame(createFrame((Packet802154*) msg));
+            if (radioMode == RADIO_ON) {
+                // Packet from upper layer, assemble frame and add to sending queue
+                queueFrame(createFrame((Packet802154*) msg));
+            } else {
+                delete msg;
+                EV<< "Error: Cannot send packet when radio is off\n";
+            }
         } else if (msg->getArrivalGate() == gate("radioIn")) {
-            // Frame from other node
-            recvFrame((Frame802154*) msg);
+            if (radioMode == RADIO_ON) {
+                // Frame from other node
+                recvFrame((Frame802154*) msg);
+            } else {
+                // Just drop frame if radio is off
+                delete msg;
+            }
         }
     }
 }
@@ -77,6 +87,7 @@ Link802154::~Link802154()
 
 void Link802154::setRadioMode(int mode)
 {
+    Enter_Method_Silent("setRadioMode");
     if (mode == RADIO_OFF || mode == RADIO_ON) {
         radioMode = mode;
 

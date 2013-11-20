@@ -26,6 +26,10 @@ simple AppSensor
         double collMeaPeriod = default(0.05);
         // Report measurement period (should shorter than collMeaPeriod
         double repMeaPeriod = default(0.04);
+        
+        double idleTime = default(5); // Idle time before sensor goes to sleep
+        double sleepTime = default(20); // Max sleep time
+        
         @display("i=block/app");
     gates:
         inout ssGate; // Connect acoustic signal sensor (ass)

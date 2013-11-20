@@ -40,16 +40,27 @@ class AppSensor : public cSimpleModule
         int workMode;
 
         bool syncSense;
+        cMessage *activeTimer; // Timer for entering active mode
+        cMessage *sleepTimer; // Timer for entering sleep mode
         cMessage *senseTimer; // Self message for start sensing
         cMessage *reportTimer; // Timer for reporting measurement
         cMessage *collTimer; // Timer for collecting measurements
         std::list<Measurement> meaList; // Measurement list of recent sensing
         MeaColl mc; // Measurement collection
 
+        /* Send sense result to CH (broadcast, CH will collect these result) */
         void sendSenseResult();
+        /* Receive measurements from sensor module. Prepare to broadcast the result and collect other's */
         void recvSenseResult(SensedResult *result);
-        void recvMessage(MsgTracking *msg); // Receive message from other node
+        /* Receive message from other node */
+        void recvMessage(MsgTracking *msg);
+        /* Promote this node to CH (if appropriate). Then estimate targets' positions (if is CH). */
         void trackTargets();
+
+        /* Set working mode
+         * @param mode Can be WORK_MODE_OFF, WORK_MODE_SLEEP or WORK_MODE_ACTIVE */
+        void setWorkMode(int mode);
+        void updateDisplay();
 
     protected:
         virtual void initialize();

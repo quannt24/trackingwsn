@@ -16,6 +16,7 @@
 #include "netemrp.h"
 #include "packetemrp_m.h"
 #include "messagecr_m.h"
+#include "messagetracking_m.h"
 #include "link802154.h"
 #include "energy.h"
 #include "mobility.h"
@@ -27,7 +28,7 @@ Define_Module(NetEMRP);
 void NetEMRP::initialize()
 {
     // Set timer for initialize EMRP first time
-    scheduleAt(uniform(0, par("initPeriod")), initMsg);
+    scheduleAt(uniform(0, par("initInterval")), initMsg);
 }
 
 void NetEMRP::handleMessage(cMessage *msg)
@@ -119,9 +120,12 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
         // Receive a request for relay information
         cMessage *resRelayMsg = new cMessage("ResRelayMsg");
         resRelayMsg->setKind(EMRP_RES_RELAY);
-        resRelayMsg->setContextPointer(pkt->dup());
+        resRelayMsg->setContextPointer(pkt->dup()); // Pack sender information with timer message
         scheduleAt(simTime() + uniform(0, par("resRelayPeriod").doubleValue()), resRelayMsg);
         delete pkt;
+
+        // Notify application that event occurs
+        notifyApp();
     } else if (pkt->getPkType() == PK_RELAY_INFO) {
         // Receive relay information
         PacketEMRP_RelayInfo *ri = check_and_cast<PacketEMRP_RelayInfo*>(pkt);
@@ -134,9 +138,15 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
             }
         }
         delete pkt;
+
+        // Notify application that event occurs
+        notifyApp();
     } else if (pkt->getPkType() == PK_ENERGY_INFO) {
         // Receive energy information
         updateRelayEnergy(check_and_cast<PacketEMRP_EnergyInfo*>(pkt));
+
+        // Notify application that event occurs
+        notifyApp();
     } else if (pkt->getPkType() == PK_PAYLOAD_TO_AN) {
         // Send message to upper layer
         MessageCR *msg = (MessageCR*) pkt->decapsulate();
@@ -161,8 +171,20 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
 
             // Send back a report about energy
             sendEnergyInfo(sender);
+
+            // Notify application that event occurs
+            notifyApp();
         }
     }
+}
+
+/* Create a message to notify application layer that some events occur but the content is
+ * not forwarded to application */
+void NetEMRP::notifyApp()
+{
+    MsgTracking *msg = new MsgTracking();
+    msg->setMsgType(MSG_EVENT_NOTIFY);
+    send(msg, "appGate$o");
 }
 
 /*
@@ -383,7 +405,8 @@ void NetEMRP::sendMsgDown(MessageCR *msg)
         cMessage *waitRelayMsg = new cMessage("WaitRelayMsg");
         waitRelayMsg->setKind(EMRP_WAIT_RELAY);
         waitRelayMsg->setContextPointer(msg);
-        scheduleAt(simTime() + par("waitRelayTimeout").doubleValue(), waitRelayMsg);
+        // Set timeout for waiting relay info
+        scheduleAt(simTime() + par("resRelayPeriod").doubleValue(), waitRelayMsg);
         return;
     }
 

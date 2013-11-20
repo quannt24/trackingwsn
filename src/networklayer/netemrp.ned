@@ -25,16 +25,11 @@ simple NetEMRP
         // Period for broadcast first relay request. If this period is too short, channel may be
         // too busy and some nodes may fail to complete initializing procedure. The warm-up period
         // will be dependent to this period.
-        double initPeriod = default(20);
-        // Period for responsing for a relay request
-        double resRelayPeriod = default(2);
-        // Waiting for relay info timeout. This timeout is used when a message is needed to be sent
-        // to BS, but relay info is not ready (may be due to incomplete initializing stage). A request
-        // for relay info will be sent and retry to send the message after this timeout. If retry is
-        // unsuccessful (relay info is still not ready), this transmision is fail.
-        double waitRelayTimeout = default(0.1);
+        double initInterval = default(10);
+        // Period for responsing for a relay request in initial period
+        double resRelayPeriod = default(0.2);
         // Differential amount of relay/backup nodes' energy that triggers switch nodes
-        double switchingEnergy = default(0.1);
+        double switchingEnergy @unit(J)= default(0.1J);
         // Critical energy level that a node cannot guarantees reliable transmission
         double criticalEnergy = default(0.2);
         

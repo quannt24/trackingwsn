@@ -26,5 +26,5 @@ simple StatCollector
         @signal[total_sensor_energy](type="double");
         @statistic[totalEnergy](title="Total energy"; source="total_sensor_energy"; record=vector);
 
-        @display("i=block/table2;is=s");
+        @display("i=block/table2");
 }

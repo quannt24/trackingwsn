@@ -233,6 +233,8 @@ $O/mobility/mobility.o: mobility/mobility.cc \
 $O/networklayer/messagecr_m.o: networklayer/messagecr_m.cc \
 	networklayer/messagecr_m.h
 $O/networklayer/netemrp.o: networklayer/netemrp.cc \
+	applications/estimator/targetpos.h \
+	applications/messagetracking_m.h \
 	energy/energy.h \
 	linklayer/frame802154_m.h \
 	linklayer/link802154.h \
@@ -242,6 +244,7 @@ $O/networklayer/netemrp.o: networklayer/netemrp.cc \
 	networklayer/messagecr_m.h \
 	networklayer/netemrp.h \
 	networklayer/packetemrp_m.h \
+	sensors/measurement.h \
 	util/worldutil.h
 $O/networklayer/packetemrp_m.o: networklayer/packetemrp_m.cc \
 	linklayer/packet802154_m.h \

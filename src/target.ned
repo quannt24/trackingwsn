@@ -26,8 +26,7 @@ module Target extends Entity
     parameters:
         double range @unit(m) = default(30m);
         mobility.moving = true;
-        mobility.startMovingTime = 22;
-        @display("i=block/broadcast;r=$range;is=s");
+        @display("i=block/broadcast;r=$range");
 
     submodules:
         asg: Asg {

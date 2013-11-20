@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-// Trasmission type
+// Trasmission types
 enum TxType {
     TX_PPP = 0; // Point to point
     TX_BROADCAST = -1;
@@ -26,8 +26,8 @@ enum TxType {
 packet Packet802154 {
     // Trasmission type: 0 = normal (to 1 host); -1 = broadcast
     int txType @enum(TxType);
-    // Source MAC address
+    // Source MAC address (8 bytes)
     int srcMacAddr;
-    // Destination/Next-hop MAC address.
+    // Destination/Next-hop MAC address. (8 bytes)
     int desMacAddr;
 }

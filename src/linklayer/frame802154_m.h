@@ -16,9 +16,24 @@
 
 
 /**
+ * Enum generated from <tt>linklayer/frame802154.msg</tt> by opp_msgc.
+ * <pre>
+ * enum FrType {
+ *     FR_PAYLOAD = 0; 
+ *     FR_STROBE = 1; 
+ * };
+ * </pre>
+ */
+enum FrType {
+    FR_PAYLOAD = 0,
+    FR_STROBE = 1
+};
+
+/**
  * Class generated from <tt>linklayer/frame802154.msg</tt> by opp_msgc.
  * <pre>
  * packet Frame802154 {
+ *     int type = FR_PAYLOAD; 
  *     int srcAddr; 
  *     int desAddr; 
  * }
@@ -27,6 +42,7 @@
 class Frame802154 : public ::cPacket
 {
   protected:
+    int type_var;
     int srcAddr_var;
     int desAddr_var;
 
@@ -47,6 +63,8 @@ class Frame802154 : public ::cPacket
     virtual void parsimUnpack(cCommBuffer *b);
 
     // field getter/setter methods
+    virtual int getType() const;
+    virtual void setType(int type);
     virtual int getSrcAddr() const;
     virtual void setSrcAddr(int srcAddr);
     virtual int getDesAddr() const;

@@ -44,6 +44,14 @@ void Link802154::handleMessage(cMessage *msg)
             // Schedule next period
             rxConsumeTimer->setTimestamp();
             scheduleAt(simTime() + period, rxConsumeTimer);
+        } else if (msg == dcListenTimer) {
+            // In radio duty cycling, turn on radio for short period
+            setRadioMode(RADIO_ON, true);
+            getParentModule()->bubble("In duty cycling: Radio ON");
+        } else if (msg == dcSleepTimer) {
+            // In radio duty cycling
+            setRadioMode(RADIO_OFF, true);
+            getParentModule()->bubble("In duty cycling: Radio OFF");
         }
     } else {
         if (msg->getArrivalGate() == gate("netGate$i")) {
@@ -74,10 +82,14 @@ Link802154::Link802154()
     csmaMsg = new cMessage("CSMAMsg");
     releaseChannelMsg = new cMessage("ReleaseChannelMsg");
     rxConsumeTimer = new cMessage("RxConsumeTimer");
+    dcListenTimer = new cMessage("DcListenTimer");
+    dcSleepTimer = new cMessage("DcSleepTimer");
 }
 
 Link802154::~Link802154()
 {
+    cancelAndDelete(dcSleepTimer);
+    cancelAndDelete(dcListenTimer);
     cancelAndDelete(rxConsumeTimer);
     cancelAndDelete(csmaMsg);
     cancelAndDelete(releaseChannelMsg);
@@ -85,9 +97,10 @@ Link802154::~Link802154()
     outQueue.clear();
 }
 
-void Link802154::setRadioMode(int mode)
+void Link802154::setRadioMode(int mode, bool dutyCycling)
 {
     Enter_Method_Silent("setRadioMode");
+
     if (mode == RADIO_OFF || mode == RADIO_ON) {
         radioMode = mode;
 
@@ -95,6 +108,9 @@ void Link802154::setRadioMode(int mode)
             // Turn on transceiver and set power consuming timer for simulation
             rxConsumeTimer->setTimestamp();
             scheduleAt(simTime() + par("rxConsumingPeriod").doubleValue(), rxConsumeTimer);
+
+            // If called by duty cycling, plan a sleep timer
+            if (dutyCycling) scheduleAt(simTime() + par("lR").doubleValue(), dcSleepTimer);
         } else if (mode == RADIO_OFF && rxConsumeTimer->isScheduled()) {
             // Turn off transceiver and calculate consumed energy of last incomplete timer's period
             double onTime = SIMTIME_DBL(simTime() - rxConsumeTimer->getTimestamp());
@@ -102,6 +118,9 @@ void Link802154::setRadioMode(int mode)
                 useEnergyRx(onTime);
             }
             cancelEvent(rxConsumeTimer);
+
+            // Always start duty cycling when radio mode is off
+            scheduleAt(simTime() + par("sR").doubleValue(), dcListenTimer);
         }
     }
 }
@@ -152,8 +171,9 @@ Frame802154* Link802154::createFrame(Packet802154* packet)
         // Send to specific address
         frm->setDesAddr(packet->getDesMacAddr());
     }
-    frm->setByteLength(par("fldFrameControl").longValue() + par("fldSequenceId").longValue()
-            + par("fldAddr").longValue() + par("fldFooter").longValue() + par("phyHeaderSize").longValue());
+    frm->setByteLength(
+            par("fldFrameControl").longValue() + par("fldSequenceId").longValue() + par("fldDesAddr").longValue()
+                    + par("fldSrcAddr").longValue() + par("fldFooter").longValue() + par("phyHeaderSize").longValue());
     frm->encapsulate(packet); // Frame length will be increased by length of packet
 
     return frm;

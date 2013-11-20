@@ -30,10 +30,18 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 
 
+EXECUTE_ON_STARTUP(
+    cEnum *e = cEnum::find("FrType");
+    if (!e) enums.getInstance()->add(e = new cEnum("FrType"));
+    e->insert(FR_PAYLOAD, "FR_PAYLOAD");
+    e->insert(FR_STROBE, "FR_STROBE");
+);
+
 Register_Class(Frame802154);
 
 Frame802154::Frame802154(const char *name, int kind) : cPacket(name,kind)
 {
+    this->type_var = FR_PAYLOAD;
     this->srcAddr_var = 0;
     this->desAddr_var = 0;
 }
@@ -57,6 +65,7 @@ Frame802154& Frame802154::operator=(const Frame802154& other)
 
 void Frame802154::copy(const Frame802154& other)
 {
+    this->type_var = other.type_var;
     this->srcAddr_var = other.srcAddr_var;
     this->desAddr_var = other.desAddr_var;
 }
@@ -64,6 +73,7 @@ void Frame802154::copy(const Frame802154& other)
 void Frame802154::parsimPack(cCommBuffer *b)
 {
     cPacket::parsimPack(b);
+    doPacking(b,this->type_var);
     doPacking(b,this->srcAddr_var);
     doPacking(b,this->desAddr_var);
 }
@@ -71,8 +81,19 @@ void Frame802154::parsimPack(cCommBuffer *b)
 void Frame802154::parsimUnpack(cCommBuffer *b)
 {
     cPacket::parsimUnpack(b);
+    doUnpacking(b,this->type_var);
     doUnpacking(b,this->srcAddr_var);
     doUnpacking(b,this->desAddr_var);
+}
+
+int Frame802154::getType() const
+{
+    return type_var;
+}
+
+void Frame802154::setType(int type)
+{
+    this->type_var = type;
 }
 
 int Frame802154::getSrcAddr() const
@@ -142,7 +163,7 @@ const char *Frame802154Descriptor::getProperty(const char *propertyname) const
 int Frame802154Descriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
+    return basedesc ? 3+basedesc->getFieldCount(object) : 3;
 }
 
 unsigned int Frame802154Descriptor::getFieldTypeFlags(void *object, int field) const
@@ -156,8 +177,9 @@ unsigned int Frame802154Descriptor::getFieldTypeFlags(void *object, int field) c
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
 }
 
 const char *Frame802154Descriptor::getFieldName(void *object, int field) const
@@ -169,18 +191,20 @@ const char *Frame802154Descriptor::getFieldName(void *object, int field) const
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldNames[] = {
+        "type",
         "srcAddr",
         "desAddr",
     };
-    return (field>=0 && field<2) ? fieldNames[field] : NULL;
+    return (field>=0 && field<3) ? fieldNames[field] : NULL;
 }
 
 int Frame802154Descriptor::findField(void *object, const char *fieldName) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
-    if (fieldName[0]=='s' && strcmp(fieldName, "srcAddr")==0) return base+0;
-    if (fieldName[0]=='d' && strcmp(fieldName, "desAddr")==0) return base+1;
+    if (fieldName[0]=='t' && strcmp(fieldName, "type")==0) return base+0;
+    if (fieldName[0]=='s' && strcmp(fieldName, "srcAddr")==0) return base+1;
+    if (fieldName[0]=='d' && strcmp(fieldName, "desAddr")==0) return base+2;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -195,8 +219,9 @@ const char *Frame802154Descriptor::getFieldTypeString(void *object, int field) c
     static const char *fieldTypeStrings[] = {
         "int",
         "int",
+        "int",
     };
-    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<3) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *Frame802154Descriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -236,8 +261,9 @@ std::string Frame802154Descriptor::getFieldAsString(void *object, int field, int
     }
     Frame802154 *pp = (Frame802154 *)object; (void)pp;
     switch (field) {
-        case 0: return long2string(pp->getSrcAddr());
-        case 1: return long2string(pp->getDesAddr());
+        case 0: return long2string(pp->getType());
+        case 1: return long2string(pp->getSrcAddr());
+        case 2: return long2string(pp->getDesAddr());
         default: return "";
     }
 }
@@ -252,8 +278,9 @@ bool Frame802154Descriptor::setFieldAsString(void *object, int field, int i, con
     }
     Frame802154 *pp = (Frame802154 *)object; (void)pp;
     switch (field) {
-        case 0: pp->setSrcAddr(string2long(value)); return true;
-        case 1: pp->setDesAddr(string2long(value)); return true;
+        case 0: pp->setType(string2long(value)); return true;
+        case 1: pp->setSrcAddr(string2long(value)); return true;
+        case 2: pp->setDesAddr(string2long(value)); return true;
         default: return false;
     }
 }
@@ -269,8 +296,9 @@ const char *Frame802154Descriptor::getFieldStructName(void *object, int field) c
     static const char *fieldStructNames[] = {
         NULL,
         NULL,
+        NULL,
     };
-    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<3) ? fieldStructNames[field] : NULL;
 }
 
 void *Frame802154Descriptor::getFieldStructPointer(void *object, int field, int i) const

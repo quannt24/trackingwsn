@@ -45,17 +45,28 @@ simple Link802154
         // Size of MAC layer fields in a frame in byte
         int fldFrameControl = default(2);
         int fldSequenceId = default(1);
-        int fldAddr = default(8); // Short address ~ 2 bytes; Long address ~ 8 bytes
+        int fldSrcAddr = default(8); // Sender address. Short address ~ 2 bytes; Long address ~ 8 bytes
+        int fldDesAddr = default(8); // Receiver address
         // Security segment is ignored
         int fldFooter = default(2);
+        // Total: 21 bytes
         
         // Max packet size for upper layer
-        int maxPacketSize = maxFrameSize - fldFrameControl - fldSequenceId - fldAddr - fldFooter;
+        int maxPacketSize = maxFrameSize - fldFrameControl - fldSequenceId - fldDesAddr - fldSrcAddr - fldFooter;
 
 		// Unslotted CSMA/CA parameters
 		int macMinBE = default(3);
 		int aMaxBE = default(5);
 		int aMaxNB = default(5);
+		
+		// X-MAC duty cycling (RADIO_OFF mode)
+		// Receiver
+		double lR = default(0.02); // Listen period
+		double sR = default(0.1); // Sleep period (radio totally off), causes delay
+		// Sender
+		// Strobe period: time between sending 2 strobes. Must be long enough for receiving strobe
+		// ACK and short enough so that current strobe and next strobe fit in one listen period (lR)
+		double strobePeriod = default(0.012);
 
         @display("i=block/wrxtx");
 

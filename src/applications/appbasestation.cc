@@ -43,7 +43,7 @@ void AppBaseStation::initialize()
 
     // Turn on tranceiver
     Link802154 *link = check_and_cast<Link802154*>(getParentModule()->getSubmodule("link"));
-    link->setRadioMode(RADIO_ON);
+    link->setRadioMode(RADIO_ON, false);
 }
 
 void AppBaseStation::handleMessage(cMessage *msg)

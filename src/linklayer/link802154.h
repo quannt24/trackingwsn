@@ -57,6 +57,10 @@ class Link802154 : public cSimpleModule
         // Timer for calculating power consumed by transceiver listening
         cMessage *rxConsumeTimer;
 
+        // Timers for duty cycling
+        cMessage *dcListenTimer; // Start listening for strobes
+        cMessage *dcSleepTimer; // Stop listening for strobes
+
         Frame802154* createFrame(Packet802154 *packet);
         void queueFrame(Frame802154 *frame);
         void recvFrame(Frame802154 *frame);
@@ -83,7 +87,10 @@ class Link802154 : public cSimpleModule
         Link802154();
         ~Link802154();
         int getRadioMode() { return radioMode; };
-        void setRadioMode(int mode);
+        /* Set radio mode with a duty cycling flag. If the flag is true, it's considered this
+         * function is called by duty cycling and a sleep timer is set if mode is on. When mode is
+         * off, a listen timer is always set. Default value for the flag is false for normal use. */
+        void setRadioMode(int mode, bool dutyCycling = false);
         int getAddr();
         bool isFullConn();
         int addAdjNode(int addr);

@@ -13,10 +13,17 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
+// Frame types
+enum FrType {
+    FR_PAYLOAD = 0; // Payload for upper layer
+    FR_STROBE = 1; // Strobe frame for waking up other nodes
+};
+
 //
 // Phy/Link frame
 //
 packet Frame802154 {
+    int type = FR_PAYLOAD; // Frame type, default is payload
     int srcAddr; // Source MAC address
     int desAddr; // Destination MAC address
 }

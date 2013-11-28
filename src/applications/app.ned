@@ -13,30 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __TRACKINGWSN_APPBASESTATION_H_
-#define __TRACKINGWSN_APPBASESTATION_H_
+package trackingwsn.applications;
 
-#include "app.h"
-#include "messagetracking_m.h"
-#include "targetposvectorset.h"
-#include <omnetpp.h>
-
-/**
- * Base station's Application Layer
- */
-class AppBaseStation : public App
+//
+// Abstract module for application layer
+//
+simple App
 {
-    private:
-        std::list<TargetPosVectorSet*> tpvsList;
-
-        void recvMessage(MsgTracking *msg);
-
-    protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
-
-    public:
-        ~AppBaseStation();
-};
-
-#endif
+    @display("i=block/app");
+}

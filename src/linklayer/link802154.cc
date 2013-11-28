@@ -19,6 +19,7 @@
 #include "wsnexception.h"
 #include "channelutil.h"
 #include "energy.h"
+#include "app.h"
 
 Define_Module(Link802154);
 
@@ -62,7 +63,7 @@ void Link802154::handleMessage(cMessage *msg)
                 queueFrame(createFrame((Packet802154*) msg));
             } else {
                 delete msg;
-                EV<< "Error: Cannot send packet when radio is off\n";
+                EV << "Error: Cannot send packet when radio is off\n";
             }
         } else if (msg->getArrivalGate() == gate("radioIn")) {
             if (radioMode == RADIO_ON) {
@@ -211,8 +212,8 @@ void Link802154::sendFrame(Frame802154 *frame, simtime_t propagationDelay, simti
         /* At this time, this node has acquired channel and collision by hidden node problem may occur.
          * In simulation, collision may be gone before this frame is sent completely;
          * therefore frame loss in this situation is simulated here. */
-        desNode->getParentModule()->bubble("Lost frame by collision");
-        EV << "Lost frame by collision";
+        desNode->getParentModule()->bubble("collision at destination node");
+        EV << "Link802154: Lost frame by collision";
         delete frame;
     } else {
         sendDirect(frame, propagationDelay, duration, desNode, inputGateName, gateIndex);
@@ -228,8 +229,8 @@ void Link802154::recvFrame(Frame802154* frame)
 
     /* Frame loss when collision still occurs at time when the frame is received completely. */
     if (cu->hasCollision(this)) {
-        getParentModule()->bubble("Lost frame by collision");
-        EV << "Lost frame by collision";
+        getParentModule()->bubble("collision");
+        EV << "Link802154: Lost frame by collision\n";
         delete frame;
         return;
     }
@@ -238,7 +239,7 @@ void Link802154::recvFrame(Frame802154* frame)
     double rand = uniform(0, 1);
     if (rand < par("ranFrameLossProb").doubleValue()) {
         getParentModule()->bubble("Lost frame");
-        EV << "Lost frame";
+        EV << "Link802154: Lost frame\n";
         delete frame;
         return;
     }
@@ -246,34 +247,45 @@ void Link802154::recvFrame(Frame802154* frame)
     if (frame->getType() == FR_PAYLOAD) {
         // Forward to upper layer
         send(frame->decapsulate(), "netGate$o");
+        delete frame;
     } else if (frame->getType() == FR_STROBE) {
-
+        App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
+        app->notifyEvent();
+        sendStrobeAck(frame);
     } else if (frame->getType() == FR_STROBE_ACK) {
-
+        EV << "Link802154: Receive strobe ACK\n";
+        nStrobe = 0;
+        cancelEvent(strobeTimer);
+        startSending();
+        delete frame;
     }
-    delete frame;
 }
 
 /* =========================================================================
  * Duty cycling sending procedures
  * ========================================================================= */
 
-void Link802154::prepareSending() {
+void Link802154::prepareSending()
+{
     // Check if something being sent
-    if (/*strobeTimer->isScheduled() ||*/ csmaTimer->isScheduled() || releaseChannelTimer->isScheduled()) {
+    if (strobeTimer->isScheduled() || csmaTimer->isScheduled() || releaseChannelTimer->isScheduled()) {
         return;
     }
 
     if (!outQueue.isEmpty()) {
-        // Prepare strobes
-        nStrobe = (int) ceil(par("sR").doubleValue() / par("strobePeriod").doubleValue());
-        EV << "Sending " << nStrobe << " strobes\n";
+        Frame802154 *frame = check_and_cast<Frame802154*>(outQueue.front());
+        if (frame->getType() == FR_PAYLOAD) {
+            // Prepare strobes
+            nStrobe = (int) ceil(par("sR").doubleValue() / par("strobePeriod").doubleValue());
+            EV<< "Link802154: Sending " << nStrobe << " strobes\n";
+        }
         startSending();
     }
 }
 
-void Link802154::startSending() {
-    if (!outQueue.isEmpty()) {
+void Link802154::startSending()
+{
+    if (!outQueue.isEmpty() && !csmaTimer->isScheduled()) {
         if (nStrobe > 0) {
             sendStrobe();
         } else {
@@ -282,9 +294,10 @@ void Link802154::startSending() {
     }
 }
 
-void Link802154::sendStrobe() {
+void Link802154::sendStrobe()
+{
     if (!outQueue.isEmpty()) {
-        EV<< "Sending strobe " << nStrobe << " \n";
+        EV<< "Link802154: Sending strobe " << nStrobe << " \n";
 
         Frame802154 *payloadFrame = check_and_cast<Frame802154*>(outQueue.front());
         Frame802154 *strobe = new Frame802154();
@@ -300,15 +313,36 @@ void Link802154::sendStrobe() {
     }
 }
 
-void Link802154::sendPayload() {
+void Link802154::sendPayload()
+{
     if (!outQueue.isEmpty()) {
-        EV << "Sending payload\n";
+        EV<< "Link802154: Sending payload\n";
         outFrame = check_and_cast<Frame802154*>(outQueue.pop());
         csmaTransmit();
     }
 }
 
-void Link802154::finishSending() {
+void Link802154::sendStrobeAck(Frame802154 *strobe)
+{
+    if (strobe->getDesAddr() == macAddress || strobe->getDesAddr() == BROADCAST_ADDR) {
+        EV<< "Link802154: Sending strobe ack\n";
+        Frame802154 *ack = new Frame802154();
+        ack->setType(FR_STROBE_ACK);
+        ack->setSrcAddr(macAddress);
+        ack->setDesAddr(strobe->getSrcAddr());
+        ack->setByteLength(
+                par("fldFrameControl").longValue() + par("fldSequenceId").longValue() + par("fldDesAddr").longValue()
+                + par("fldSrcAddr").longValue() + par("fldFooter").longValue() + par("phyHeaderSize").longValue());
+
+        // Add ACK to sending queue
+        queueFrame(ack);
+    }
+
+    delete strobe;
+}
+
+void Link802154::finishSending()
+{
     if (--nStrobe > 0) {
         // Set timer for sending next strobe
         scheduleAt(simTime() + par("strobePeriod").doubleValue(), strobeTimer);

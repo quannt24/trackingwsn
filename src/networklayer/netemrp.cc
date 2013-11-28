@@ -22,6 +22,7 @@
 #include "mobility.h"
 #include "worldutil.h"
 #include "msgkind.h"
+#include "app.h"
 
 Define_Module(NetEMRP);
 
@@ -178,13 +179,11 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
     }
 }
 
-/* Create a message to notify application layer that some events occur but the content is
- * not forwarded to application */
+/* Notify application layer that some events occur */
 void NetEMRP::notifyApp()
 {
-    MsgTracking *msg = new MsgTracking();
-    msg->setMsgType(MSG_EVENT_NOTIFY);
-    send(msg, "appGate$o");
+    App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
+    app->notifyEvent();
 }
 
 /*

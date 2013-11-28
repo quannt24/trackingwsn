@@ -16,6 +16,7 @@
 #ifndef __TRACKINGWSN_APPSENSOR_H_
 #define __TRACKINGWSN_APPSENSOR_H_
 
+#include "app.h"
 #include "sensedresult_m.h"
 #include "messagetracking_m.h"
 #include "meacoll.h"
@@ -34,7 +35,7 @@
 /**
  * Sensor's Application Layer
  */
-class AppSensor : public cSimpleModule
+class AppSensor : public App
 {
     private:
         int workMode;
@@ -69,6 +70,7 @@ class AppSensor : public cSimpleModule
     public:
         AppSensor();
         ~AppSensor();
+        virtual void notifyEvent();
 };
 
 #endif

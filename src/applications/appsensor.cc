@@ -67,15 +67,7 @@ void AppSensor::handleMessage(cMessage *msg)
         } else if (msg->getArrivalGate() == gate("netGate$i")) {
             MsgTracking *m = check_and_cast<MsgTracking*>(msg);
             recvMessage(m);
-
-            /* Check if it is currently network initial period; if not, extend active time.
-             * In network initial interval, all nodes * should be active then sleep time should be
-             * uniformly distributed over next 'idleTime' period so that "all sleepy nodes" does
-             * not occur. */
-            if (simTime() > getParentModule()->getSubmodule("net")->par("initInterval").doubleValue()) {
-                // Extend active time when having event
-                setWorkMode(WORK_MODE_ACTIVE);
-            }
+            notifyEvent();
         }
     }
 }
@@ -99,6 +91,20 @@ AppSensor::~AppSensor()
     cancelAndDelete(reportTimer);
     cancelAndDelete(collTimer);
     mc.clear(); // Clear collection
+}
+
+void AppSensor::notifyEvent()
+{
+    Enter_Method_Silent("notifyEvent");
+    EV << "AppSensor: Event notify\n";
+    /* Check if it is currently network initial period; if not, extend active time.
+     * In network initial interval, all nodes should be active then sleep time should be
+     * uniformly distributed over next 'idleTime' period so that "all sleepy nodes" does
+     * not occur. */
+    if (simTime() > getParentModule()->getSubmodule("net")->par("initInterval").doubleValue()) {
+        // Extend active time when having event
+        setWorkMode(WORK_MODE_ACTIVE);
+    }
 }
 
 void AppSensor::sendSenseResult()

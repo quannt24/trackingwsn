@@ -30,15 +30,13 @@
  *     MSG_SYNC_REQUEST = 0; 
  *     MSG_SENSE_RESULT = 1; 
  *     MSG_TRACK_RESULT = 2; 
- *     MSG_EVENT_NOTIFY = 3; 
  * };
  * </pre>
  */
 enum MessageType {
     MSG_SYNC_REQUEST = 0,
     MSG_SENSE_RESULT = 1,
-    MSG_TRACK_RESULT = 2,
-    MSG_EVENT_NOTIFY = 3
+    MSG_TRACK_RESULT = 2
 };
 
 /**

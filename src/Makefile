@@ -43,6 +43,7 @@ OBJS = \
     $O/applications/appbasestation.o \
     $O/applications/appsensor.o \
     $O/applications/meacoll.o \
+    $O/applications/app.o \
     $O/applications/estimator/targetpos.o \
     $O/applications/estimator/lateration.o \
     $O/applications/estimator/estimator.o \
@@ -168,7 +169,10 @@ depend:
 	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc applications/estimator/*.cc energy/*.cc linklayer/*.cc mobility/*.cc networklayer/*.cc nodes/*.cc sensors/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
+$O/applications/app.o: applications/app.cc \
+	applications/app.h
 $O/applications/appbasestation.o: applications/appbasestation.cc \
+	applications/app.h \
 	applications/appbasestation.h \
 	applications/estimator/targetpos.h \
 	applications/messagetracking_m.h \
@@ -179,6 +183,7 @@ $O/applications/appbasestation.o: applications/appbasestation.cc \
 	networklayer/messagecr_m.h \
 	sensors/measurement.h
 $O/applications/appsensor.o: applications/appsensor.cc \
+	applications/app.h \
 	applications/appsensor.h \
 	applications/estimator/estimator.h \
 	applications/estimator/targetpos.h \
@@ -220,6 +225,7 @@ $O/energy/energy.o: energy/energy.cc \
 $O/linklayer/frame802154_m.o: linklayer/frame802154_m.cc \
 	linklayer/frame802154_m.h
 $O/linklayer/link802154.o: linklayer/link802154.cc \
+	applications/app.h \
 	energy/energy.h \
 	linklayer/frame802154_m.h \
 	linklayer/link802154.h \
@@ -233,6 +239,7 @@ $O/mobility/mobility.o: mobility/mobility.cc \
 $O/networklayer/messagecr_m.o: networklayer/messagecr_m.cc \
 	networklayer/messagecr_m.h
 $O/networklayer/netemrp.o: networklayer/netemrp.cc \
+	applications/app.h \
 	applications/estimator/targetpos.h \
 	applications/messagetracking_m.h \
 	energy/energy.h \

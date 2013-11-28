@@ -74,6 +74,7 @@ class Link802154 : public cSimpleModule
         void startSending();
         void sendStrobe();
         void sendPayload();
+        void sendStrobeAck(Frame802154 *strobe);
         void finishSending();
 
         void csmaTransmit();

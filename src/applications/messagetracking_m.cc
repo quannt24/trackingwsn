@@ -36,7 +36,6 @@ EXECUTE_ON_STARTUP(
     e->insert(MSG_SYNC_REQUEST, "MSG_SYNC_REQUEST");
     e->insert(MSG_SENSE_RESULT, "MSG_SENSE_RESULT");
     e->insert(MSG_TRACK_RESULT, "MSG_TRACK_RESULT");
-    e->insert(MSG_EVENT_NOTIFY, "MSG_EVENT_NOTIFY");
 );
 
 Register_Class(MsgTracking);

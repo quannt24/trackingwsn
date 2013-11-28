@@ -21,13 +21,6 @@
 
 Define_Module(AppBaseStation);
 
-AppBaseStation::~AppBaseStation()
-{
-    for (std::list<TargetPosVectorSet*>::iterator tpvsIt = tpvsList.begin(); tpvsIt != tpvsList.end(); tpvsIt++) {
-        delete *tpvsIt;
-    }
-}
-
 void AppBaseStation::initialize()
 {
     cModule *wsn = simulation.getModuleByPath("Wsn");
@@ -51,6 +44,13 @@ void AppBaseStation::handleMessage(cMessage *msg)
     if (msg->getArrivalGate() == gate("netGate$i")) {
         MsgTracking *m = check_and_cast<MsgTracking*>(msg);
         recvMessage(m);
+    }
+}
+
+AppBaseStation::~AppBaseStation()
+{
+    for (std::list<TargetPosVectorSet*>::iterator tpvsIt = tpvsList.begin(); tpvsIt != tpvsList.end(); tpvsIt++) {
+        delete *tpvsIt;
     }
 }
 

@@ -29,7 +29,6 @@ enum MessageType {
     MSG_SYNC_REQUEST = 0; // Nofity other nodes to synchronize sensing
     MSG_SENSE_RESULT = 1; // Raw measurements
     MSG_TRACK_RESULT = 2; // Tracked postions of targets
-    MSG_EVENT_NOTIFY = 3; // Have no content, just to notify application that there are some events
 };
 
 // Application level message for tracking. Extend MessageCR defined by network layer.

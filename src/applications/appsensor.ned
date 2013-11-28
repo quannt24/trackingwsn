@@ -18,7 +18,7 @@ package trackingwsn.applications;
 //
 // Sensor's Application Layer
 //
-simple AppSensor
+simple AppSensor extends App
 {
     parameters:
         double senseInterval = default(0.5);
@@ -30,6 +30,7 @@ simple AppSensor
         double idleTime = default(5); // Idle time before sensor goes to sleep
         double sleepTime = default(20); // Max sleep time
         
+        @class("AppSensor");
         @display("i=block/app");
     gates:
         inout ssGate; // Connect acoustic signal sensor (ass)

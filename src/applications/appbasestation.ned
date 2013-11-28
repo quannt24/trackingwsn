@@ -21,6 +21,7 @@ package trackingwsn.applications;
 simple AppBaseStation
 {
     parameters:
+        @class("AppBaseStation");
         @display("i=block/app");
     gates:
         inout netGate; // Connect network layer

@@ -21,12 +21,14 @@
  * enum FrType {
  *     FR_PAYLOAD = 0; 
  *     FR_STROBE = 1; 
+ *     FR_STROBE_ACK = 2; 
  * };
  * </pre>
  */
 enum FrType {
     FR_PAYLOAD = 0,
-    FR_STROBE = 1
+    FR_STROBE = 1,
+    FR_STROBE_ACK = 2
 };
 
 /**

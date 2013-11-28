@@ -47,25 +47,36 @@ class Link802154 : public cSimpleModule
 
         cPacketQueue outQueue; // Frame sending queue
 
-        // Unslotted CSMA/CA variables
-        int BE; // Back-off exponent
-        int NB; // Number of back-off
-        cMessage *csmaMsg; // Self message for starting CSMA process
-        cMessage *releaseChannelMsg; // Self message for releasing channel timer
-        Frame802154 *txFrame; // Frame going to be transmitted
-
         // Timer for calculating power consumed by transceiver listening
         cMessage *rxConsumeTimer;
 
-        // Timers for duty cycling
+        // Duty cycling variables
+        Frame802154 *payloadFrame; // Payload frame needed to be sent
+        int nStrobe; // Number of strobes going to be sent
+        cMessage *strobeTimer; // Self message for triggering strobe
+        cMessage *prepareSendingTimer; // Timer for calling prepareSending()
         cMessage *dcListenTimer; // Start listening for strobes
         cMessage *dcSleepTimer; // Stop listening for strobes
 
+        // Unslotted CSMA/CA variables
+        int BE; // Back-off exponent
+        int NB; // Number of back-off
+        cMessage *csmaTimer; // Self message for starting CSMA process
+        cMessage *releaseChannelTimer; // Self message for releasing channel timer
+        Frame802154 *txFrame; // Frame going to be transmitted
+        Frame802154 *csmaFrame; // Frame currently being transmitted in CSMA round(s)
+
         Frame802154* createFrame(Packet802154 *packet);
         void queueFrame(Frame802154 *frame);
-        void recvFrame(Frame802154 *frame);
         void sendFrame(Frame802154 *frame, simtime_t propagationDelay, simtime_t duration, Link802154 *desNode,
                 const char *inputGateName, int gateIndex = -1);
+        void recvFrame(Frame802154 *frame);
+
+        void prepareSending(); // Prepare strobes
+        void startSending();
+        void sendStrobe();
+        void sendPayload();
+        void finishSending();
 
         void csmaTransmit();
         bool performCCA();

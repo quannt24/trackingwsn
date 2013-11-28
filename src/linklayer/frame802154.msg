@@ -17,11 +17,10 @@
 enum FrType {
     FR_PAYLOAD = 0; // Payload for upper layer
     FR_STROBE = 1; // Strobe frame for waking up other nodes
+    FR_STROBE_ACK = 2; // Strobe ACK
 };
 
-//
 // Phy/Link frame
-//
 packet Frame802154 {
     int type = FR_PAYLOAD; // Frame type, default is payload
     int srcAddr; // Source MAC address

@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from other/sensedresult.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from sensors/sensedresult.msg.
 //
 
 #ifndef _SENSEDRESULT_M_H_
@@ -21,7 +21,7 @@
 
 
 /**
- * Class generated from <tt>other/sensedresult.msg</tt> by opp_msgc.
+ * Class generated from <tt>sensors/sensedresult.msg</tt> by opp_msgc.
  * <pre>
  * message SensedResult {
  *     MeasurementList meaList;

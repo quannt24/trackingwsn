@@ -86,6 +86,7 @@ Mobility::~Mobility()
 
 double Mobility::getX()
 {
+    Enter_Method_Silent();
     return x;
 }
 
@@ -96,6 +97,7 @@ void Mobility::setX(double x)
 
 double Mobility::getY()
 {
+    Enter_Method_Silent();
     return y;
 }
 

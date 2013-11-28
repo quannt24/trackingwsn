@@ -49,7 +49,7 @@ simple Link802154
         int fldDesAddr = default(8); // Receiver address
         // Security segment is ignored
         int fldFooter = default(2);
-        // Total: 21 bytes
+        // Total: 21 bytes => physical frame size = 27 bytes
         
         // Max packet size for upper layer
         int maxPacketSize = maxFrameSize - fldFrameControl - fldSequenceId - fldDesAddr - fldSrcAddr - fldFooter;
@@ -61,12 +61,13 @@ simple Link802154
 		
 		// X-MAC duty cycling (RADIO_OFF mode)
 		// Receiver
-		double lR = default(0.02); // Listen period
+		double lR = default(0.005); // Listen period, must long enough to receive one of two consecutive strobes
 		double sR = default(0.1); // Sleep period (radio totally off), causes delay
 		// Sender
 		// Strobe period: time between sending 2 strobes. Must be long enough for receiving strobe
 		// ACK and short enough so that current strobe and next strobe fit in one listen period (lR)
-		double strobePeriod = default(0.012);
+		// Transmit 27 bytes over 250kbps channel takes 0.000864s ~> 0.001s
+		double strobePeriod = default(0.003);
 
         @display("i=block/wrxtx");
 

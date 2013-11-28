@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from other/sensedsignal.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from sensors/sensedsignal.msg.
 //
 
 #ifndef _SENSEDSIGNAL_M_H_
@@ -16,7 +16,7 @@
 
 
 /**
- * Class generated from <tt>other/sensedsignal.msg</tt> by opp_msgc.
+ * Class generated from <tt>sensors/sensedsignal.msg</tt> by opp_msgc.
  * <pre>
  * message SensedSignal {
  *     int tarId; 

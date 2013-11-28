@@ -32,10 +32,12 @@ void Link802154::initialize()
 void Link802154::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
-        if (msg == csmaMsg) {
+        if (msg == strobeTimer) {
+            startSending();
+        } else if (msg == csmaTimer) {
             // Start CSMA transmission
             csmaTransmit();
-        } else if (msg == releaseChannelMsg) {
+        } else if (msg == releaseChannelTimer) {
             releaseChannel();
         } else if (msg == rxConsumeTimer) {
             // Calculate consumed energy for completed period
@@ -60,7 +62,7 @@ void Link802154::handleMessage(cMessage *msg)
                 queueFrame(createFrame((Packet802154*) msg));
             } else {
                 delete msg;
-                EV<< "Error: Cannot send packet when radio is off\n";
+                EV << "Error: Cannot send packet when radio is off\n";
             }
         } else if (msg->getArrivalGate() == gate("radioIn")) {
             if (radioMode == RADIO_ON) {
@@ -78,10 +80,17 @@ Link802154::Link802154()
 {
     radioMode = RADIO_OFF;
     numAdjNode = 0;
+
     txFrame = NULL;
-    csmaMsg = new cMessage("CSMAMsg");
-    releaseChannelMsg = new cMessage("ReleaseChannelMsg");
+    csmaTimer = new cMessage("CSMATimer");
+    releaseChannelTimer = new cMessage("ReleaseChannelTimer");
+
     rxConsumeTimer = new cMessage("RxConsumeTimer");
+
+    payloadFrame = NULL;
+    nStrobe = 0;
+    strobeTimer = new cMessage("StrobeTimer");
+    prepareSendingTimer = new cMessage("PrepareSendingTimer");
     dcListenTimer = new cMessage("DcListenTimer");
     dcSleepTimer = new cMessage("DcSleepTimer");
 }
@@ -90,9 +99,11 @@ Link802154::~Link802154()
 {
     cancelAndDelete(dcSleepTimer);
     cancelAndDelete(dcListenTimer);
+    cancelAndDelete(strobeTimer);
+    cancelAndDelete(prepareSendingTimer);
     cancelAndDelete(rxConsumeTimer);
-    cancelAndDelete(csmaMsg);
-    cancelAndDelete(releaseChannelMsg);
+    cancelAndDelete(csmaTimer);
+    cancelAndDelete(releaseChannelTimer);
     if (txFrame != NULL) delete txFrame;
     outQueue.clear();
 }
@@ -179,18 +190,33 @@ Frame802154* Link802154::createFrame(Packet802154* packet)
     return frm;
 }
 
-/*
- * Add Frame to sending queue and start a transmit timer.
- */
 void Link802154::queueFrame(Frame802154 *frame)
 {
     outQueue.insert(frame);
-    // If CSMA transmission is not in process, start new one
-    if (!csmaMsg->isScheduled() && !releaseChannelMsg->isScheduled()) scheduleAt(simTime(), csmaMsg);
+    if (!strobeTimer->isScheduled() && !csmaTimer->isScheduled() && !releaseChannelTimer->isScheduled()) {
+        prepareSending();
+    }
+}
+
+/* Wrapper for sendDirect() */
+void Link802154::sendFrame(Frame802154 *frame, simtime_t propagationDelay, simtime_t duration, Link802154 *desNode,
+        const char *inputGateName, int gateIndex)
+{
+    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
+    if (cu->hasCollision(desNode)) {
+        /* At this time, this node has acquired channel and collision by hidden node problem may occur.
+         * In simulation, collision may be gone before this frame is sent completely;
+         * therefore frame loss in this situation is simulated here. */
+        desNode->getParentModule()->bubble("Lost frame by collision");
+        EV << "Lost frame by collision at destination node\n";
+        delete frame;
+    } else {
+        sendDirect(frame, propagationDelay, duration, desNode, inputGateName, gateIndex);
+    }
 }
 
 /*
- * Receive frame from other node, forward to upper layer
+ * Receive frame from other node, forward payload to upper layer
  */
 void Link802154::recvFrame(Frame802154* frame)
 {
@@ -213,29 +239,92 @@ void Link802154::recvFrame(Frame802154* frame)
         return;
     }
 
-    // TODO Control frame of link layer will not be forward to upper layer
-    EV << "Link802154::recvFrame : Physical frame size " << frame->getByteLength() << "\n";
-    // Forward to upper layer
-    send(frame->decapsulate(), "netGate$o");
-    delete frame;
-}
-
-/* Wrapper for sendDirect() */
-void Link802154::sendFrame(Frame802154 *frame, simtime_t propagationDelay, simtime_t duration, Link802154 *desNode,
-        const char *inputGateName, int gateIndex)
-{
-    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
-    if (cu->hasCollision(desNode)) {
-        /* At this time, this node has acquired channel and collision by hidden node problem may occur.
-         * In simulation, collision may be gone before this frame is sent completely;
-         * therefore frame loss in this situation is simulated here. */
-        desNode->getParentModule()->bubble("Lost frame by collision");
-        EV << "Lost frame by collision";
+    if (frame->getType() == FR_PAYLOAD) {
+        EV << "Link802154: Payload received\n";
+        // Forward to upper layer
+        send(frame->decapsulate(), "netGate$o");
         delete frame;
-    } else {
-        sendDirect(frame, propagationDelay, duration, desNode, inputGateName, gateIndex);
+    } else if (frame->getType() == FR_STROBE) {
+        // TODO Receive strobe
+        EV << "Link802154: Strobe received\n";
+    } else if (frame->getType() == FR_STROBE_ACK) {
+        nStrobe = 0;
+        cancelEvent(strobeTimer);
+        sendPayload();
     }
 }
+
+/* =========================================================================
+ * Duty cycling sending procedures
+ * ========================================================================= */
+
+void Link802154::prepareSending() {
+    // TODO Check if sending something
+
+    if (outQueue.isEmpty()) {
+        payloadFrame = NULL;
+        nStrobe = 0;
+        return; // Nothing to send
+    }
+
+    // Pop out payload frame
+    if ((payloadFrame = (Frame802154*) outQueue.pop()) == NULL) {
+        nStrobe = 0;
+        return;
+    }
+
+    // Prepare strobes
+    nStrobe = (int) ceil(par("sR").doubleValue() / par("strobePeriod").doubleValue());
+    EV << "Sending " << nStrobe << " strobes\n";
+    startSending();
+}
+
+void Link802154::startSending() {
+    if (payloadFrame == NULL) {
+        nStrobe = 0;
+        return; // Nothing to send
+    }
+
+    if (nStrobe > 0) {
+        sendStrobe();
+    } else {
+        sendPayload();
+    }
+}
+
+void Link802154::sendStrobe() {
+    Frame802154 *strobe = new Frame802154();
+    strobe->setType(FR_STROBE);
+    strobe->setSrcAddr(macAddress);
+    strobe->setDesAddr(payloadFrame->getDesAddr());
+    strobe->setByteLength(
+            par("fldFrameControl").longValue() + par("fldSequenceId").longValue() + par("fldDesAddr").longValue()
+                    + par("fldSrcAddr").longValue() + par("fldFooter").longValue() + par("phyHeaderSize").longValue());
+
+    txFrame = strobe;
+    csmaTransmit();
+}
+
+void Link802154::sendPayload() {
+    if (payloadFrame != NULL) {
+        txFrame = payloadFrame;
+        csmaTransmit();
+    }
+}
+
+void Link802154::finishSending() {
+    if (--nStrobe > 0) {
+        // Set timer for sending next strobe
+        scheduleAt(simTime() + par("strobePeriod").doubleValue(), strobeTimer);
+    } else {
+        // Send next payload
+        prepareSending();
+    }
+}
+
+/* =========================================================================
+ * CSMA/CA sending procedures
+ * ========================================================================= */
 
 /*
  * Transmit a prepared frame using unslotted CSMA/CA.
@@ -243,11 +332,10 @@ void Link802154::sendFrame(Frame802154 *frame, simtime_t propagationDelay, simti
  */
 void Link802154::csmaTransmit()
 {
-    if (txFrame == NULL) {
+    if (csmaFrame == NULL) {
         // Initialize when a frame is transmitted for first time
-        if (outQueue.isEmpty()) return; // Nothing to transmit
-        // Pop new frame from queue
-        txFrame = (Frame802154*) outQueue.pop();
+        if (txFrame == NULL) return; // Nothing to transmit
+        csmaFrame = txFrame;
         // Initialize first CSMA attempt
         NB = 0;
         BE = par("macMinBE").longValue();
@@ -263,13 +351,16 @@ void Link802154::csmaTransmit()
 
     if (performCCA()) {
         transmit();
+        EV << "OK here\n";
+        csmaFrame = NULL;
         txFrame = NULL;
     } else {
         if (NB < par("aMaxNB").longValue()) {
             backoff();
         } else {
             // TODO Transmission failure
-            delete txFrame;
+            delete csmaFrame; // Also be txFrame
+            csmaFrame = NULL;
             txFrame = NULL;
             EV << "Link802154::csmaTransmit : Transmission failure\n";
         }
@@ -296,6 +387,7 @@ void Link802154::releaseChannel()
 {
     ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
     cu->releaseChannel(this);
+    finishSending();
     EV << "Link802154::releaseChannel\n";
 }
 
@@ -307,13 +399,13 @@ void Link802154::transmit()
 {
     double txDuration = 0;
 
-    if (txFrame != NULL) {
-        txDuration = ((double) txFrame->getBitLength()) / par("bitRate").doubleValue();
-        int desAddr = txFrame->getDesAddr();
+    if (csmaFrame != NULL) {
+        txDuration = ((double) csmaFrame->getBitLength()) / par("bitRate").doubleValue();
+        int desAddr = csmaFrame->getDesAddr();
         Link802154 *des;
 
         // Draw energy for transmission
-        useEnergyTx(txFrame->getBitLength());
+        useEnergyTx(csmaFrame->getBitLength());
 
         if (desAddr == BROADCAST_ADDR) {
             // Broadcast frame. In simulation, we send frame to all connected nodes
@@ -321,32 +413,33 @@ void Link802154::transmit()
             for (int i = 0; i < numAdjNode; i++) {
                 des = (Link802154*) simulation.getModule(adjNode[i]);
                 if (des != NULL) {
-                    copy = txFrame->dup();
+                    copy = csmaFrame->dup();
                     sendFrame(copy, 0, txDuration, des, "radioIn");
                 } else {
                     EV << "Link802154::transmitFrames : destination error, ID " << adjNode[i] << '\n';
                     delete copy;
                 }
             }
-            delete txFrame; // Original frame is redundant
+            delete csmaFrame; // Original frame is redundant
         } else {
             // Transmit to specific destination
             des = (Link802154*) simulation.getModule(desAddr);
             if (des != NULL) {
-                sendFrame(txFrame, 0, txDuration, des, "radioIn");
+                sendFrame(csmaFrame, 0, txDuration, des, "radioIn");
             } else {
                 EV << "Link802154::transmitFrames : destination error, ID " << desAddr << '\n';
-                delete txFrame;
+                delete csmaFrame;
             }
         }
     }
 
     // Set a timer to release channel
-    scheduleAt(simTime() + txDuration, releaseChannelMsg);
+    scheduleAt(simTime() + txDuration, releaseChannelTimer);
 
     if (!outQueue.isEmpty()) {
-        // Set a timer to transmit next frame in queue
-        scheduleAt(simTime() + txDuration, csmaMsg); // TODO A processing time may need to be added to timer
+        // Set a timer to transmit next payload frame in queue (if any)
+        //scheduleAt(simTime() + txDuration, csmaTimer); // TODO A processing time may need to be added to timer
+        scheduleAt(simTime() + txDuration, prepareSendingTimer); // TODO A processing time may need to be added to timer
     }
 }
 
@@ -356,7 +449,7 @@ void Link802154::transmit()
 void Link802154::backoff()
 {
     double backoffDur = intuniform(0, (int)(pow(2, BE) - 1)) * aUnitBP;
-    scheduleAt(simTime() + backoffDur, csmaMsg);
+    scheduleAt(simTime() + backoffDur, csmaTimer);
     EV << "Link802154::backoff : duration " << backoffDur << '\n';
 }
 

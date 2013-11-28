@@ -35,6 +35,7 @@ EXECUTE_ON_STARTUP(
     if (!e) enums.getInstance()->add(e = new cEnum("FrType"));
     e->insert(FR_PAYLOAD, "FR_PAYLOAD");
     e->insert(FR_STROBE, "FR_STROBE");
+    e->insert(FR_STROBE_ACK, "FR_STROBE_ACK");
 );
 
 Register_Class(Frame802154);

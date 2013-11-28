@@ -32,7 +32,9 @@ void Link802154::initialize()
 void Link802154::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
-        if (msg == csmaTimer) {
+        if (msg == strobeTimer) {
+            startSending();
+        } else if (msg == csmaTimer) {
             // Start CSMA transmission
             csmaTransmit();
         } else if (msg == releaseChannelTimer) {
@@ -79,6 +81,8 @@ Link802154::Link802154()
     radioMode = RADIO_OFF;
     numAdjNode = 0;
 
+    nStrobe = 0;
+    strobeTimer = new cMessage("StrobeTimer");
     dcListenTimer = new cMessage("DcListenTimer");
     dcSleepTimer = new cMessage("DcSleepTimer");
 
@@ -98,6 +102,7 @@ Link802154::~Link802154()
         delete pkt;
     }
 
+    cancelAndDelete(strobeTimer);
     cancelAndDelete(dcSleepTimer);
     cancelAndDelete(dcListenTimer);
 
@@ -194,8 +199,7 @@ Frame802154* Link802154::createFrame(Packet802154* packet)
 void Link802154::queueFrame(Frame802154 *frame)
 {
     outQueue.insert(frame);
-    // If CSMA transmission is not in process, start new one
-    if (!csmaTimer->isScheduled() && !releaseChannelTimer->isScheduled()) sendPayload();
+    prepareSending();
 }
 
 /* Wrapper for sendDirect() */
@@ -239,21 +243,78 @@ void Link802154::recvFrame(Frame802154* frame)
         return;
     }
 
-    // TODO Control frame of link layer will not be forward to upper layer
-    EV << "Link802154::recvFrame : Physical frame size " << frame->getByteLength() << "\n";
-    // Forward to upper layer
-    send(frame->decapsulate(), "netGate$o");
+    if (frame->getType() == FR_PAYLOAD) {
+        // Forward to upper layer
+        send(frame->decapsulate(), "netGate$o");
+    } else if (frame->getType() == FR_STROBE) {
+
+    } else if (frame->getType() == FR_STROBE_ACK) {
+
+    }
     delete frame;
 }
 
 /* =========================================================================
  * Duty cycling sending procedures
  * ========================================================================= */
+
+void Link802154::prepareSending() {
+    // Check if something being sent
+    if (/*strobeTimer->isScheduled() ||*/ csmaTimer->isScheduled() || releaseChannelTimer->isScheduled()) {
+        return;
+    }
+
+    if (!outQueue.isEmpty()) {
+        // Prepare strobes
+        nStrobe = (int) ceil(par("sR").doubleValue() / par("strobePeriod").doubleValue());
+        EV << "Sending " << nStrobe << " strobes\n";
+        startSending();
+    }
+}
+
+void Link802154::startSending() {
+    if (!outQueue.isEmpty()) {
+        if (nStrobe > 0) {
+            sendStrobe();
+        } else {
+            sendPayload();
+        }
+    }
+}
+
+void Link802154::sendStrobe() {
+    if (!outQueue.isEmpty()) {
+        EV<< "Sending strobe " << nStrobe << " \n";
+
+        Frame802154 *payloadFrame = check_and_cast<Frame802154*>(outQueue.front());
+        Frame802154 *strobe = new Frame802154();
+        strobe->setType(FR_STROBE);
+        strobe->setSrcAddr(macAddress);
+        strobe->setDesAddr(payloadFrame->getDesAddr());
+        strobe->setByteLength(
+                par("fldFrameControl").longValue() + par("fldSequenceId").longValue() + par("fldDesAddr").longValue()
+                + par("fldSrcAddr").longValue() + par("fldFooter").longValue() + par("phyHeaderSize").longValue());
+
+        outFrame = strobe;
+        csmaTransmit();
+    }
+}
+
 void Link802154::sendPayload() {
     if (!outQueue.isEmpty()) {
         EV << "Sending payload\n";
         outFrame = check_and_cast<Frame802154*>(outQueue.pop());
         csmaTransmit();
+    }
+}
+
+void Link802154::finishSending() {
+    if (--nStrobe > 0) {
+        // Set timer for sending next strobe
+        scheduleAt(simTime() + par("strobePeriod").doubleValue(), strobeTimer);
+    } else {
+        // Send next payload
+        prepareSending();
     }
 }
 
@@ -321,7 +382,7 @@ void Link802154::releaseChannel()
     ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
     cu->releaseChannel(this);
     EV << "Link802154::releaseChannel\n";
-    sendPayload();
+    finishSending();
 }
 
 /*

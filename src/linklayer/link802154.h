@@ -45,12 +45,14 @@ class Link802154 : public cSimpleModule
         int numAdjNode; // Number of connected nodes (adjacent nodes), which is <= MAX_CONNECTIONS
         int adjNode[MAX_CONNECTIONS]; // Adjacent nodes' addresses
 
-        cPacketQueue outQueue; // Frame sending queue
+        cPacketQueue outQueue; // Payload frame sending queue
 
         // Timer for calculating power consumed by transceiver listening
         cMessage *rxConsumeTimer;
 
-        // Timers for duty cycling
+        // Duty cycling
+        int nStrobe;
+        cMessage *strobeTimer;
         cMessage *dcListenTimer; // Start listening for strobes
         cMessage *dcSleepTimer; // Stop listening for strobes
 
@@ -68,6 +70,9 @@ class Link802154 : public cSimpleModule
                 const char *inputGateName, int gateIndex = -1);
         void recvFrame(Frame802154 *frame);
 
+        void prepareSending();
+        void startSending();
+        void sendStrobe();
         void sendPayload();
         void finishSending();
 

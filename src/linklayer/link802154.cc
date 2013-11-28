@@ -35,7 +35,7 @@ void Link802154::handleMessage(cMessage *msg)
         if (msg == csmaTimer) {
             // Start CSMA transmission
             csmaTransmit();
-        } else if (msg == releaseChannelMsg) {
+        } else if (msg == releaseChannelTimer) {
             releaseChannel();
         } else if (msg == rxConsumeTimer) {
             // Calculate consumed energy for completed period
@@ -78,23 +78,32 @@ Link802154::Link802154()
 {
     radioMode = RADIO_OFF;
     numAdjNode = 0;
-    txFrame = NULL;
-    csmaTimer = new cMessage("CSMAMsg");
-    releaseChannelMsg = new cMessage("ReleaseChannelMsg");
-    rxConsumeTimer = new cMessage("RxConsumeTimer");
+
     dcListenTimer = new cMessage("DcListenTimer");
     dcSleepTimer = new cMessage("DcSleepTimer");
+
+    outFrame = NULL;
+    txFrame = NULL;
+    csmaTimer = new cMessage("CSMATimer");
+    releaseChannelTimer = new cMessage("ReleaseChannelTimer");
+    rxConsumeTimer = new cMessage("RxConsumeTimer");
 }
 
 Link802154::~Link802154()
 {
+    cancelAndDelete(rxConsumeTimer);
+    cPacket *pkt;
+    while (!outQueue.isEmpty()) {
+        pkt = outQueue.pop();
+        delete pkt;
+    }
+
     cancelAndDelete(dcSleepTimer);
     cancelAndDelete(dcListenTimer);
-    cancelAndDelete(rxConsumeTimer);
+
     cancelAndDelete(csmaTimer);
-    cancelAndDelete(releaseChannelMsg);
+    cancelAndDelete(releaseChannelTimer);
     if (txFrame != NULL) delete txFrame;
-    outQueue.clear();
 }
 
 void Link802154::setRadioMode(int mode, bool dutyCycling)
@@ -186,7 +195,7 @@ void Link802154::queueFrame(Frame802154 *frame)
 {
     outQueue.insert(frame);
     // If CSMA transmission is not in process, start new one
-    if (!csmaTimer->isScheduled() && !releaseChannelMsg->isScheduled()) scheduleAt(simTime(), csmaTimer);
+    if (!csmaTimer->isScheduled() && !releaseChannelTimer->isScheduled()) sendPayload();
 }
 
 /* Wrapper for sendDirect() */
@@ -238,6 +247,17 @@ void Link802154::recvFrame(Frame802154* frame)
 }
 
 /* =========================================================================
+ * Duty cycling sending procedures
+ * ========================================================================= */
+void Link802154::sendPayload() {
+    if (!outQueue.isEmpty()) {
+        EV << "Sending payload\n";
+        outFrame = check_and_cast<Frame802154*>(outQueue.pop());
+        csmaTransmit();
+    }
+}
+
+/* =========================================================================
  * CSMA/CA sending procedures
  * ========================================================================= */
 
@@ -249,9 +269,9 @@ void Link802154::csmaTransmit()
 {
     if (txFrame == NULL) {
         // Initialize when a frame is transmitted for first time
-        if (outQueue.isEmpty()) return; // Nothing to transmit
-        // Pop new frame from queue
-        txFrame = (Frame802154*) outQueue.pop();
+        if (outFrame == NULL) return; // Nothing to transmit
+        txFrame = outFrame;
+        outFrame = NULL;
         // Initialize first CSMA attempt
         NB = 0;
         BE = par("macMinBE").longValue();
@@ -301,6 +321,7 @@ void Link802154::releaseChannel()
     ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
     cu->releaseChannel(this);
     EV << "Link802154::releaseChannel\n";
+    sendPayload();
 }
 
 /*
@@ -346,12 +367,7 @@ void Link802154::transmit()
     }
 
     // Set a timer to release channel
-    scheduleAt(simTime() + txDuration, releaseChannelMsg);
-
-    if (!outQueue.isEmpty()) {
-        // Set a timer to transmit next frame in queue
-        scheduleAt(simTime() + txDuration, csmaTimer); // TODO A processing time may need to be added to timer
-    }
+    scheduleAt(simTime() + txDuration, releaseChannelTimer);
 }
 
 /*

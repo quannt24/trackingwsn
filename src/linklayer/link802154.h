@@ -58,14 +58,18 @@ class Link802154 : public cSimpleModule
         int BE; // Back-off exponent
         int NB; // Number of back-off
         cMessage *csmaTimer; // Self message for starting CSMA process
-        cMessage *releaseChannelMsg; // Self message for releasing channel timer
-        Frame802154 *txFrame; // Frame going to be transmitted
+        cMessage *releaseChannelTimer; // Self message for releasing channel timer
+        Frame802154 *outFrame; // Frame going to be transmitted
+        Frame802154 *txFrame; // Frame being sent by CSMA
 
         Frame802154* createFrame(Packet802154 *packet);
         void queueFrame(Frame802154 *frame);
         void sendFrame(Frame802154 *frame, simtime_t propagationDelay, simtime_t duration, Link802154 *desNode,
                 const char *inputGateName, int gateIndex = -1);
         void recvFrame(Frame802154 *frame);
+
+        void sendPayload();
+        void finishSending();
 
         void csmaTransmit();
         bool performCCA();

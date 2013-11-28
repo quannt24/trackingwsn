@@ -54,7 +54,6 @@ class Link802154 : public cSimpleModule
         Frame802154 *payloadFrame; // Payload frame needed to be sent
         int nStrobe; // Number of strobes going to be sent
         cMessage *strobeTimer; // Self message for triggering strobe
-        cMessage *prepareSendingTimer; // Timer for calling prepareSending()
         cMessage *dcListenTimer; // Start listening for strobes
         cMessage *dcSleepTimer; // Stop listening for strobes
 

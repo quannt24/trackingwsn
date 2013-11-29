@@ -249,14 +249,22 @@ void Link802154::recvFrame(Frame802154* frame)
         send(frame->decapsulate(), "netGate$o");
         delete frame;
     } else if (frame->getType() == FR_STROBE) {
-        App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
-        app->notifyEvent();
-        sendStrobeAck(frame);
+        if (frame->getDesAddr() == macAddress) {
+            App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
+            app->notifyEvent();
+            sendStrobeAck(frame);
+        } else if (frame->getDesAddr() == BROADCAST_ADDR) {
+            App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
+            app->notifyEvent();
+        }
+        delete frame;
     } else if (frame->getType() == FR_STROBE_ACK) {
-        EV << "Link802154: Receive strobe ACK\n";
-        nStrobe = 0;
-        cancelEvent(strobeTimer);
-        startSending();
+        if (frame->getDesAddr() == macAddress) {
+            EV << "Link802154: Receive strobe ACK\n";
+            nStrobe = 0;
+            cancelEvent(strobeTimer);
+            startSending();
+        }
         delete frame;
     }
 }
@@ -340,8 +348,6 @@ void Link802154::sendStrobeAck(Frame802154 *strobe)
         // Add ACK to sending queue
         queueFrame(ack);
     }
-
-    delete strobe;
 }
 
 void Link802154::finishSending()

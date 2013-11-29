@@ -34,7 +34,7 @@ enum MessageType {
 // Application level message for tracking. Extend MessageCR defined by network layer.
 packet MsgTracking extends MessageCR {
     int msgType;
-    int msgSize = 10; // Message size in byte. Default is 10 for routingType, desMacAddr and msgType
+    int msgSize = 11; // Message size in byte. Default is 10 for routingType, desMacAddr, strobeFlag and msgType
 }
 
 // Nofity other nodes to synchronize sensing

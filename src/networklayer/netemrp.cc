@@ -36,7 +36,7 @@ void NetEMRP::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
         if (msg == initMsg) {
-            requestRelay();
+            requestRelay(true);
         } else if (msg->getKind() == EMRP_RES_RELAY) {
             // This message has a packet passed in context pointer
             sendRelayInfo((PacketEMRP*) msg->getContextPointer());
@@ -189,7 +189,7 @@ void NetEMRP::notifyApp()
 /*
  * Broadcast request for info of base station/relay/backup node.
  */
-void NetEMRP::requestRelay()
+void NetEMRP::requestRelay(bool init)
 {
     // Send request for relay node
     PacketEMRP *pkt = new PacketEMRP();
@@ -198,6 +198,7 @@ void NetEMRP::requestRelay()
     pkt->setSrcMacAddr(getMacAddr());
     // No need to set desMacAddr here
 
+    if (!init) pkt->setStrobeFlag(true);
     pkt->setByteLength(pkt->getPkSize());
 
     send(pkt, "linkGate$o");
@@ -354,7 +355,7 @@ void NetEMRP::updateRelayEnergy(PacketEMRP_EnergyInfo *ei)
     if (enerRn < par("criticalEnergy").doubleValue()) {
         if (enerBn < par("criticalEnergy").doubleValue()) {
             // Find new relay/backup nodes
-            requestRelay();
+            requestRelay(false);
         } else {
             // Switch to backup node
             switchRN();
@@ -424,6 +425,7 @@ void NetEMRP::sendMsgDown(MessageCR *msg)
         // No need to set desMacAddr here
     }
     pkt->setSrcMacAddr(getMacAddr());
+    pkt->setStrobeFlag(msg->getStrobeFlag());
 
     pkt->setByteLength(pkt->getPkSize());
     pkt->encapsulate(msg); // Packet length will be increased by message length

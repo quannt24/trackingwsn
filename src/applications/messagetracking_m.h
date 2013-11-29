@@ -44,7 +44,7 @@ enum MessageType {
  * <pre>
  * packet MsgTracking extends MessageCR {
  *     int msgType;
- *     int msgSize = 10; 
+ *     int msgSize = 11; 
  * }
  * </pre>
  */

@@ -43,7 +43,7 @@ Register_Class(MsgTracking);
 MsgTracking::MsgTracking(const char *name, int kind) : MessageCR(name,kind)
 {
     this->msgType_var = 0;
-    this->msgSize_var = 10;
+    this->msgSize_var = 11;
 }
 
 MsgTracking::MsgTracking(const MsgTracking& other) : MessageCR(other)

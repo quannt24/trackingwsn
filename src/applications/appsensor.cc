@@ -286,6 +286,8 @@ void AppSensor::trackTargets()
          * Each TargetPos contains target ID + x + y will have size of 1 + 8 + 8 bytes */
         msgTrackResult->setMsgSize(msgTrackResult->getMsgSize() + 17 * tpList.size());
         msgTrackResult->setByteLength(msgTrackResult->getMsgSize());
+        // Turn on strobe flag for this message
+        msgTrackResult->setStrobeFlag(true);
         // Send result to base station
         send(msgTrackResult, "netGate$o");
     } else {

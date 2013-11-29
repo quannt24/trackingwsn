@@ -44,6 +44,8 @@ MessageCR::MessageCR(const char *name, int kind) : cPacket(name,kind)
 {
     this->routingType_var = 0;
     this->desMacAddr_var = 0;
+    this->strobeFlag_var = false;
+    this->msgSize_var = 10;
 }
 
 MessageCR::MessageCR(const MessageCR& other) : cPacket(other)
@@ -67,6 +69,8 @@ void MessageCR::copy(const MessageCR& other)
 {
     this->routingType_var = other.routingType_var;
     this->desMacAddr_var = other.desMacAddr_var;
+    this->strobeFlag_var = other.strobeFlag_var;
+    this->msgSize_var = other.msgSize_var;
 }
 
 void MessageCR::parsimPack(cCommBuffer *b)
@@ -74,6 +78,8 @@ void MessageCR::parsimPack(cCommBuffer *b)
     cPacket::parsimPack(b);
     doPacking(b,this->routingType_var);
     doPacking(b,this->desMacAddr_var);
+    doPacking(b,this->strobeFlag_var);
+    doPacking(b,this->msgSize_var);
 }
 
 void MessageCR::parsimUnpack(cCommBuffer *b)
@@ -81,6 +87,8 @@ void MessageCR::parsimUnpack(cCommBuffer *b)
     cPacket::parsimUnpack(b);
     doUnpacking(b,this->routingType_var);
     doUnpacking(b,this->desMacAddr_var);
+    doUnpacking(b,this->strobeFlag_var);
+    doUnpacking(b,this->msgSize_var);
 }
 
 int MessageCR::getRoutingType() const
@@ -101,6 +109,26 @@ int MessageCR::getDesMacAddr() const
 void MessageCR::setDesMacAddr(int desMacAddr)
 {
     this->desMacAddr_var = desMacAddr;
+}
+
+bool MessageCR::getStrobeFlag() const
+{
+    return strobeFlag_var;
+}
+
+void MessageCR::setStrobeFlag(bool strobeFlag)
+{
+    this->strobeFlag_var = strobeFlag;
+}
+
+int MessageCR::getMsgSize() const
+{
+    return msgSize_var;
+}
+
+void MessageCR::setMsgSize(int msgSize)
+{
+    this->msgSize_var = msgSize;
 }
 
 class MessageCRDescriptor : public cClassDescriptor
@@ -150,7 +178,7 @@ const char *MessageCRDescriptor::getProperty(const char *propertyname) const
 int MessageCRDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
+    return basedesc ? 4+basedesc->getFieldCount(object) : 4;
 }
 
 unsigned int MessageCRDescriptor::getFieldTypeFlags(void *object, int field) const
@@ -164,8 +192,10 @@ unsigned int MessageCRDescriptor::getFieldTypeFlags(void *object, int field) con
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<4) ? fieldTypeFlags[field] : 0;
 }
 
 const char *MessageCRDescriptor::getFieldName(void *object, int field) const
@@ -179,8 +209,10 @@ const char *MessageCRDescriptor::getFieldName(void *object, int field) const
     static const char *fieldNames[] = {
         "routingType",
         "desMacAddr",
+        "strobeFlag",
+        "msgSize",
     };
-    return (field>=0 && field<2) ? fieldNames[field] : NULL;
+    return (field>=0 && field<4) ? fieldNames[field] : NULL;
 }
 
 int MessageCRDescriptor::findField(void *object, const char *fieldName) const
@@ -189,6 +221,8 @@ int MessageCRDescriptor::findField(void *object, const char *fieldName) const
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
     if (fieldName[0]=='r' && strcmp(fieldName, "routingType")==0) return base+0;
     if (fieldName[0]=='d' && strcmp(fieldName, "desMacAddr")==0) return base+1;
+    if (fieldName[0]=='s' && strcmp(fieldName, "strobeFlag")==0) return base+2;
+    if (fieldName[0]=='m' && strcmp(fieldName, "msgSize")==0) return base+3;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -203,8 +237,10 @@ const char *MessageCRDescriptor::getFieldTypeString(void *object, int field) con
     static const char *fieldTypeStrings[] = {
         "int",
         "int",
+        "bool",
+        "int",
     };
-    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<4) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *MessageCRDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -246,6 +282,8 @@ std::string MessageCRDescriptor::getFieldAsString(void *object, int field, int i
     switch (field) {
         case 0: return long2string(pp->getRoutingType());
         case 1: return long2string(pp->getDesMacAddr());
+        case 2: return bool2string(pp->getStrobeFlag());
+        case 3: return long2string(pp->getMsgSize());
         default: return "";
     }
 }
@@ -262,6 +300,8 @@ bool MessageCRDescriptor::setFieldAsString(void *object, int field, int i, const
     switch (field) {
         case 0: pp->setRoutingType(string2long(value)); return true;
         case 1: pp->setDesMacAddr(string2long(value)); return true;
+        case 2: pp->setStrobeFlag(string2bool(value)); return true;
+        case 3: pp->setMsgSize(string2long(value)); return true;
         default: return false;
     }
 }
@@ -277,8 +317,10 @@ const char *MessageCRDescriptor::getFieldStructName(void *object, int field) con
     static const char *fieldStructNames[] = {
         NULL,
         NULL,
+        NULL,
+        NULL,
     };
-    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<4) ? fieldStructNames[field] : NULL;
 }
 
 void *MessageCRDescriptor::getFieldStructPointer(void *object, int field, int i) const

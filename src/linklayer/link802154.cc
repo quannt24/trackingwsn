@@ -28,6 +28,7 @@ void Link802154::initialize()
     // Address is also module id of link module. This address is only available when initializing
     // stage of this module finishes.
     macAddress = this->getId();
+    WATCH(radioMode);
 }
 
 void Link802154::handleMessage(cMessage *msg)
@@ -71,6 +72,7 @@ void Link802154::handleMessage(cMessage *msg)
                 recvFrame((Frame802154*) msg);
             } else {
                 // Just drop frame if radio is off
+                getParentModule()->bubble("Radio OFF");
                 delete msg;
             }
         }
@@ -119,22 +121,28 @@ void Link802154::setRadioMode(int mode, bool dutyCycling)
     if (mode == RADIO_OFF || mode == RADIO_ON) {
         radioMode = mode;
 
-        if (mode == RADIO_ON && !rxConsumeTimer->isScheduled()) {
-            // Turn on transceiver and set power consuming timer for simulation
-            rxConsumeTimer->setTimestamp();
-            scheduleAt(simTime() + par("rxConsumingPeriod").doubleValue(), rxConsumeTimer);
+        if (mode == RADIO_ON) {
+            if (!rxConsumeTimer->isScheduled()) {
+                // Turn on transceiver and set power consuming timer for simulation
+                rxConsumeTimer->setTimestamp();
+                scheduleAt(simTime() + par("rxConsumingPeriod").doubleValue(), rxConsumeTimer);
+            }
 
             // If called by duty cycling, plan a sleep timer
+            cancelEvent(dcSleepTimer);
             if (dutyCycling) scheduleAt(simTime() + par("lR").doubleValue(), dcSleepTimer);
-        } else if (mode == RADIO_OFF && rxConsumeTimer->isScheduled()) {
-            // Turn off transceiver and calculate consumed energy of last incomplete timer's period
-            double onTime = SIMTIME_DBL(simTime() - rxConsumeTimer->getTimestamp());
-            if (onTime > 0) {
-                useEnergyRx(onTime);
+        } else if (mode == RADIO_OFF) {
+            if (rxConsumeTimer->isScheduled()) {
+                // Turn off transceiver and calculate consumed energy of last incomplete timer's period
+                double onTime = SIMTIME_DBL(simTime() - rxConsumeTimer->getTimestamp());
+                if (onTime > 0) {
+                    useEnergyRx(onTime);
+                }
+                cancelEvent(rxConsumeTimer);
             }
-            cancelEvent(rxConsumeTimer);
 
             // Always start duty cycling when radio mode is off
+            cancelEvent(dcListenTimer);
             scheduleAt(simTime() + par("sR").doubleValue(), dcListenTimer);
         }
     }
@@ -249,6 +257,7 @@ void Link802154::recvFrame(Frame802154* frame)
         send(frame->decapsulate(), "netGate$o");
         delete frame;
     } else if (frame->getType() == FR_STROBE) {
+        getParentModule()->bubble("Get strobe");
         if (frame->getDesAddr() == macAddress) {
             App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
             app->notifyEvent();
@@ -282,7 +291,7 @@ void Link802154::prepareSending()
 
     if (!outQueue.isEmpty()) {
         Frame802154 *frame = check_and_cast<Frame802154*>(outQueue.front());
-        Packet802154 *pkt = check_and_cast<Packet802154*>(frame->getEncapsulatedPacket());
+        Packet802154 *pkt = (Packet802154*) frame->getEncapsulatedPacket();
         if (frame->getType() == FR_PAYLOAD && pkt != NULL && pkt->getStrobeFlag()) {
             // Prepare strobes
             nStrobe = (int) ceil(par("sR").doubleValue() / par("strobePeriod").doubleValue());

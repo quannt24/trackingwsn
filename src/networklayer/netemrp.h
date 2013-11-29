@@ -57,8 +57,9 @@ class NetEMRP : public cSimpleModule
         /* Create a message to notify application layer that some events occur but the content is
          * not forwarded to application */
         void notifyApp();
-        /* Broadcast request for info of base station/relay/backup node */
-        void requestRelay();
+        /* Broadcast request for info of base station/relay/backup node.
+         * The flag 'init' is used when calling this function at initial phase. */
+        void requestRelay(bool init = false);
         /* Response to a request for relay node, given the requesting packet */
         void sendRelayInfo(PacketEMRP *reqPkt);
         /* Compare new relay info with current relay node; if it's better, select it as new relay node.

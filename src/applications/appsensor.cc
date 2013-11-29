@@ -31,7 +31,8 @@ void AppSensor::initialize()
     /* Modify sleep time so that sleep time of sensor nodes will be uniformly distributed over
      * next 'idleTime' period to prevent "all sleepy nodes" phenomena. */
     cancelEvent(sleepTimer);
-    scheduleAt(getParentModule()->getSubmodule("net")->par("initInterval").doubleValue() + uniform(0, par("sleepTime").doubleValue()), sleepTimer);
+    if (par("enableSleep").boolValue()) scheduleAt(getParentModule()->getSubmodule("net")->par("initInterval").doubleValue() + uniform(0, par("sleepTime").doubleValue()), sleepTimer);
+    //if (par("enableSleep").boolValue()) scheduleAt(80, sleepTimer); // No sleep
 }
 
 void AppSensor::handleMessage(cMessage *msg)
@@ -336,7 +337,7 @@ void AppSensor::setWorkMode(int mode)
                 // Plan for sleeping after idleTime
                 // If a working event occurs, cancel this timer and plan new one
                 cancelEvent(sleepTimer);
-                scheduleAt(simTime() + par("idleTime"), sleepTimer);
+                if (par("enableSleep").boolValue()) scheduleAt(simTime() + par("idleTime"), sleepTimer);
 
                 // Start sensing immediately
                 if (!senseTimer->isScheduled()) scheduleAt(simTime(), senseTimer);

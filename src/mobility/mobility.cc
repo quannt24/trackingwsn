@@ -57,15 +57,15 @@ void Mobility::handleMessage(cMessage *msg)
 {
     // Self message: move
     // Move target to next position in path array
-    posId++;
     setX(xArr[posId]);
     setY(yArr[posId]);
+    posId++;
     // Record position
     vecPosX->record(getX());
     vecPosY->record(getY());
 
     updateDisplay();
-    if (posId < pathLen - 1) scheduleAt(simTime() + par("movingTimeStep").doubleValue(), msg);
+    if (posId < pathLen) scheduleAt(simTime() + par("movingTimeStep").doubleValue(), msg);
 }
 
 Mobility::Mobility()

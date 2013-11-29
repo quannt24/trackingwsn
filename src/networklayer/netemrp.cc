@@ -198,7 +198,6 @@ void NetEMRP::requestRelay(bool init)
     pkt->setSrcMacAddr(getMacAddr());
     // No need to set desMacAddr here
 
-    if (!init) pkt->setStrobeFlag(true);
     pkt->setByteLength(pkt->getPkSize());
 
     send(pkt, "linkGate$o");

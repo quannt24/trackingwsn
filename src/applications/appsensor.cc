@@ -146,6 +146,7 @@ void AppSensor::recvSenseResult(SensedResult *result)
             notify->setByteLength(notify->getMsgSize());
             send(notify, "netGate$o");
             syncSense = true;
+            getParentModule()->bubble("Notifying");
             // Do nothing except change to synchronized state
         } else {
             // Add sensed measurement to collection
@@ -197,10 +198,12 @@ void AppSensor::recvMessage(MsgTracking *msg)
         send(cancelSense, "ssGate$o");
 
         // Reset sensing timer with synchronized value
+        Link802154 *link = check_and_cast<Link802154*>(getParentModule()->getSubmodule("link"));
+        double addTime = par("senseInterval").doubleValue()
+                        - getParentModule()->getSubmodule("ass")->par("responseDelay").doubleValue()
+                        - (link->par("maxFrameSize").doubleValue() + link->par("phyHeaderSize").doubleValue()) / link->par("bitRate").doubleValue();
         cancelEvent(senseTimer);
-        scheduleAt(simTime() + par("senseInterval").doubleValue()
-                - this->getParentModule()->getSubmodule("ass")->par("responseDelay").doubleValue() - 0.005,
-                senseTimer);
+        scheduleAt(simTime() + addTime, senseTimer);
     } else if (msg->getMsgType() == MSG_SENSE_RESULT) {
         MsgSenseResult *msr = check_and_cast<MsgSenseResult*>(msg);
         std::list<Measurement> ml = msr->getMeaList();

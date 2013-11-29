@@ -39,6 +39,11 @@ enum TxType {
  *     int srcMacAddr;
  *     
  *     int desMacAddr;
+ *     
+ *     bool strobeFlag = false;
+ *     
+ *     
+ *     int pkSize = 18;
  * }
  * </pre>
  */
@@ -48,6 +53,8 @@ class Packet802154 : public ::cPacket
     int txType_var;
     int srcMacAddr_var;
     int desMacAddr_var;
+    bool strobeFlag_var;
+    int pkSize_var;
 
   private:
     void copy(const Packet802154& other);
@@ -72,6 +79,10 @@ class Packet802154 : public ::cPacket
     virtual void setSrcMacAddr(int srcMacAddr);
     virtual int getDesMacAddr() const;
     virtual void setDesMacAddr(int desMacAddr);
+    virtual bool getStrobeFlag() const;
+    virtual void setStrobeFlag(bool strobeFlag);
+    virtual int getPkSize() const;
+    virtual void setPkSize(int pkSize);
 };
 
 inline void doPacking(cCommBuffer *b, Packet802154& obj) {obj.parsimPack(b);}

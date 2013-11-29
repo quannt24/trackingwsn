@@ -45,7 +45,7 @@ Register_Class(PacketEMRP);
 PacketEMRP::PacketEMRP(const char *name, int kind) : Packet802154(name,kind)
 {
     this->pkType_var = 0;
-    this->pkSize_var = 18;
+    this->pkSize_var = 19;
 }
 
 PacketEMRP::PacketEMRP(const PacketEMRP& other) : Packet802154(other)

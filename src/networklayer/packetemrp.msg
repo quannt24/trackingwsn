@@ -30,8 +30,7 @@ enum PacketType {
 // EMRP network packet
 packet PacketEMRP extends Packet802154 {
     int pkType; // Packet type
-    
-    int pkSize = 18; // 17 bytes from 3 fields of Packet802154 + 1 byte pkType
+    int pkSize = 19; // 18 bytes from 4 fields of Packet802154 + 1 byte pkType
 }
 
 // EMRP relay info packet

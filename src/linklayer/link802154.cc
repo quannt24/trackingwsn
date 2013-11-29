@@ -274,10 +274,13 @@ void Link802154::prepareSending()
 
     if (!outQueue.isEmpty()) {
         Frame802154 *frame = check_and_cast<Frame802154*>(outQueue.front());
-        if (frame->getType() == FR_PAYLOAD) {
+        Packet802154 *pkt = check_and_cast<Packet802154*>(frame->getEncapsulatedPacket());
+        if (frame->getType() == FR_PAYLOAD && pkt != NULL && pkt->getStrobeFlag()) {
             // Prepare strobes
             nStrobe = (int) ceil(par("sR").doubleValue() / par("strobePeriod").doubleValue());
             EV<< "Link802154: Sending " << nStrobe << " strobes\n";
+        } else {
+            nStrobe = 0;
         }
         startSending();
     }

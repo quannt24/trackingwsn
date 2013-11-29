@@ -44,8 +44,7 @@ enum PacketType {
  * <pre>
  * packet PacketEMRP extends Packet802154 {
  *     int pkType; 
- *     
- *     int pkSize = 18; 
+ *     int pkSize = 19; 
  * }
  * </pre>
  */

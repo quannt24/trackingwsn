@@ -44,6 +44,8 @@ Packet802154::Packet802154(const char *name, int kind) : cPacket(name,kind)
     this->txType_var = 0;
     this->srcMacAddr_var = 0;
     this->desMacAddr_var = 0;
+    this->strobeFlag_var = false;
+    this->pkSize_var = 18;
 }
 
 Packet802154::Packet802154(const Packet802154& other) : cPacket(other)
@@ -68,6 +70,8 @@ void Packet802154::copy(const Packet802154& other)
     this->txType_var = other.txType_var;
     this->srcMacAddr_var = other.srcMacAddr_var;
     this->desMacAddr_var = other.desMacAddr_var;
+    this->strobeFlag_var = other.strobeFlag_var;
+    this->pkSize_var = other.pkSize_var;
 }
 
 void Packet802154::parsimPack(cCommBuffer *b)
@@ -76,6 +80,8 @@ void Packet802154::parsimPack(cCommBuffer *b)
     doPacking(b,this->txType_var);
     doPacking(b,this->srcMacAddr_var);
     doPacking(b,this->desMacAddr_var);
+    doPacking(b,this->strobeFlag_var);
+    doPacking(b,this->pkSize_var);
 }
 
 void Packet802154::parsimUnpack(cCommBuffer *b)
@@ -84,6 +90,8 @@ void Packet802154::parsimUnpack(cCommBuffer *b)
     doUnpacking(b,this->txType_var);
     doUnpacking(b,this->srcMacAddr_var);
     doUnpacking(b,this->desMacAddr_var);
+    doUnpacking(b,this->strobeFlag_var);
+    doUnpacking(b,this->pkSize_var);
 }
 
 int Packet802154::getTxType() const
@@ -114,6 +122,26 @@ int Packet802154::getDesMacAddr() const
 void Packet802154::setDesMacAddr(int desMacAddr)
 {
     this->desMacAddr_var = desMacAddr;
+}
+
+bool Packet802154::getStrobeFlag() const
+{
+    return strobeFlag_var;
+}
+
+void Packet802154::setStrobeFlag(bool strobeFlag)
+{
+    this->strobeFlag_var = strobeFlag;
+}
+
+int Packet802154::getPkSize() const
+{
+    return pkSize_var;
+}
+
+void Packet802154::setPkSize(int pkSize)
+{
+    this->pkSize_var = pkSize;
 }
 
 class Packet802154Descriptor : public cClassDescriptor
@@ -163,7 +191,7 @@ const char *Packet802154Descriptor::getProperty(const char *propertyname) const
 int Packet802154Descriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 3+basedesc->getFieldCount(object) : 3;
+    return basedesc ? 5+basedesc->getFieldCount(object) : 5;
 }
 
 unsigned int Packet802154Descriptor::getFieldTypeFlags(void *object, int field) const
@@ -178,8 +206,10 @@ unsigned int Packet802154Descriptor::getFieldTypeFlags(void *object, int field) 
         FD_ISEDITABLE,
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<5) ? fieldTypeFlags[field] : 0;
 }
 
 const char *Packet802154Descriptor::getFieldName(void *object, int field) const
@@ -194,8 +224,10 @@ const char *Packet802154Descriptor::getFieldName(void *object, int field) const
         "txType",
         "srcMacAddr",
         "desMacAddr",
+        "strobeFlag",
+        "pkSize",
     };
-    return (field>=0 && field<3) ? fieldNames[field] : NULL;
+    return (field>=0 && field<5) ? fieldNames[field] : NULL;
 }
 
 int Packet802154Descriptor::findField(void *object, const char *fieldName) const
@@ -205,6 +237,8 @@ int Packet802154Descriptor::findField(void *object, const char *fieldName) const
     if (fieldName[0]=='t' && strcmp(fieldName, "txType")==0) return base+0;
     if (fieldName[0]=='s' && strcmp(fieldName, "srcMacAddr")==0) return base+1;
     if (fieldName[0]=='d' && strcmp(fieldName, "desMacAddr")==0) return base+2;
+    if (fieldName[0]=='s' && strcmp(fieldName, "strobeFlag")==0) return base+3;
+    if (fieldName[0]=='p' && strcmp(fieldName, "pkSize")==0) return base+4;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -220,8 +254,10 @@ const char *Packet802154Descriptor::getFieldTypeString(void *object, int field) 
         "int",
         "int",
         "int",
+        "bool",
+        "int",
     };
-    return (field>=0 && field<3) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<5) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *Packet802154Descriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -267,6 +303,8 @@ std::string Packet802154Descriptor::getFieldAsString(void *object, int field, in
         case 0: return long2string(pp->getTxType());
         case 1: return long2string(pp->getSrcMacAddr());
         case 2: return long2string(pp->getDesMacAddr());
+        case 3: return bool2string(pp->getStrobeFlag());
+        case 4: return long2string(pp->getPkSize());
         default: return "";
     }
 }
@@ -284,6 +322,8 @@ bool Packet802154Descriptor::setFieldAsString(void *object, int field, int i, co
         case 0: pp->setTxType(string2long(value)); return true;
         case 1: pp->setSrcMacAddr(string2long(value)); return true;
         case 2: pp->setDesMacAddr(string2long(value)); return true;
+        case 3: pp->setStrobeFlag(string2bool(value)); return true;
+        case 4: pp->setPkSize(string2long(value)); return true;
         default: return false;
     }
 }
@@ -300,8 +340,10 @@ const char *Packet802154Descriptor::getFieldStructName(void *object, int field) 
         NULL,
         NULL,
         NULL,
+        NULL,
+        NULL,
     };
-    return (field>=0 && field<3) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<5) ? fieldStructNames[field] : NULL;
 }
 
 void *Packet802154Descriptor::getFieldStructPointer(void *object, int field, int i) const

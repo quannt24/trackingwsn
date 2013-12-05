@@ -29,11 +29,6 @@
 // Broadcast address
 #define BROADCAST_ADDR -1
 
-// CSMA time symbol (s)
-#define CSMA_SYMBOL 0.000016
-// A unit back-off period (s)
-#define aUnitBP (20 * CSMA_SYMBOL)
-
 /**
  * Phy/Link layer using IEEE 802.15.4, CSMA-CA
  */
@@ -59,7 +54,8 @@ class Link802154 : public cSimpleModule
         // Unslotted CSMA/CA variables
         int BE; // Back-off exponent
         int NB; // Number of back-off
-        cMessage *csmaTimer; // Self message for starting CSMA process
+        cMessage *backoffTimer; // Timer for finishing back-off
+        cMessage *ccaTimer; // Timer for performing CCa
         cMessage *releaseChannelTimer; // Self message for releasing channel timer
         Frame802154 *outFrame; // Frame going to be transmitted
         Frame802154 *txFrame; // Frame being sent by CSMA
@@ -70,6 +66,7 @@ class Link802154 : public cSimpleModule
                 const char *inputGateName, int gateIndex = -1);
         void recvFrame(Frame802154 *frame);
 
+        // X-MAC
         void prepareSending();
         void startSending();
         void sendStrobe();
@@ -77,11 +74,12 @@ class Link802154 : public cSimpleModule
         void sendStrobeAck(Frame802154 *strobe);
         void finishSending();
 
-        void csmaTransmit();
-        bool performCCA();
-        void releaseChannel();
-        void transmit();
+        // Unslotted CSMA/CA
+        void startCsma();
         void backoff();
+        void performCCA();
+        void transmit();
+        void releaseChannel();
 
         /* Calculate and draw energy from energy module for transmitting */
         void useEnergyTx(int nbits);

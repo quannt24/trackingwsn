@@ -36,9 +36,12 @@ void Link802154::handleMessage(cMessage *msg)
     if (msg->isSelfMessage()) {
         if (msg == strobeTimer) {
             startSending();
-        } else if (msg == csmaTimer) {
-            // Start CSMA transmission
-            csmaTransmit();
+        } else if (msg == backoffTimer) {
+            // End of back-off period, perform CCa
+            scheduleAt(simTime() + par("ccaDur").doubleValue(), ccaTimer); // Simulation
+        } else if (msg == ccaTimer) {
+            // Perform CCA, if channel is idle, acquire the channel
+            performCCA();
         } else if (msg == releaseChannelTimer) {
             releaseChannel();
         } else if (msg == rxConsumeTimer) {
@@ -91,14 +94,15 @@ Link802154::Link802154()
 
     outFrame = NULL;
     txFrame = NULL;
-    csmaTimer = new cMessage("CSMATimer");
+    backoffTimer = new cMessage("BackoffTimer");
+    ccaTimer = new cMessage("CCATimer");
     releaseChannelTimer = new cMessage("ReleaseChannelTimer");
+
     rxConsumeTimer = new cMessage("RxConsumeTimer");
 }
 
 Link802154::~Link802154()
 {
-    cancelAndDelete(rxConsumeTimer);
     cPacket *pkt;
     while (!outQueue.isEmpty()) {
         pkt = outQueue.pop();
@@ -109,9 +113,12 @@ Link802154::~Link802154()
     cancelAndDelete(dcSleepTimer);
     cancelAndDelete(dcListenTimer);
 
-    cancelAndDelete(csmaTimer);
+    cancelAndDelete(backoffTimer);
+    cancelAndDelete(ccaTimer);
     cancelAndDelete(releaseChannelTimer);
     if (txFrame != NULL) delete txFrame;
+
+    cancelAndDelete(rxConsumeTimer);
 }
 
 void Link802154::setRadioMode(int mode, bool dutyCycling)
@@ -282,10 +289,14 @@ void Link802154::recvFrame(Frame802154* frame)
  * Duty cycling sending procedures
  * ========================================================================= */
 
+/*
+ * Prepare for sending frame at head of the queue if nothing being sent.
+ */
 void Link802154::prepareSending()
 {
     // Check if something being sent
-    if (strobeTimer->isScheduled() || csmaTimer->isScheduled() || releaseChannelTimer->isScheduled()) {
+    if (strobeTimer->isScheduled() || backoffTimer->isScheduled() || ccaTimer->isScheduled()
+            || releaseChannelTimer->isScheduled()) {
         return;
     }
 
@@ -303,9 +314,18 @@ void Link802154::prepareSending()
     }
 }
 
+/*
+ * Start sending frame in queue (payload) or strobe.
+ */
 void Link802154::startSending()
 {
-    if (!outQueue.isEmpty() && !csmaTimer->isScheduled()) {
+    // Check if something being sent
+    if (strobeTimer->isScheduled() || backoffTimer->isScheduled() || ccaTimer->isScheduled()
+            || releaseChannelTimer->isScheduled()) {
+        return;
+    }
+
+    if (!outQueue.isEmpty()) {
         if (nStrobe > 0) {
             sendStrobe();
         } else {
@@ -329,7 +349,7 @@ void Link802154::sendStrobe()
                 + par("fldSrcAddr").longValue() + par("fldFooter").longValue() + par("phyHeaderSize").longValue());
 
         outFrame = strobe;
-        csmaTransmit();
+        startCsma();
     }
 }
 
@@ -338,10 +358,13 @@ void Link802154::sendPayload()
     if (!outQueue.isEmpty()) {
         EV<< "Link802154: Sending payload\n";
         outFrame = check_and_cast<Frame802154*>(outQueue.pop());
-        csmaTransmit();
+        startCsma();
     }
 }
 
+/*
+ * Queue a strobe ACK to send back to the node that sent strobes.
+ */
 void Link802154::sendStrobeAck(Frame802154 *strobe)
 {
     if (strobe->getDesAddr() == macAddress || strobe->getDesAddr() == BROADCAST_ADDR) {
@@ -359,6 +382,10 @@ void Link802154::sendStrobeAck(Frame802154 *strobe)
     }
 }
 
+/*
+ * Called when finish sending a frame. Determine to send next strobe (or payload) or start over the
+ * sending process (so that next frame in queue can be sent).
+ */
 void Link802154::finishSending()
 {
     if (--nStrobe > 0) {
@@ -375,10 +402,10 @@ void Link802154::finishSending()
  * ========================================================================= */
 
 /*
- * Transmit a prepared frame using unslotted CSMA/CA.
+ * Prepare transmitted frame and initialize CSMA/CA.
  * This function is entry point of unslotted CSMA/CA algorithm.
  */
-void Link802154::csmaTransmit()
+void Link802154::startCsma()
 {
     if (txFrame == NULL) {
         // Initialize when a frame is transmitted for first time
@@ -388,21 +415,41 @@ void Link802154::csmaTransmit()
         // Initialize first CSMA attempt
         NB = 0;
         BE = par("macMinBE").longValue();
-    } else {
-        // Re-attempt to transmit prepared frame
-        NB++;
-        if (BE < par("aMaxBE").longValue()) {
-            BE++;
-        } else {
-            BE = par("aMaxBE").longValue();
-        }
     }
 
-    if (performCCA()) {
+    backoff();
+}
+
+/*
+ * Back-off
+ */
+void Link802154::backoff()
+{
+    double backoffDur = intuniform(0, (int)(pow(2, BE) - 1)) * par("aUnitBP").doubleValue();
+    scheduleAt(simTime() + backoffDur, backoffTimer);
+    //EV << "Link802154::backoff : duration " << backoffDur << '\n';
+}
+
+/*
+ * Perform a Clear Channel Assessment (CCA).
+ * In simulation, this function will also acquire the channel if possible.
+ * Return true if channel is idle, false if channel is busy or error.
+ */
+void Link802154::performCCA()
+{
+    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
+
+    if (cu->acquireChannel(this) == 0) {
+        // Acquire channel successfully (channel is idle)
         transmit();
         txFrame = NULL;
     } else {
-        if (NB < par("aMaxNB").longValue()) {
+        // Channel is busy
+        int maxBE = par("aMaxBE").longValue();
+
+        if (++BE > maxBE) BE = maxBE;
+        NB++;
+        if (NB <= par("macMaxNB").longValue()) {
             backoff();
         } else {
             // TODO Transmission failure
@@ -411,30 +458,6 @@ void Link802154::csmaTransmit()
             EV << "Link802154::csmaTransmit : Transmission failure\n";
         }
     }
-}
-
-/*
- * Perform a Clear Channel Assessment (CCA).
- * In simulation, this function will also acquire the channel if possible.
- * Return true if channel is idle, false if channel is busy or error.
- */
-bool Link802154::performCCA()
-{
-    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
-    int ret = cu->acquireChannel(this);
-    EV << "Link802154::performCCA : result " << ret << '\n';
-    return ret == 0;
-}
-
-/*
- * Release channel
- */
-void Link802154::releaseChannel()
-{
-    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
-    cu->releaseChannel(this);
-    EV << "Link802154::releaseChannel\n";
-    finishSending();
 }
 
 /*
@@ -484,14 +507,19 @@ void Link802154::transmit()
 }
 
 /*
- * Back-off when channel is not idle.
+ * Release channel
  */
-void Link802154::backoff()
+void Link802154::releaseChannel()
 {
-    double backoffDur = intuniform(0, (int)(pow(2, BE) - 1)) * aUnitBP;
-    scheduleAt(simTime() + backoffDur, csmaTimer);
-    EV << "Link802154::backoff : duration " << backoffDur << '\n';
+    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
+    cu->releaseChannel(this);
+    EV << "Link802154::releaseChannel\n";
+    finishSending();
 }
+
+/* =========================================================================
+ * Consume energy
+ * ========================================================================= */
 
 /*
  * Calculate and draw energy from energy module for transmitting.

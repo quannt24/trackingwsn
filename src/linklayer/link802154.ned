@@ -55,9 +55,12 @@ simple Link802154
         int maxPacketSize = maxFrameSize - fldFrameControl - fldSequenceId - fldDesAddr - fldSrcAddr - fldFooter;
 
 		// Unslotted CSMA/CA parameters
-		int macMinBE = default(3);
+		double symPeriod = default(0.000016); // Symbol period
+		double ccaDur = 8 * symPeriod;
 		int aMaxBE = default(5);
-		int aMaxNB = default(5);
+		double aUnitBP = 20 * symPeriod; // A unit backoff-period
+		int macMaxNB = default(4); // 0 ~ 5
+		int macMinBE = default(3); // 0 ~ 3
 		
 		// X-MAC duty cycling (RADIO_OFF mode)
 		// Receiver

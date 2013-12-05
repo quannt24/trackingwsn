@@ -35,24 +35,6 @@
         <properties name="Y.Axis.Title" value="y"/>
       </items>
     </datasets>
-    <datasets name="Compare BS output with real movements" basedOn="//@datasets/@datasets.1">
-      <items xsi:type="scave:Add" filterPattern="tracked_tid*" type="VECTOR"/>
-      <items xsi:type="scave:LineChart" name="Compare ID2 x" lineNameFormat="">
-        <filters xsi:type="scave:Select" filterPattern="id2_x OR tracked_tid2_x" type="VECTOR"/>
-        <properties name="Graph.Title" value="Compare ID2 x"/>
-        <properties name="X.Axis.Title" value="s"/>
-        <properties name="Y.Axis.Title" value="m"/>
-        <properties name="Symbols.Type/Wsn.target[0].mobility id2_x" value="None"/>
-        <properties name="Line.Type/Wsn.target[0].mobility id2_x" value="Linear"/>
-      </items>
-      <items xsi:type="scave:LineChart" name="Compare ID2 y" lineNameFormat="">
-        <filters xsi:type="scave:Select" filterPattern="id2_y OR tracked_tid2_y" type="VECTOR"/>
-        <properties name="Graph.Title" value="Compare ID2 y"/>
-        <properties name="X.Axis.Title" value="s"/>
-        <properties name="Y.Axis.Title" value="m"/>
-        <properties name="Symbols.Type/Wsn.target[0].mobility id2_y" value="None"/>
-      </items>
-    </datasets>
     <datasets name="Sensor Energy">
       <items xsi:type="scave:Group" name="invidual">
         <items xsi:type="scave:Add" filterPattern="energy:vector AND module(Wsn.sensor[*].energy) " type="VECTOR"/>
@@ -73,7 +55,7 @@
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.2 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.1/@items.2 //@datasets/@datasets.2/@items.1 //@datasets/@datasets.2/@items.2"/>
-    <chartSheets name="Efficiency" charts="//@datasets/@datasets.3/@items.0/@items.1 //@datasets/@datasets.3/@items.1/@items.1"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.2 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.1/@items.2"/>
+    <chartSheets name="Efficiency" charts="//@datasets/@datasets.2/@items.0/@items.1 //@datasets/@datasets.2/@items.1/@items.1"/>
   </chartSheets>
 </scave:Analysis>

@@ -75,7 +75,7 @@ void Link802154::handleMessage(cMessage *msg)
                 recvFrame((Frame802154*) msg);
             } else {
                 // Just drop frame if radio is off
-                getParentModule()->bubble("Radio OFF");
+                //getParentModule()->bubble("Radio OFF");
                 delete msg;
             }
         }
@@ -275,12 +275,22 @@ void Link802154::recvFrame(Frame802154* frame)
         }
         delete frame;
     } else if (frame->getType() == FR_STROBE_ACK) {
-        if (frame->getDesAddr() == macAddress) {
-            EV << "Link802154: Receive strobe ACK\n";
-            nStrobe = 0;
-            cancelEvent(strobeTimer);
-            startSending();
+        //EV << "Link802154: Receive strobe ACK\n";
+        getParentModule()->bubble("Receive strobe ACK");
+        nStrobe = 0;
+        // Cancel current strobe sending (if any)
+        cancelEvent(strobeTimer);
+        if (outFrame != NULL && outFrame->getType() == FR_STROBE) {
+            delete outFrame;
+            outFrame = NULL;
         }
+        if (txFrame != NULL && txFrame->getType() == FR_STROBE) {
+            cancelEvent(backoffTimer);
+            cancelEvent(ccaTimer);
+            delete txFrame;
+            txFrame = NULL;
+        }
+        startSending();
         delete frame;
     }
 }
@@ -356,7 +366,8 @@ void Link802154::sendStrobe()
 void Link802154::sendPayload()
 {
     if (!outQueue.isEmpty()) {
-        EV<< "Link802154: Sending payload\n";
+        //EV << "Link802154: Sending payload\n";
+        getParentModule()->bubble("Sending payload");
         outFrame = check_and_cast<Frame802154*>(outQueue.pop());
         startCsma();
     }

@@ -54,11 +54,11 @@ void Link802154::handleMessage(cMessage *msg)
         } else if (msg == dcListenTimer) {
             // In radio duty cycling, turn on radio for short period
             setRadioMode(RADIO_ON, true);
-            getParentModule()->bubble("In duty cycling: Radio ON");
+            getParentModule()->bubble("Radio ON");
         } else if (msg == dcSleepTimer) {
             // In radio duty cycling
             setRadioMode(RADIO_OFF, true);
-            getParentModule()->bubble("In duty cycling: Radio OFF");
+            getParentModule()->bubble("Radio OFF");
         }
     } else {
         if (msg->getArrivalGate() == gate("netGate$i")) {
@@ -367,7 +367,7 @@ void Link802154::sendPayload()
 {
     if (!outQueue.isEmpty()) {
         //EV << "Link802154: Sending payload\n";
-        getParentModule()->bubble("Sending payload");
+        //getParentModule()->bubble("Sending payload");
         outFrame = check_and_cast<Frame802154*>(outQueue.pop());
         startCsma();
     }

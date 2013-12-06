@@ -37,13 +37,14 @@
     </datasets>
     <datasets name="Sensor Energy">
       <items xsi:type="scave:Group" name="invidual">
-        <items xsi:type="scave:Add" filterPattern="energy:vector AND module(Wsn.sensor[*].energy) " type="VECTOR"/>
-        <items xsi:type="scave:LineChart" name="Sensor energy distribution" lineNameFormat="">
-          <properties name="Graph.Title" value="Sensor energy distribution"/>
-          <properties name="X.Axis.Title" value="s"/>
+        <items xsi:type="scave:Add" filterPattern="energy:last AND module(Wsn.sensor[*].energy) "/>
+        <items xsi:type="scave:BarChart" name="Remaining energy">
+          <properties name="Graph.Title" value="Remaining energy"/>
           <properties name="Y.Axis.Title" value="J"/>
-          <properties name="Symbols.Type" value="Dot"/>
-          <properties name="Line.Type" value="Points"/>
+          <properties name="X.Label.RotateBy" value="90.0"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+          <properties name="Y.Axis.Max" value="1.0"/>
+          <properties name="X.Label.Wrap" value="false"/>
         </items>
       </items>
       <items xsi:type="scave:Group" name="global">
@@ -56,6 +57,6 @@
   </datasets>
   <chartSheets>
     <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.2 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.1/@items.2"/>
-    <chartSheets name="Efficiency" charts="//@datasets/@datasets.2/@items.0/@items.1 //@datasets/@datasets.2/@items.1/@items.1"/>
+    <chartSheets name="Efficiency" charts="//@datasets/@datasets.2/@items.1/@items.1 //@datasets/@datasets.2/@items.0/@items.1"/>
   </chartSheets>
 </scave:Analysis>

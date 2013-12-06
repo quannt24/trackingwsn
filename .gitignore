@@ -1,6 +1,7 @@
 *.[oa]
 *~
 *.swp
+*.svg
 out/
 src/TrackingWSN
 simulations/.tkenvlog

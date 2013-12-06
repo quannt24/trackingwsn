@@ -25,7 +25,12 @@ class StatCollector : public cSimpleModule
 {
     private:
         cMessage *pollTSE; // Timer for polling total sensor energy
+        int numSentFrame;
+        int numLostFrame;
+
         simsignal_t totalSensorEnergySignal;
+        simsignal_t sentFrameSignal;
+        simsignal_t lostFrameSignal;
 
     protected:
         virtual void initialize();
@@ -36,6 +41,10 @@ class StatCollector : public cSimpleModule
         ~StatCollector();
         /* Calculate total energy and emit it */
         void pollTotalSensorEnergy();
+        /* Increase number of sent frames */
+        void incSentFrame();
+        /* Increase number of lost frame */
+        void incLostFrame();
 };
 
 #endif

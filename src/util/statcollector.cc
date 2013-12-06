@@ -21,6 +21,8 @@ Define_Module(StatCollector);
 void StatCollector::initialize()
 {
     totalSensorEnergySignal = registerSignal("total_sensor_energy");
+    sentFrameSignal = registerSignal("sent_frame");
+    lostFrameSignal = registerSignal("lost_frame");
 
     // Record total sensor energy for first time
     pollTotalSensorEnergy();
@@ -40,6 +42,8 @@ void StatCollector::handleMessage(cMessage *msg)
 StatCollector::StatCollector()
 {
     pollTSE = new cMessage();
+    numSentFrame = 0;
+    numLostFrame = 0;
 }
 
 StatCollector::~StatCollector()
@@ -62,4 +66,18 @@ void StatCollector::pollTotalSensorEnergy()
     }
 
     emit(totalSensorEnergySignal, totalEnergy);
+}
+
+void StatCollector::incSentFrame()
+{
+    Enter_Method_Silent("incSentFrame");
+    numSentFrame++;
+    emit(sentFrameSignal, numSentFrame);
+}
+
+void StatCollector::incLostFrame()
+{
+    Enter_Method_Silent("incLostFrame");
+    numLostFrame++;
+    emit(lostFrameSignal, numLostFrame);
 }

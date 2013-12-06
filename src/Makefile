@@ -232,6 +232,7 @@ $O/linklayer/link802154.o: linklayer/link802154.cc \
 	linklayer/link802154.h \
 	linklayer/packet802154_m.h \
 	util/channelutil.h \
+	util/statcollector.h \
 	wsnexception.h
 $O/linklayer/packet802154_m.o: linklayer/packet802154_m.cc \
 	linklayer/packet802154_m.h

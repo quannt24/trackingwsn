@@ -25,6 +25,12 @@ simple StatCollector
 
         @signal[total_sensor_energy](type="double");
         @statistic[totalEnergy](title="Total energy"; source="total_sensor_energy"; record=vector);
+        
+        @signal[sent_frame](type="int");
+        @statistic[numSentFrame](title="Number of sent frames"; source="sent_frame"; record=last);
+        
+        @signal[lost_frame](type="int");
+        @statistic[numLostFrame](title="Number of lost frames"; source="lost_frame"; record=last);
 
         @display("i=block/table2");
 }

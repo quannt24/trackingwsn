@@ -20,6 +20,7 @@
 #include "channelutil.h"
 #include "energy.h"
 #include "app.h"
+#include "statcollector.h"
 
 Define_Module(Link802154);
 
@@ -70,12 +71,18 @@ void Link802154::handleMessage(cMessage *msg)
                 EV << "Error: Cannot send packet when radio is off\n";
             }
         } else if (msg->getArrivalGate() == gate("radioIn")) {
+            Frame802154 *frame = check_and_cast<Frame802154*>(msg);
             if (radioMode == RADIO_ON) {
                 // Frame from other node
-                recvFrame((Frame802154*) msg);
+                recvFrame(frame);
             } else {
                 // Just drop frame if radio is off
                 //getParentModule()->bubble("Radio OFF");
+                if (frame->getType() == FR_PAYLOAD) {
+                    // Count lost payload frame
+                    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+                    sc->incLostFrame();
+                }
                 delete msg;
             }
         }
@@ -235,13 +242,24 @@ void Link802154::queueFrame(Frame802154 *frame)
 void Link802154::sendFrame(Frame802154 *frame, simtime_t propagationDelay, simtime_t duration, Link802154 *desNode,
         const char *inputGateName, int gateIndex)
 {
+    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+    if (frame->getType() == FR_PAYLOAD) {
+        // Count sent payload frame
+        sc->incSentFrame();
+    }
+
     ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
     if (cu->hasCollision(desNode)) {
         /* At this time, this node has acquired channel and collision by hidden node problem may occur.
          * In simulation, collision may be gone before this frame is sent completely;
          * therefore frame loss in this situation is simulated here. */
-        desNode->getParentModule()->bubble("collision at destination node");
-        EV << "Link802154: Lost frame by collision";
+        desNode->getParentModule()->bubble("collision");
+        EV << "Link802154: Collision at destination";
+
+        if (frame->getType() == FR_PAYLOAD) {
+            // Count lost payload frame
+            sc->incLostFrame();
+        }
         delete frame;
     } else {
         sendDirect(frame, propagationDelay, duration, desNode, inputGateName, gateIndex);
@@ -259,6 +277,12 @@ void Link802154::recvFrame(Frame802154* frame)
     if (cu->hasCollision(this)) {
         getParentModule()->bubble("collision");
         EV << "Link802154: Lost frame by collision\n";
+
+        if (frame->getType() == FR_PAYLOAD) {
+            // Count lost payload frame
+            StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+            sc->incLostFrame();
+        }
         delete frame;
         return;
     }
@@ -268,6 +292,12 @@ void Link802154::recvFrame(Frame802154* frame)
     if (rand < par("ranFrameLossProb").doubleValue()) {
         getParentModule()->bubble("Lost frame");
         EV << "Link802154: Lost frame\n";
+
+        if (frame->getType() == FR_PAYLOAD) {
+            // Count lost payload frame
+            StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+            sc->incLostFrame();
+        }
         delete frame;
         return;
     }

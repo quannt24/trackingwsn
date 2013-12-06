@@ -20,7 +20,8 @@
 #include "packet802154_m.h"
 #include <omnetpp.h>
 
-// Radio mode
+// Radio modes
+#define RADIO_FULL_OFF -1
 #define RADIO_OFF 0
 #define RADIO_ON 1
 
@@ -30,7 +31,7 @@
 #define BROADCAST_ADDR -1
 
 /**
- * Phy/Link layer using IEEE 802.15.4, CSMA-CA
+ * Phy/Link layer using IEEE 802.15.4, CSMA-CA, X-MAC
  */
 class Link802154 : public cSimpleModule
 {
@@ -81,11 +82,16 @@ class Link802154 : public cSimpleModule
         void transmit();
         void releaseChannel();
 
-        /* Calculate and draw energy from energy module for transmitting */
-        void useEnergyTx(int nbits);
+        /*
+         * Calculate and draw energy from energy module for transmitting.
+         * Return true when have enough energy, false when short of energy
+         */
+        bool useEnergyTx(int nbits);
         /* Calculate and draw energy for listening
          * @param onTime Time interval that transceiver is turned on for listening signal */
         void useEnergyRx(double onTime);
+        /* Stop all timer and clean up memory when run out of energy */
+        void poweroff();
 
     protected:
         virtual void initialize();

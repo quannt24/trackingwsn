@@ -32,7 +32,6 @@ void AppSensor::initialize()
      * next 'idleTime' period to prevent "all sleepy nodes" phenomena. */
     cancelEvent(sleepTimer);
     if (par("enableSleep").boolValue()) scheduleAt(getParentModule()->getSubmodule("net")->par("initInterval").doubleValue() + uniform(0, par("sleepTime").doubleValue()), sleepTimer);
-    //if (par("enableSleep").boolValue()) scheduleAt(80, sleepTimer); // No sleep
 }
 
 void AppSensor::handleMessage(cMessage *msg)
@@ -96,7 +95,7 @@ AppSensor::~AppSensor()
 
 void AppSensor::notifyEvent()
 {
-    Enter_Method_Silent("notifyEvent");
+    Enter_Method("notifyEvent");
     EV << "AppSensor: Event notify\n";
     /* Check if it is currently network initial period; if not, extend active time.
      * In network initial interval, all nodes should be active then sleep time should be
@@ -106,6 +105,17 @@ void AppSensor::notifyEvent()
         // Extend active time when having event
         setWorkMode(WORK_MODE_ACTIVE);
     }
+}
+
+void AppSensor::poweroff()
+{
+    Enter_Method("poweroff");
+    setWorkMode(WORK_MODE_OFF);
+}
+
+bool AppSensor::isWorking()
+{
+    return workMode != WORK_MODE_OFF;
 }
 
 void AppSensor::sendSenseResult()
@@ -308,7 +318,7 @@ void AppSensor::setWorkMode(int mode)
         switch (workMode) {
             case WORK_MODE_OFF:
                 // Turn off transceiver
-                link->setRadioMode(RADIO_OFF);
+                link->setRadioMode(RADIO_FULL_OFF);
                 // Cancel all timers
                 cancelEvent(activeTimer);
                 cancelEvent(sleepTimer);

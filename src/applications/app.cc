@@ -27,5 +27,13 @@ void App::handleMessage(cMessage *msg)
 
 void App::notifyEvent()
 {
-    Enter_Method_Silent("notifyEvent");
+}
+
+void App::poweroff()
+{
+}
+
+bool App::isWorking()
+{
+    return true;
 }

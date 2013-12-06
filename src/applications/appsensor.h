@@ -71,6 +71,8 @@ class AppSensor : public App
         AppSensor();
         ~AppSensor();
         virtual void notifyEvent();
+        virtual void poweroff();
+        virtual bool isWorking();
 };
 
 #endif

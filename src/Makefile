@@ -221,6 +221,7 @@ $O/applications/estimator/lateration.o: applications/estimator/lateration.cc \
 $O/applications/estimator/targetpos.o: applications/estimator/targetpos.cc \
 	applications/estimator/targetpos.h
 $O/energy/energy.o: energy/energy.cc \
+	applications/app.h \
 	energy/energy.h
 $O/linklayer/frame802154_m.o: linklayer/frame802154_m.cc \
 	linklayer/frame802154_m.h

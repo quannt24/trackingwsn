@@ -123,12 +123,13 @@ Link802154::~Link802154()
 
 void Link802154::setRadioMode(int mode, bool dutyCycling)
 {
-    Enter_Method_Silent("setRadioMode");
+    Enter_Method("setRadioMode");
 
-    if (mode == RADIO_OFF || mode == RADIO_ON) {
+    if (mode == RADIO_OFF || mode == RADIO_ON || mode == RADIO_FULL_OFF) {
         radioMode = mode;
 
         if (mode == RADIO_ON) {
+            EV << "Radio on\n";
             if (!rxConsumeTimer->isScheduled()) {
                 // Turn on transceiver and set power consuming timer for simulation
                 rxConsumeTimer->setTimestamp();
@@ -139,6 +140,7 @@ void Link802154::setRadioMode(int mode, bool dutyCycling)
             cancelEvent(dcSleepTimer);
             if (dutyCycling) scheduleAt(simTime() + par("lR").doubleValue(), dcSleepTimer);
         } else if (mode == RADIO_OFF) {
+            EV << "Radio off\n";
             if (rxConsumeTimer->isScheduled()) {
                 // Turn off transceiver and calculate consumed energy of last incomplete timer's period
                 double onTime = SIMTIME_DBL(simTime() - rxConsumeTimer->getTimestamp());
@@ -148,9 +150,20 @@ void Link802154::setRadioMode(int mode, bool dutyCycling)
                 cancelEvent(rxConsumeTimer);
             }
 
-            // Always start duty cycling when radio mode is off
+            // Plan a listen timer
             cancelEvent(dcListenTimer);
             scheduleAt(simTime() + par("sR").doubleValue(), dcListenTimer);
+        } else if (mode == RADIO_FULL_OFF) {
+            EV << "Radio full off\n";
+            if (rxConsumeTimer->isScheduled()) {
+                // Turn off transceiver and calculate consumed energy of last incomplete timer's period
+                double onTime = SIMTIME_DBL(simTime() - rxConsumeTimer->getTimestamp());
+                if (onTime > 0) {
+                    useEnergyRx(onTime);
+                }
+                cancelEvent(rxConsumeTimer);
+            }
+            poweroff();
         }
     }
 }
@@ -485,7 +498,14 @@ void Link802154::transmit()
         Link802154 *des;
 
         // Draw energy for transmission
-        useEnergyTx(txFrame->getBitLength());
+        bool enoughEnergy = useEnergyTx(txFrame->getBitLength());
+        if (!enoughEnergy) {
+            getParentModule()->bubble("Cannot send frame. Out of energy!");
+            delete txFrame;
+            txFrame = NULL;
+            releaseChannel();
+            return;
+        }
 
         if (desAddr == BROADCAST_ADDR) {
             // Broadcast frame. In simulation, we send frame to all connected nodes
@@ -534,8 +554,9 @@ void Link802154::releaseChannel()
 
 /*
  * Calculate and draw energy from energy module for transmitting.
+ * Return true when have enough energy, false when short of energy
  */
-void Link802154::useEnergyTx(int nbits)
+bool Link802154::useEnergyTx(int nbits)
 {
     double ce; // Consumed energy
     double d = par("txRange").doubleValue();
@@ -549,8 +570,11 @@ void Link802154::useEnergyTx(int nbits)
     }
 
     Energy *energy = (Energy*) getParentModule()->getSubmodule("energy");
-    energy->draw(ce);
-    //EV << "Link802154::useEnergyTx : use " << ce << " J\n";
+    double e = energy->draw(ce);
+    //EV << "Link802154::useEnergyTx : use " << e << " J\n";
+
+    if (e < ce) return false;
+    else return true;
 }
 
 /*
@@ -564,4 +588,27 @@ void Link802154::useEnergyRx(double onTime)
     double ce = (double) bitRate * e_elect * onTime; // Consumed energy
     Energy *energy = (Energy*) getParentModule()->getSubmodule("energy");
     energy->draw(ce);
+}
+
+/* Stop all timer and clean up memory when run out of energy */
+void Link802154::poweroff()
+{
+    cPacket *pkt;
+    while (!outQueue.isEmpty()) {
+        pkt = outQueue.pop();
+        delete pkt;
+    }
+
+    if (txFrame != NULL) delete txFrame;
+    txFrame = NULL;
+
+    cancelEvent(strobeTimer);
+    cancelEvent(dcSleepTimer);
+    cancelEvent(dcListenTimer);
+
+    cancelEvent(backoffTimer);
+    cancelEvent(ccaTimer);
+    cancelEvent(releaseChannelTimer);
+
+    cancelEvent(rxConsumeTimer);
 }

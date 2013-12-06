@@ -29,6 +29,10 @@ class App : public cSimpleModule
     public:
         /* Notify application that some events happened */
         virtual void notifyEvent();
+        /* Shutdown system. Can be used by energy module to simulate running out of energy */
+        virtual void poweroff();
+        /* Check if the node is working or not. One node is not working when it totally powered off. */
+        virtual bool isWorking();
 };
 
 #endif

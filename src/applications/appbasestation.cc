@@ -37,6 +37,9 @@ void AppBaseStation::initialize()
     // Turn on tranceiver
     Link802154 *link = check_and_cast<Link802154*>(getParentModule()->getSubmodule("link"));
     link->setRadioMode(RADIO_ON, false);
+
+    // Prepare signal
+    e2edelaySignal = registerSignal("e2e_delay");
 }
 
 void AppBaseStation::handleMessage(cMessage *msg)
@@ -75,6 +78,8 @@ void AppBaseStation::recvMessage(MsgTracking *msg)
                 }
             }
         }
+
+        emit(e2edelaySignal, simTime() - ((MsgTrackResult*) msg)->getTsSense());
     }
     delete msg;
 }

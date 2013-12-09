@@ -66,5 +66,8 @@ packet MsgTrackResult extends MsgTracking {
     // List of tracked result (positions of targets)
     TargetPosList tpList;
     
-    // Message size should be calculated in application
+    // Note: Message size should be calculated in application
+    
+    // Sense time stamp
+    simtime_t tsSense;
 }

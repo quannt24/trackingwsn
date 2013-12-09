@@ -195,6 +195,9 @@ inline void doUnpacking(cCommBuffer *b, MsgSenseResult& obj) {obj.parsimUnpack(b
  *     TargetPosList tpList;
  *     
  *     
+ *     
+ *     
+ *     simtime_t tsSense;
  * }
  * </pre>
  */
@@ -204,6 +207,7 @@ class MsgTrackResult : public ::MsgTracking
     int routingType_var;
     int msgType_var;
     TargetPosList tpList_var;
+    simtime_t tsSense_var;
 
   private:
     void copy(const MsgTrackResult& other);
@@ -229,6 +233,8 @@ class MsgTrackResult : public ::MsgTracking
     virtual TargetPosList& getTpList();
     virtual const TargetPosList& getTpList() const {return const_cast<MsgTrackResult*>(this)->getTpList();}
     virtual void setTpList(const TargetPosList& tpList);
+    virtual simtime_t getTsSense() const;
+    virtual void setTsSense(simtime_t tsSense);
 };
 
 inline void doPacking(cCommBuffer *b, MsgTrackResult& obj) {obj.parsimPack(b);}

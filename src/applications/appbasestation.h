@@ -28,6 +28,7 @@ class AppBaseStation : public App
 {
     private:
         std::list<TargetPosVectorSet*> tpvsList;
+        simsignal_t e2edelaySignal;
 
         void recvMessage(MsgTracking *msg);
 

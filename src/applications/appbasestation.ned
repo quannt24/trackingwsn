@@ -23,6 +23,10 @@ simple AppBaseStation
     parameters:
         @class("AppBaseStation");
         @display("i=block/app");
+        
+        @signal[e2e_delay](type="simtime_t");
+        @statistic[e2eDelay](title="End to end delay"; source="e2e_delay"; record=vector);
+        
     gates:
         inout netGate; // Connect network layer
 }

@@ -48,6 +48,7 @@ class AppSensor : public App
         cMessage *collTimer; // Timer for collecting measurements
         std::list<Measurement> meaList; // Measurement list of recent sensing
         MeaColl mc; // Measurement collection
+        simtime_t tsSense; // Time stamp for receiving sense result from sensor
 
         /* Send sense result to CH (broadcast, CH will collect these result) */
         void sendSenseResult();

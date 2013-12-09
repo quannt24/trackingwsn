@@ -81,6 +81,9 @@ AppSensor::AppSensor()
     senseTimer = new cMessage("SenseTimer");
     reportTimer = new cMessage("ReportTimer");
     collTimer = new cMessage("CollTimer");
+
+    // Sense time stamp
+    tsSense = 0;
 }
 
 AppSensor::~AppSensor()
@@ -181,6 +184,7 @@ void AppSensor::recvSenseResult(SensedResult *result)
                 // Add measurement object to collection
                 mc.addMeasurement(*it);
             }
+            tsSense = simTime(); // Punch time stamp for sense action
 
             // Sensing is synchronized locally, collect measurements from other nodes
             EV << "Sensing is synchronized, collecting measurements\n";
@@ -297,11 +301,13 @@ void AppSensor::trackTargets()
         MsgTrackResult *msgTrackResult = new MsgTrackResult();
         msgTrackResult->setTpList(tpList);
         /* Set message size
-         * Each TargetPos contains target ID + x + y will have size of 1 + 8 + 8 bytes */
+         * Each TargetPos cons target ID + x + y will have size of 1 + 8 + 8 bytes */
         msgTrackResult->setMsgSize(msgTrackResult->getMsgSize() + 17 * tpList.size());
         msgTrackResult->setByteLength(msgTrackResult->getMsgSize());
         // Turn on strobe flag for this message
         msgTrackResult->setStrobeFlag(true);
+        // Set time stamp
+        msgTrackResult->setTsSense(tsSense);
         // Send result to base station
         send(msgTrackResult, "netGate$o");
     } else {

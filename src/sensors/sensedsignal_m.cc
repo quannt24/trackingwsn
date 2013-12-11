@@ -37,6 +37,8 @@ SensedSignal::SensedSignal(const char *name, int kind) : cMessage(name,kind)
     this->tarId_var = 0;
     this->signal_var = 0;
     this->distance_var = 0;
+    this->x_var = 0;
+    this->y_var = 0;
 }
 
 SensedSignal::SensedSignal(const SensedSignal& other) : cMessage(other)
@@ -61,6 +63,8 @@ void SensedSignal::copy(const SensedSignal& other)
     this->tarId_var = other.tarId_var;
     this->signal_var = other.signal_var;
     this->distance_var = other.distance_var;
+    this->x_var = other.x_var;
+    this->y_var = other.y_var;
 }
 
 void SensedSignal::parsimPack(cCommBuffer *b)
@@ -69,6 +73,8 @@ void SensedSignal::parsimPack(cCommBuffer *b)
     doPacking(b,this->tarId_var);
     doPacking(b,this->signal_var);
     doPacking(b,this->distance_var);
+    doPacking(b,this->x_var);
+    doPacking(b,this->y_var);
 }
 
 void SensedSignal::parsimUnpack(cCommBuffer *b)
@@ -77,6 +83,8 @@ void SensedSignal::parsimUnpack(cCommBuffer *b)
     doUnpacking(b,this->tarId_var);
     doUnpacking(b,this->signal_var);
     doUnpacking(b,this->distance_var);
+    doUnpacking(b,this->x_var);
+    doUnpacking(b,this->y_var);
 }
 
 int SensedSignal::getTarId() const
@@ -107,6 +115,26 @@ double SensedSignal::getDistance() const
 void SensedSignal::setDistance(double distance)
 {
     this->distance_var = distance;
+}
+
+double SensedSignal::getX() const
+{
+    return x_var;
+}
+
+void SensedSignal::setX(double x)
+{
+    this->x_var = x;
+}
+
+double SensedSignal::getY() const
+{
+    return y_var;
+}
+
+void SensedSignal::setY(double y)
+{
+    this->y_var = y;
 }
 
 class SensedSignalDescriptor : public cClassDescriptor
@@ -156,7 +184,7 @@ const char *SensedSignalDescriptor::getProperty(const char *propertyname) const
 int SensedSignalDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 3+basedesc->getFieldCount(object) : 3;
+    return basedesc ? 5+basedesc->getFieldCount(object) : 5;
 }
 
 unsigned int SensedSignalDescriptor::getFieldTypeFlags(void *object, int field) const
@@ -171,8 +199,10 @@ unsigned int SensedSignalDescriptor::getFieldTypeFlags(void *object, int field) 
         FD_ISEDITABLE,
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<5) ? fieldTypeFlags[field] : 0;
 }
 
 const char *SensedSignalDescriptor::getFieldName(void *object, int field) const
@@ -187,8 +217,10 @@ const char *SensedSignalDescriptor::getFieldName(void *object, int field) const
         "tarId",
         "signal",
         "distance",
+        "x",
+        "y",
     };
-    return (field>=0 && field<3) ? fieldNames[field] : NULL;
+    return (field>=0 && field<5) ? fieldNames[field] : NULL;
 }
 
 int SensedSignalDescriptor::findField(void *object, const char *fieldName) const
@@ -198,6 +230,8 @@ int SensedSignalDescriptor::findField(void *object, const char *fieldName) const
     if (fieldName[0]=='t' && strcmp(fieldName, "tarId")==0) return base+0;
     if (fieldName[0]=='s' && strcmp(fieldName, "signal")==0) return base+1;
     if (fieldName[0]=='d' && strcmp(fieldName, "distance")==0) return base+2;
+    if (fieldName[0]=='x' && strcmp(fieldName, "x")==0) return base+3;
+    if (fieldName[0]=='y' && strcmp(fieldName, "y")==0) return base+4;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -213,8 +247,10 @@ const char *SensedSignalDescriptor::getFieldTypeString(void *object, int field) 
         "int",
         "string",
         "double",
+        "double",
+        "double",
     };
-    return (field>=0 && field<3) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<5) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *SensedSignalDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -257,6 +293,8 @@ std::string SensedSignalDescriptor::getFieldAsString(void *object, int field, in
         case 0: return long2string(pp->getTarId());
         case 1: return oppstring2string(pp->getSignal());
         case 2: return double2string(pp->getDistance());
+        case 3: return double2string(pp->getX());
+        case 4: return double2string(pp->getY());
         default: return "";
     }
 }
@@ -274,6 +312,8 @@ bool SensedSignalDescriptor::setFieldAsString(void *object, int field, int i, co
         case 0: pp->setTarId(string2long(value)); return true;
         case 1: pp->setSignal((value)); return true;
         case 2: pp->setDistance(string2double(value)); return true;
+        case 3: pp->setX(string2double(value)); return true;
+        case 4: pp->setY(string2double(value)); return true;
         default: return false;
     }
 }
@@ -290,8 +330,10 @@ const char *SensedSignalDescriptor::getFieldStructName(void *object, int field) 
         NULL,
         NULL,
         NULL,
+        NULL,
+        NULL,
     };
-    return (field>=0 && field<3) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<5) ? fieldStructNames[field] : NULL;
 }
 
 void *SensedSignalDescriptor::getFieldStructPointer(void *object, int field, int i) const

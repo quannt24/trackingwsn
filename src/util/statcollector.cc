@@ -23,6 +23,8 @@ void StatCollector::initialize()
     totalSensorEnergySignal = registerSignal("total_sensor_energy");
     sentFrameSignal = registerSignal("sent_frame");
     lostFrameSignal = registerSignal("lost_frame");
+    // Signal for emitting estimation error
+    estErrSignal = registerSignal("est_err");
 
     // Record total sensor energy for first time
     pollTotalSensorEnergy();
@@ -80,4 +82,10 @@ void StatCollector::incLostFrame()
     Enter_Method_Silent("incLostFrame");
     numLostFrame++;
     emit(lostFrameSignal, numLostFrame);
+}
+
+void StatCollector::recEstError(double err)
+{
+    Enter_Method_Silent("recEstError");
+    emit(estErrSignal, err);
 }

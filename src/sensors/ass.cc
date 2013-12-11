@@ -103,7 +103,7 @@ void Ass::reqTargets()
 
 void Ass::recvSenseData(SensedSignal* sig)
 {
-    Measurement m(sig->getTarId(), sig->getDistance() + noise->nextNoise());
+    Measurement m(sig->getTarId(), sig->getDistance() + noise->nextNoise(), sig->getX(), sig->getY());
     meaList.push_back(m);
     nMeasurement++;
     if (nMeasurement == nSensedTarget) {

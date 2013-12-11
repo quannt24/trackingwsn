@@ -20,4 +20,6 @@ message SensedSignal {
     int tarId; // Target ID (used for reference and when target classification is not available)
     string signal; // Acoustic signal
     double distance; // True distance from target to sensing sensor (for reference)
+    double x; // True x coordination (for reference)
+    double y; // True y coordination (for reference)
 }

@@ -8,10 +8,12 @@
 #include "measurement.h"
 
 /* Initial function for constructors */
-void Measurement::init(int tarId, double md, double nodePosX, double nodePosY, double nodeEnergy)
+void Measurement::init(int tarId, double md, double tarPosX, double tarPosY, double nodePosX, double nodePosY, double nodeEnergy)
 {
     this->tarId = tarId;
     this->measuredDistance = md;
+    this->tarPosX = tarPosX;
+    this->tarPosY = tarPosY;
     this->nodePosX = nodePosX;
     this->nodePosY = nodePosY;
     this->nodeEnergy = nodeEnergy;
@@ -19,17 +21,17 @@ void Measurement::init(int tarId, double md, double nodePosX, double nodePosY, d
 
 Measurement::Measurement()
 {
-    init (-1, 0, 0, 0, 0);
+    init (-1, 0, 0, 0, 0, 0, 0);
 }
 
-Measurement::Measurement(int tarId, double md)
+Measurement::Measurement(int tarId, double md, double tarPosX, double tarPosY)
 {
-    init (tarId, md, 0, 0, 0);
+    init (tarId, md, tarPosX, tarPosY, 0, 0, 0);
 }
 
-Measurement::Measurement(int tarId, double md, double nodePosX, double nodePosY, double nodeEnergy)
+Measurement::Measurement(int tarId, double md, double tarPosX, double tarPosY, double nodePosX, double nodePosY, double nodeEnergy)
 {
-    init(tarId, md, nodePosX, nodePosY, nodeEnergy);
+    init(tarId, md, tarPosX, tarPosY, nodePosX, nodePosY, nodeEnergy);
 }
 
 Measurement::~Measurement()
@@ -54,6 +56,26 @@ double Measurement::getMeasuredDistance() const
 void Measurement::setMeasuredDistance(double measuredDistance)
 {
     this->measuredDistance = measuredDistance;
+}
+
+double Measurement::getTarPosX() const
+{
+    return tarPosX;
+}
+
+void Measurement::setTarPosX(double tarPosX)
+{
+    this->tarPosX = tarPosX;
+}
+
+double Measurement::getTarPosY() const
+{
+    return tarPosY;
+}
+
+void Measurement::setTarPosY(double tarPosY)
+{
+    this->tarPosY = tarPosY;
 }
 
 double Measurement::getNodePosX() const

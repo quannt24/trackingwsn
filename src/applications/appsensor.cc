@@ -21,6 +21,8 @@
 #include "energy.h"
 #include "estimator.h"
 #include "measurement.h"
+#include "worldutil.h"
+#include "statcollector.h"
 
 Define_Module(AppSensor);
 
@@ -255,6 +257,9 @@ void AppSensor::trackTargets()
     bool isCH = false; // True if this node is CH of at least one target (global CH flag)
     std::list<TargetPos> tpList;
 
+    double err = 0; // Estimation error
+    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+
     for (ite = el->begin(); ite != el->end(); ++ite) {
         // Check if this node has its own measurement of a target (in range of that target)
         hasMea = false;
@@ -292,6 +297,10 @@ void AppSensor::trackTargets()
             tp.setTarId((*ite).tarId); // Label the position with target's ID
             //EV << "Estimated pos: " << tp.getX() << " ; " << tp.getY();
             tpList.push_back(tp);
+
+            // Calculate error
+            err = distance(tp.getX(), tp.getY(), (*ite).meaList.front().getTarPosX(), (*ite).meaList.front().getTarPosY());
+            sc->recEstError(err);
         }
     }
 

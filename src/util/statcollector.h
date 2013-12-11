@@ -31,6 +31,7 @@ class StatCollector : public cSimpleModule
         simsignal_t totalSensorEnergySignal;
         simsignal_t sentFrameSignal;
         simsignal_t lostFrameSignal;
+        simsignal_t estErrSignal;
 
     protected:
         virtual void initialize();
@@ -45,6 +46,8 @@ class StatCollector : public cSimpleModule
         void incSentFrame();
         /* Increase number of lost frame */
         void incLostFrame();
+        /* Record estimation error */
+        void recEstError(double err);
 };
 
 #endif

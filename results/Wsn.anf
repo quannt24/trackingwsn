@@ -49,8 +49,12 @@
       </items>
       <items xsi:type="scave:Group" name="global">
         <items xsi:type="scave:Add" filterPattern="module(Wsn.sc) AND name(totalEnergy:vector)" type="VECTOR"/>
-        <items xsi:type="scave:LineChart" name="totalEnergy:vector Wsn.sc" lineNameFormat="">
+        <items xsi:type="scave:LineChart" name="Total energy" lineNameFormat="Total energy">
+          <properties name="Graph.Title" value="Total energy"/>
+          <properties name="X.Axis.Title" value="Time (s)"/>
+          <properties name="Y.Axis.Title" value="Total energy (J)"/>
           <properties name="Symbols.Type" value="None"/>
+          <properties name="Line.Name/Total energy" value="Total energy"/>
         </items>
       </items>
     </datasets>
@@ -58,13 +62,22 @@
       <items xsi:type="scave:Add" filterPattern="file(/TrackingWSN/simulations/results/Wsn-0.vec) AND attr:configname(Wsn) AND attr:runnumber(0) AND module(Wsn.bs.app) AND name(e2eDelay:vector)" type="VECTOR"/>
       <items xsi:type="scave:LineChart" name="End-to-end Delay" lineNameFormat="">
         <properties name="Graph.Title" value="End-to-end Delay"/>
-        <properties name="X.Axis.Title" value="Time"/>
-        <properties name="Y.Axis.Title" value="Delay"/>
+        <properties name="X.Axis.Title" value="Time (s)"/>
+        <properties name="Y.Axis.Title" value="Delay (s)"/>
+        <properties name="Line.Type" value="Dots"/>
+      </items>
+    </datasets>
+    <datasets name="Estimation Error">
+      <items xsi:type="scave:Add" filterPattern="file(/TrackingWSN/simulations/results/Wsn-0.vec) AND attr:configname(Wsn) AND attr:runnumber(0) AND module(Wsn.sc) AND name(estimationError:vector)" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="Estimation Error" lineNameFormat="Error">
+        <properties name="Graph.Title" value="Estimation Error"/>
+        <properties name="X.Axis.Title" value="Time (s)"/>
+        <properties name="Y.Axis.Title" value="Error (m)"/>
       </items>
     </datasets>
   </datasets>
   <chartSheets>
     <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.2 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.1/@items.2"/>
-    <chartSheets name="Efficiency" charts="//@datasets/@datasets.2/@items.1/@items.1 //@datasets/@datasets.2/@items.0/@items.1 //@datasets/@datasets.3/@items.1"/>
+    <chartSheets name="Efficiency" charts="//@datasets/@datasets.2/@items.1/@items.1 //@datasets/@datasets.2/@items.0/@items.1 //@datasets/@datasets.3/@items.1 //@datasets/@datasets.4/@items.1"/>
   </chartSheets>
 </scave:Analysis>

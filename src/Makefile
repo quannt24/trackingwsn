@@ -197,7 +197,9 @@ $O/applications/appsensor.o: applications/appsensor.cc \
 	msgkind.h \
 	networklayer/messagecr_m.h \
 	sensors/measurement.h \
-	sensors/sensedresult_m.h
+	sensors/sensedresult_m.h \
+	util/statcollector.h \
+	util/worldutil.h
 $O/applications/meacoll.o: applications/meacoll.cc \
 	applications/meacoll.h \
 	sensors/measurement.h

@@ -16,22 +16,27 @@ class Measurement
     private:
         int tarId; // Target ID
         double measuredDistance; // Measured distance (not true distance)
+        double tarPosX, tarPosY; // True position of target (for reference)
         double nodePosX, nodePosY; // Position of sensor node
         double nodeEnergy; // Remaining energy of sensor
 
         /* Initial function for constructors */
-        void init(int tarId, double md, double nodePosX, double nodePosY, double nodeEnergy);
+        void init(int tarId, double md, double tarPosX, double tarPosY, double nodePosX, double nodePosY, double nodeEnergy);
 
     public:
         Measurement();
-        Measurement(int tarId, double md);
-        Measurement(int tarId, double md, double nodePosX, double nodePosY, double nodeEnergy);
+        Measurement(int tarId, double md, double tarPosX, double tarPosY);
+        Measurement(int tarId, double md, double tarPosX, double tarPosY, double nodePosX, double nodePosY, double nodeEnergy);
         virtual ~Measurement();
 
         int getTarId() const;
         void setTarId(int tarId);
         double getMeasuredDistance() const;
         void setMeasuredDistance(double measuredDistance);
+        double getTarPosX() const;
+        void setTarPosX(double tarPosX);
+        double getTarPosY() const;
+        void setTarPosY(double tarPosY);
         double getNodePosX() const;
         void setNodePosX(double nodePosX);
         double getNodePosY() const;

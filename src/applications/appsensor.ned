@@ -26,11 +26,11 @@ simple AppSensor extends App
         double collMeaPeriod = default(0.05);
         // Report measurement period (should shorter than collMeaPeriod
         double repMeaPeriod = default(0.04);
-        
+
         bool enableSleep = default(true); // If false, node will stay awake all time
         double idleTime = default(5); // Idle time before sensor goes to sleep
         double sleepTime = default(20); // Max sleep time
-        
+
         @class("AppSensor");
         @display("i=block/app");
     gates:

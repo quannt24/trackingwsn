@@ -22,6 +22,8 @@
  *     int tarId; 
  *     string signal; 
  *     double distance; 
+ *     double x; 
+ *     double y; 
  * }
  * </pre>
  */
@@ -31,6 +33,8 @@ class SensedSignal : public ::cMessage
     int tarId_var;
     opp_string signal_var;
     double distance_var;
+    double x_var;
+    double y_var;
 
   private:
     void copy(const SensedSignal& other);
@@ -55,6 +59,10 @@ class SensedSignal : public ::cMessage
     virtual void setSignal(const char * signal);
     virtual double getDistance() const;
     virtual void setDistance(double distance);
+    virtual double getX() const;
+    virtual void setX(double x);
+    virtual double getY() const;
+    virtual void setY(double y);
 };
 
 inline void doPacking(cCommBuffer *b, SensedSignal& obj) {obj.parsimPack(b);}

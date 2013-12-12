@@ -31,7 +31,7 @@ simple NetEMRP
         // Differential amount of relay/backup nodes' energy that triggers switch nodes
         double switchingEnergy @unit(J)= default(0.1J);
         // Critical energy level that a node cannot guarantees reliable transmission
-        double criticalEnergy = default(0.2);
+        double criticalEnergy @unit(J) = default(0.2J);
         
         @display("i=block/layer");
     gates:

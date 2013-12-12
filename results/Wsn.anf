@@ -60,6 +60,10 @@
     </datasets>
     <datasets name="E2E Delay">
       <items xsi:type="scave:Add" filterPattern="file(/TrackingWSN/simulations/results/Wsn-0.vec) AND attr:configname(Wsn) AND attr:runnumber(0) AND module(Wsn.bs.app) AND name(e2eDelay:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Group">
+        <items xsi:type="scave:ComputeScalar" scalarName="max_delay" valueExpr="max('e2eDelay:vector') " moduleExpr="" groupByExpr=""/>
+        <items xsi:type="scave:ComputeScalar" scalarName="mean_e2e_delay" valueExpr="mean('e2eDelay:vector') " moduleExpr="" groupByExpr=""/>
+      </items>
       <items xsi:type="scave:LineChart" name="End-to-end Delay" lineNameFormat="">
         <properties name="Graph.Title" value="End-to-end Delay"/>
         <properties name="X.Axis.Title" value="Time (s)"/>
@@ -69,15 +73,23 @@
     </datasets>
     <datasets name="Estimation Error">
       <items xsi:type="scave:Add" filterPattern="file(/TrackingWSN/simulations/results/Wsn-0.vec) AND attr:configname(Wsn) AND attr:runnumber(0) AND module(Wsn.sc) AND name(estimationError:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Group" name="">
+        <items xsi:type="scave:ComputeScalar" scalarName="mean_error" valueExpr="mean('estimationError:vector') " moduleExpr="" groupByExpr=""/>
+        <items xsi:type="scave:ComputeScalar" scalarName="max_error" valueExpr="max('estimationError:vector') " moduleExpr="" groupByExpr=""/>
+      </items>
       <items xsi:type="scave:LineChart" name="Estimation Error" lineNameFormat="Error">
         <properties name="Graph.Title" value="Estimation Error"/>
         <properties name="X.Axis.Title" value="Time (s)"/>
         <properties name="Y.Axis.Title" value="Error (m)"/>
       </items>
     </datasets>
+    <datasets name="Frame count">
+      <items xsi:type="scave:Add" filterPattern="module(Wsn.sc) AND (source(lost_frame)  OR source(sent_frame) )"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="percent_lost_frame" valueExpr="'numLostFrame:last' / 'numSentFrame:last' * 100" moduleExpr="" groupByExpr=""/>
+    </datasets>
   </datasets>
   <chartSheets>
     <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.2 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.1/@items.2"/>
-    <chartSheets name="Efficiency" charts="//@datasets/@datasets.2/@items.1/@items.1 //@datasets/@datasets.2/@items.0/@items.1 //@datasets/@datasets.3/@items.1 //@datasets/@datasets.4/@items.1"/>
+    <chartSheets name="Efficiency" charts="//@datasets/@datasets.2/@items.1/@items.1 //@datasets/@datasets.2/@items.0/@items.1 //@datasets/@datasets.3/@items.2 //@datasets/@datasets.4/@items.2"/>
   </chartSheets>
 </scave:Analysis>

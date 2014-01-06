@@ -15,6 +15,10 @@
 
 #include "statcollector.h"
 #include "energy.h"
+#include "mobility.h"
+#include <iostream>
+#include <fstream>
+#include <iomanip>
 
 Define_Module(StatCollector);
 
@@ -88,4 +92,38 @@ void StatCollector::recEstError(double err)
 {
     Enter_Method_Silent("recEstError");
     emit(estErrSignal, err);
+}
+
+void StatCollector::finish()
+{
+    recRemainingEnergy();
+}
+
+void StatCollector::recRemainingEnergy()
+{
+    using namespace std;
+
+    cModule *wsn = getModuleByPath("Wsn");
+    Energy *ener;
+    Mobility *mob;
+    int nss = wsn->par("numSensors").longValue();
+    int i;
+
+    ofstream out("results/remain_ener.data", ios::out | ios::trunc);
+
+    if (!out) {
+        cerr << "Cannot output data\n";
+        return;
+    }
+
+    for (i = 0; i < nss; i++) {
+        ener = check_and_cast<Energy*>(wsn->getSubmodule("sensor", i)->getSubmodule("energy"));
+        mob = check_and_cast<Mobility*>(wsn->getSubmodule("sensor", i)->getSubmodule("mobility"));
+
+        out << right << setw(3) << mob->getRow() << ' ' << setw(3) << mob->getCol() << ' '
+                << setw(7) << mob->getX() << ' ' << setw(7) << mob->getY() << ' '
+                << setw(10) << ener->getCapacity() << endl;
+    }
+
+    out.close();
 }

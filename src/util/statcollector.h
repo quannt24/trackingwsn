@@ -33,6 +33,11 @@ class StatCollector : public cSimpleModule
         simsignal_t lostFrameSignal;
         simsignal_t estErrSignal;
 
+        /**
+         * Record remaining energy of sensor nodes
+         */
+        void recRemainingEnergy();
+
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
@@ -48,6 +53,8 @@ class StatCollector : public cSimpleModule
         void incLostFrame();
         /* Record estimation error */
         void recEstError(double err);
+
+        void finish();
 };
 
 #endif

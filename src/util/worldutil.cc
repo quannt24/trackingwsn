@@ -54,6 +54,8 @@ void WorldUtil::arrangeNodes()
         mob = check_and_cast<Mobility*>(ss->getSubmodule("mobility"));
         mob->setX((i % ssCols) * rint(wsnWidth / ssCols) + intuniform(0, wsnWidth / ssCols / 2));
         mob->setY((i / ssCols) * rint(wsnHeight / ssRows) + intuniform(0, wsnHeight / ssRows / 2));
+        mob->setRow(i / ssCols);
+        mob->setCol(i % ssCols);
         mob->updateDisplay(); // Update display of sensor
     }
 }

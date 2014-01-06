@@ -26,7 +26,8 @@
 class Mobility : public cSimpleModule
 {
     private:
-        double x, y; // Position (coordinate in meter)
+        double x, y; // Position (coordinate in meter), used to place module on inspector
+        int row, col; // Position in row/column (just for reference only, not for actual drawing)
         cMessage *moveMsg; // Self message to move target to new position
         double *xArr; // Path array storing x coordinates
         double *yArr; // Path array storing y coordinates
@@ -47,6 +48,10 @@ class Mobility : public cSimpleModule
         void setX(double x);
         double getY();
         void setY(double y);
+        int getRow();
+        void setRow(int r);
+        int getCol();
+        void setCol(int c);
         void updateDisplay(); // Update display of parent module in simulation
 };
 

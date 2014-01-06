@@ -308,6 +308,7 @@ $O/util/matrix.o: util/matrix.cc \
 	util/matrix.h
 $O/util/statcollector.o: util/statcollector.cc \
 	energy/energy.h \
+	mobility/mobility.h \
 	util/statcollector.h
 $O/util/worldutil.o: util/worldutil.cc \
 	linklayer/frame802154_m.h \

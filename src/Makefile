@@ -63,6 +63,7 @@ OBJS = \
     $O/linklayer/packet802154_m.o \
     $O/linklayer/frame802154_m.o \
     $O/networklayer/packetemrp_m.o \
+    $O/networklayer/packetcr_m.o \
     $O/networklayer/messagecr_m.o \
     $O/sensors/sensedresult_m.o \
     $O/sensors/sensereq_m.o \
@@ -74,6 +75,7 @@ MSGFILES = \
     linklayer/packet802154.msg \
     linklayer/frame802154.msg \
     networklayer/packetemrp.msg \
+    networklayer/packetcr.msg \
     networklayer/messagecr.msg \
     sensors/sensedresult.msg \
     sensors/sensereq.msg \
@@ -254,11 +256,16 @@ $O/networklayer/netemrp.o: networklayer/netemrp.cc \
 	msgkind.h \
 	networklayer/messagecr_m.h \
 	networklayer/netemrp.h \
+	networklayer/packetcr_m.h \
 	networklayer/packetemrp_m.h \
 	sensors/measurement.h \
 	util/worldutil.h
+$O/networklayer/packetcr_m.o: networklayer/packetcr_m.cc \
+	linklayer/packet802154_m.h \
+	networklayer/packetcr_m.h
 $O/networklayer/packetemrp_m.o: networklayer/packetemrp_m.cc \
 	linklayer/packet802154_m.h \
+	networklayer/packetcr_m.h \
 	networklayer/packetemrp_m.h
 $O/sensors/asg.o: sensors/asg.cc \
 	mobility/mobility.h \
@@ -317,6 +324,7 @@ $O/util/worldutil.o: util/worldutil.cc \
 	mobility/mobility.h \
 	networklayer/messagecr_m.h \
 	networklayer/netemrp.h \
+	networklayer/packetcr_m.h \
 	networklayer/packetemrp_m.h \
 	util/worldutil.h
 

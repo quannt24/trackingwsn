@@ -14,23 +14,13 @@
 // 
 
 cplusplus {{
-#include "packet802154_m.h"
+#include "packetcr_m.h"
 }}
 
-packet Packet802154;
-
-enum PacketType {
-    PK_PAYLOAD_TO_AN = 0; // Packet to be transmited to adjacent node (cluster head or a specific node)
-    PK_PAYLOAD_TO_BS = 1; // Packet to be transmited to base station
-    PK_REQ_RELAY = 2; // Request for relay info
-    PK_RELAY_INFO = 3; // Relay info to response the request
-    PK_ENERGY_INFO = 4; // Enegry info report after relay a packet
-};
+packet PacketCR;
 
 // EMRP network packet
-packet PacketEMRP extends Packet802154 {
-    int pkType; // Packet type
-    int pkSize = 19; // 18 bytes from 4 fields of Packet802154 + 1 byte pkType
+packet PacketEMRP extends PacketCR {
 }
 
 // EMRP relay info packet

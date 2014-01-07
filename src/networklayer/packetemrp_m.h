@@ -14,45 +14,21 @@
 #endif
 
 // cplusplus {{
-#include "packet802154_m.h"
+#include "packetcr_m.h"
 // }}
 
 
 
 /**
- * Enum generated from <tt>networklayer/packetemrp.msg</tt> by opp_msgc.
- * <pre>
- * enum PacketType {
- *     PK_PAYLOAD_TO_AN = 0; 
- *     PK_PAYLOAD_TO_BS = 1; 
- *     PK_REQ_RELAY = 2; 
- *     PK_RELAY_INFO = 3; 
- *     PK_ENERGY_INFO = 4; 
- * };
- * </pre>
- */
-enum PacketType {
-    PK_PAYLOAD_TO_AN = 0,
-    PK_PAYLOAD_TO_BS = 1,
-    PK_REQ_RELAY = 2,
-    PK_RELAY_INFO = 3,
-    PK_ENERGY_INFO = 4
-};
-
-/**
  * Class generated from <tt>networklayer/packetemrp.msg</tt> by opp_msgc.
  * <pre>
- * packet PacketEMRP extends Packet802154 {
- *     int pkType; 
- *     int pkSize = 19; 
+ * packet PacketEMRP extends PacketCR {
  * }
  * </pre>
  */
-class PacketEMRP : public ::Packet802154
+class PacketEMRP : public ::PacketCR
 {
   protected:
-    int pkType_var;
-    int pkSize_var;
 
   private:
     void copy(const PacketEMRP& other);
@@ -71,10 +47,6 @@ class PacketEMRP : public ::Packet802154
     virtual void parsimUnpack(cCommBuffer *b);
 
     // field getter/setter methods
-    virtual int getPkType() const;
-    virtual void setPkType(int pkType);
-    virtual int getPkSize() const;
-    virtual void setPkSize(int pkSize);
 };
 
 inline void doPacking(cCommBuffer *b, PacketEMRP& obj) {obj.parsimPack(b);}

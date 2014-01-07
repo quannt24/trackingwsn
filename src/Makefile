@@ -50,6 +50,7 @@ OBJS = \
     $O/energy/energy.o \
     $O/linklayer/link802154.o \
     $O/mobility/mobility.o \
+    $O/networklayer/net.o \
     $O/networklayer/netemrp.o \
     $O/sensors/asg.o \
     $O/sensors/measurement.o \
@@ -244,6 +245,13 @@ $O/mobility/mobility.o: mobility/mobility.cc \
 	mobility/mobility.h
 $O/networklayer/messagecr_m.o: networklayer/messagecr_m.cc \
 	networklayer/messagecr_m.h
+$O/networklayer/net.o: networklayer/net.cc \
+	linklayer/frame802154_m.h \
+	linklayer/link802154.h \
+	linklayer/packet802154_m.h \
+	mobility/mobility.h \
+	networklayer/net.h \
+	util/worldutil.h
 $O/networklayer/netemrp.o: networklayer/netemrp.cc \
 	applications/app.h \
 	applications/estimator/targetpos.h \
@@ -255,6 +263,7 @@ $O/networklayer/netemrp.o: networklayer/netemrp.cc \
 	mobility/mobility.h \
 	msgkind.h \
 	networklayer/messagecr_m.h \
+	networklayer/net.h \
 	networklayer/netemrp.h \
 	networklayer/packetcr_m.h \
 	networklayer/packetemrp_m.h \
@@ -323,6 +332,7 @@ $O/util/worldutil.o: util/worldutil.cc \
 	linklayer/packet802154_m.h \
 	mobility/mobility.h \
 	networklayer/messagecr_m.h \
+	networklayer/net.h \
 	networklayer/netemrp.h \
 	networklayer/packetcr_m.h \
 	networklayer/packetemrp_m.h \

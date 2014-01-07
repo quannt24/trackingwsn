@@ -90,6 +90,6 @@
   </datasets>
   <chartSheets>
     <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.0/@items.2 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.1/@items.2"/>
-    <chartSheets name="Efficiency" charts="//@datasets/@datasets.2/@items.1/@items.1 //@datasets/@datasets.2/@items.0/@items.1 //@datasets/@datasets.3/@items.2 //@datasets/@datasets.4/@items.2"/>
+    <chartSheets name="Efficiency" charts="//@datasets/@datasets.2/@items.1/@items.1 //@datasets/@datasets.3/@items.2 //@datasets/@datasets.4/@items.2"/>
   </chartSheets>
 </scave:Analysis>

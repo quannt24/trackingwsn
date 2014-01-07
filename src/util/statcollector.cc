@@ -116,11 +116,16 @@ void StatCollector::recRemainingEnergy()
         return;
     }
 
+    out << "# Remaining energy" << endl;
+    out << '#' << right << setw(3) << "row" << ' ' << setw(4) << "col" << ' '
+            << setw(7) << "x" << ' ' << setw(7) << "y" << ' '
+            << setw(10) << "energy" << endl;
+
     for (i = 0; i < nss; i++) {
         ener = check_and_cast<Energy*>(wsn->getSubmodule("sensor", i)->getSubmodule("energy"));
         mob = check_and_cast<Mobility*>(wsn->getSubmodule("sensor", i)->getSubmodule("mobility"));
 
-        out << right << setw(3) << mob->getRow() << ' ' << setw(3) << mob->getCol() << ' '
+        out << right << setw(4) << mob->getRow() << ' ' << setw(4) << mob->getCol() << ' '
                 << setw(7) << mob->getX() << ' ' << setw(7) << mob->getY() << ' '
                 << setw(10) << ener->getCapacity() << endl;
     }

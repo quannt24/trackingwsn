@@ -67,7 +67,6 @@ void NetEMRP::handleMessage(cMessage *msg)
 
 NetEMRP::NetEMRP()
 {
-    macAddr = -1;
     bsAddr = 0;
     rnAddr = 0;
     bnAddr = 0;
@@ -83,27 +82,6 @@ NetEMRP::NetEMRP()
 NetEMRP::~NetEMRP()
 {
     cancelAndDelete(initMsg);
-}
-
-/* Store position of base station */
-void NetEMRP::setBSPos(double x, double y)
-{
-    Mobility *mob = (Mobility*) getParentModule()->getSubmodule("mobility");
-    bsPosX = x;
-    bsPosY = y;
-    dBS = distance(x, y, mob->getX(), mob->getY());
-}
-
-/*
- * Get MAC address from link layer. At initial stage, this address may not available
- * and this function may not work correctly.
- */
-int NetEMRP::getMacAddr()
-{
-    if (macAddr < 0) {
-        macAddr = ((Link802154*) getParentModule()->getSubmodule("link"))->getAddr();
-    }
-    return macAddr;
 }
 
 /* Process received message from upper layer */

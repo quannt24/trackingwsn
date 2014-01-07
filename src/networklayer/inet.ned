@@ -13,22 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.nodes;
+package trackingwsn.networklayer;
 
-import trackingwsn.linklayer.Link802154;
-import trackingwsn.networklayer.INet;
-import trackingwsn.networklayer.NetEMRP;
-import trackingwsn.energy.Energy;
-
-module Node802154 extends Entity
+// Module interface for network layer
+moduleinterface INet
 {
     parameters:
-    	// Network layer module name
-        string netModuleName = default("NetEMRP");
-    submodules:
-        net: <netModuleName> like INet;
-        link: Link802154;
-        energy: Energy;
-    connections:
-        net.linkGate <--> link.netGate;
+        bool isBaseStation;
+
+        @display("i=block/layer");
+    gates:
+        inout appGate;
+        inout linkGate;
 }

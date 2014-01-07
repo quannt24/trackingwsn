@@ -16,6 +16,7 @@
 #ifndef __TRACKINGWSN_NETEMRP_H_
 #define __TRACKINGWSN_NETEMRP_H_
 
+#include "net.h"
 #include "packetemrp_m.h"
 #include "messagecr_m.h"
 #include <omnetpp.h>
@@ -23,20 +24,14 @@
 /**
  * Network layer using EMRP protocol
  */
-class NetEMRP : public cSimpleModule
+class NetEMRP : public Net
 {
     private:
-        // This node MAC address. This field should not used directly, please use getMacAddr().
-        int macAddr;
         // MAC addresses for routing
         // Value 0 means connection info is not initialized.
         int bsAddr;
         int rnAddr;
         int bnAddr;
-
-        // Stored information about base station, these info must be set so that node can work properly.
-        double bsPosX, bsPosY; // Base station position
-        double dBS; // Distance from this node to base station
 
         // Stored information about relay/backup nodes
         double enerRn; // Energy
@@ -48,8 +43,6 @@ class NetEMRP : public cSimpleModule
 
         cMessage *initMsg; // Self message for initializing EMRP procedure
 
-        /* Get MAC address from link layer. At initial stage, this address may not available. */
-        int getMacAddr();
         /* Process received message from upper layer */
         void recvMessage(MessageCR *msg);
         /* Process received packet from lower layer */
@@ -93,8 +86,6 @@ class NetEMRP : public cSimpleModule
     public:
         NetEMRP();
         ~NetEMRP();
-        /* Store position of base station */
-        void setBSPos(double x, double y);
 };
 
 #endif

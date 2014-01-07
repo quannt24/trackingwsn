@@ -18,10 +18,9 @@ package trackingwsn.networklayer;
 //
 // Network layer using EMRP protocol
 //
-simple NetEMRP
+simple NetEMRP extends Net
 {
     parameters:
-        bool isBaseStation = default(false);
         // Period for broadcast first relay request. If this period is too short, channel may be
         // too busy and some nodes may fail to complete initializing procedure. The warm-up period
         // will be dependent to this period.
@@ -33,8 +32,6 @@ simple NetEMRP
         // Critical energy level that a node cannot guarantees reliable transmission
         double criticalEnergy @unit(J) = default(0.2J);
         
+        @class("NetEMRP");
         @display("i=block/layer");
-    gates:
-        inout appGate;
-        inout linkGate;
 }

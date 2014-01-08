@@ -149,7 +149,7 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
             send(pkt, "linkGate$o");
 
             // Send back a report about energy
-            sendEnergyInfo(sender);
+            sendEnergyInfo(sender, pkt->getBitLength());
 
             // Notify application that event occurs
             notifyApp();
@@ -302,8 +302,11 @@ double NetEMRP::assessRelay(double ener, double dRc, double dBs, double dRcBs)
 
 /*
  * Send an energy report to a node
+ * Param:
+ *  addr Address of node receiving info
+ *  bitLen Length in bits of relayed packet
  */
-void NetEMRP::sendEnergyInfo(int addr)
+void NetEMRP::sendEnergyInfo(int addr, int bitLen)
 {
     PacketEMRP_EnergyInfo *ei = new PacketEMRP_EnergyInfo("EnergyInfo");
     ei->setTxType(TX_PPP);
@@ -312,8 +315,21 @@ void NetEMRP::sendEnergyInfo(int addr)
     ei->setSrcMacAddr(getMacAddr());
     ei->setDesMacAddr(addr);
 
-    //ei->setEnergy(((Energy*) getParentModule()->getSubmodule("energy"))->getCapacity());
-    ei->setConsumedEnergy(0.05); // TODO Calculate
+    // Estimate consumed energy (original protocol, not accurate)
+    Link802154* link = (Link802154*) getParentModule()->getSubmodule("link");
+    double e_elec = link->par("e_elec").doubleValue();
+    double e_fs = link->par("e_fs").doubleValue();
+    double d = link->par("txRange").doubleValue();
+    double eTotal;
+    if (d <= link->par("txRTh").doubleValue()) {
+        eTotal = bitLen * e_elec + (bitLen * e_elec + bitLen * e_fs * d * d);
+    } else {
+        eTotal = bitLen * e_elec + (bitLen * e_elec + bitLen * e_fs * d * d * d * d);
+    }
+    ei->setConsumedEnergy(eTotal);
+
+    // Note: It's better to use current energy
+
     ei->setByteLength(ei->getPkSize());
 
     send(ei, "linkGate$o");

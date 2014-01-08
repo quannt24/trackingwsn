@@ -113,17 +113,15 @@ inline void doUnpacking(cCommBuffer *b, PacketEMRP_RelayInfo& obj) {obj.parsimUn
  * <pre>
  * packet PacketEMRP_EnergyInfo extends PacketEMRP {
  *     pkType = PK_ENERGY_INFO;
- *     double energy; 
  *     double consumedEnergy; 
  *     
- *     pkSize = 26; 
+ *     pkSize = 22; 
  * }
  * </pre>
  */
 class PacketEMRP_EnergyInfo : public ::PacketEMRP
 {
   protected:
-    double energy_var;
     double consumedEnergy_var;
 
   private:
@@ -143,8 +141,6 @@ class PacketEMRP_EnergyInfo : public ::PacketEMRP
     virtual void parsimUnpack(cCommBuffer *b);
 
     // field getter/setter methods
-    virtual double getEnergy() const;
-    virtual void setEnergy(double energy);
     virtual double getConsumedEnergy() const;
     virtual void setConsumedEnergy(double consumedEnergy);
 };

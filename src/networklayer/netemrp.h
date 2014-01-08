@@ -69,7 +69,7 @@ class NetEMRP : public Net
          *  dRcBs: distance from relay candidate to base station */
         double assessRelay(double ener, double dRc, double dBs, double dRcBs);
         /* Send an energy report to a node */
-        void sendEnergyInfo(int addr);
+        void sendEnergyInfo(int addr, int bitLen);
         /* Update energy of relay node when receive an energy reporting packet.
          * Perform switch relay node or find new relay node if neccessary. */
         void updateRelayEnergy(PacketEMRP_EnergyInfo *ei);

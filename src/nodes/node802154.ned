@@ -17,7 +17,7 @@ package trackingwsn.nodes;
 
 import trackingwsn.linklayer.Link802154;
 import trackingwsn.networklayer.INet;
-import trackingwsn.networklayer.NetEMRP;
+import trackingwsn.networklayer.emrp.NetEMRP;
 import trackingwsn.energy.Energy;
 
 module Node802154 extends Entity

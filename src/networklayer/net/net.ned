@@ -13,7 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.networklayer;
+package trackingwsn.networklayer.net;
+
+import trackingwsn.networklayer.INet;
 
 //
 // Abstract module for network layer

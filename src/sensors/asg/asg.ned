@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.sensors;
+package trackingwsn.sensors.asg;
 
 //
 // Acoustic Signal Generator

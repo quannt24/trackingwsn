@@ -17,13 +17,21 @@ USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(CMDENV_LIBS)
 INCLUDE_PATH = \
     -I. \
     -Iapplications \
-    -Iapplications/estimator \
+    -Iapplications/app \
+    -Iapplications/tracking \
+    -Iapplications/tracking/appbasestation \
+    -Iapplications/tracking/appsensor \
+    -Iapplications/tracking/estimator \
     -Ienergy \
     -Ilinklayer \
     -Imobility \
     -Inetworklayer \
+    -Inetworklayer/emrp \
+    -Inetworklayer/net \
     -Inodes \
     -Isensors \
+    -Isensors/asg \
+    -Isensors/ass \
     -Iutil
 
 # Additional object and library files to link with
@@ -39,48 +47,48 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc and .msg files
 OBJS = \
-    $O/applications/targetposvectorset.o \
-    $O/applications/appbasestation.o \
-    $O/applications/appsensor.o \
-    $O/applications/meacoll.o \
-    $O/applications/app.o \
-    $O/applications/estimator/targetpos.o \
-    $O/applications/estimator/lateration.o \
-    $O/applications/estimator/estimator.o \
+    $O/applications/app/app.o \
+    $O/applications/tracking/targetposvectorset.o \
+    $O/applications/tracking/meacoll.o \
+    $O/applications/tracking/appbasestation/appbasestation.o \
+    $O/applications/tracking/appsensor/appsensor.o \
+    $O/applications/tracking/estimator/targetpos.o \
+    $O/applications/tracking/estimator/lateration.o \
+    $O/applications/tracking/estimator/estimator.o \
     $O/energy/energy.o \
     $O/linklayer/link802154.o \
     $O/mobility/mobility.o \
-    $O/networklayer/net.o \
-    $O/networklayer/netemrp.o \
-    $O/sensors/asg.o \
-    $O/sensors/measurement.o \
-    $O/sensors/ass.o \
+    $O/networklayer/emrp/netemrp.o \
+    $O/networklayer/net/net.o \
+    $O/sensors/asg/asg.o \
+    $O/sensors/ass/measurement.o \
+    $O/sensors/ass/ass.o \
     $O/util/matrix.o \
     $O/util/statcollector.o \
     $O/util/worldutil.o \
     $O/util/gaussiannoise.o \
     $O/util/channelutil.o \
-    $O/applications/messagetracking_m.o \
+    $O/applications/tracking/messagetracking_m.o \
     $O/linklayer/packet802154_m.o \
     $O/linklayer/frame802154_m.o \
-    $O/networklayer/packetemrp_m.o \
     $O/networklayer/packetcr_m.o \
     $O/networklayer/messagecr_m.o \
-    $O/sensors/sensedresult_m.o \
+    $O/networklayer/emrp/packetemrp_m.o \
     $O/sensors/sensereq_m.o \
-    $O/sensors/sensedsignal_m.o
+    $O/sensors/sensedsignal_m.o \
+    $O/sensors/ass/sensedresult_m.o
 
 # Message files
 MSGFILES = \
-    applications/messagetracking.msg \
+    applications/tracking/messagetracking.msg \
     linklayer/packet802154.msg \
     linklayer/frame802154.msg \
-    networklayer/packetemrp.msg \
     networklayer/packetcr.msg \
     networklayer/messagecr.msg \
-    sensors/sensedresult.msg \
+    networklayer/emrp/packetemrp.msg \
     sensors/sensereq.msg \
-    sensors/sensedsignal.msg
+    sensors/sensedsignal.msg \
+    sensors/ass/sensedresult.msg
 
 #------------------------------------------------------------------------------
 
@@ -155,13 +163,21 @@ clean:
 	$(Q)-rm -f TrackingWSN TrackingWSN.exe libTrackingWSN.so libTrackingWSN.a libTrackingWSN.dll libTrackingWSN.dylib
 	$(Q)-rm -f ./*_m.cc ./*_m.h
 	$(Q)-rm -f applications/*_m.cc applications/*_m.h
-	$(Q)-rm -f applications/estimator/*_m.cc applications/estimator/*_m.h
+	$(Q)-rm -f applications/app/*_m.cc applications/app/*_m.h
+	$(Q)-rm -f applications/tracking/*_m.cc applications/tracking/*_m.h
+	$(Q)-rm -f applications/tracking/appbasestation/*_m.cc applications/tracking/appbasestation/*_m.h
+	$(Q)-rm -f applications/tracking/appsensor/*_m.cc applications/tracking/appsensor/*_m.h
+	$(Q)-rm -f applications/tracking/estimator/*_m.cc applications/tracking/estimator/*_m.h
 	$(Q)-rm -f energy/*_m.cc energy/*_m.h
 	$(Q)-rm -f linklayer/*_m.cc linklayer/*_m.h
 	$(Q)-rm -f mobility/*_m.cc mobility/*_m.h
 	$(Q)-rm -f networklayer/*_m.cc networklayer/*_m.h
+	$(Q)-rm -f networklayer/emrp/*_m.cc networklayer/emrp/*_m.h
+	$(Q)-rm -f networklayer/net/*_m.cc networklayer/net/*_m.h
 	$(Q)-rm -f nodes/*_m.cc nodes/*_m.h
 	$(Q)-rm -f sensors/*_m.cc sensors/*_m.h
+	$(Q)-rm -f sensors/asg/*_m.cc sensors/asg/*_m.h
+	$(Q)-rm -f sensors/ass/*_m.cc sensors/ass/*_m.h
 	$(Q)-rm -f util/*_m.cc util/*_m.h
 
 cleanall: clean
@@ -169,29 +185,39 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc applications/estimator/*.cc energy/*.cc linklayer/*.cc mobility/*.cc networklayer/*.cc nodes/*.cc sensors/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc applications/app/*.cc applications/tracking/*.cc applications/tracking/appbasestation/*.cc applications/tracking/appsensor/*.cc applications/tracking/estimator/*.cc energy/*.cc linklayer/*.cc mobility/*.cc networklayer/*.cc networklayer/emrp/*.cc networklayer/net/*.cc nodes/*.cc sensors/*.cc sensors/asg/*.cc sensors/ass/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
-$O/applications/app.o: applications/app.cc \
-	applications/app.h
-$O/applications/appbasestation.o: applications/appbasestation.cc \
-	applications/app.h \
-	applications/appbasestation.h \
-	applications/estimator/targetpos.h \
-	applications/messagetracking_m.h \
-	applications/targetposvectorset.h \
+$O/applications/app/app.o: applications/app/app.cc \
+	applications/app/app.h
+$O/applications/tracking/meacoll.o: applications/tracking/meacoll.cc \
+	applications/tracking/meacoll.h \
+	sensors/ass/measurement.h
+$O/applications/tracking/messagetracking_m.o: applications/tracking/messagetracking_m.cc \
+	applications/tracking/estimator/targetpos.h \
+	applications/tracking/messagetracking_m.h \
+	networklayer/messagecr_m.h \
+	sensors/ass/measurement.h
+$O/applications/tracking/targetposvectorset.o: applications/tracking/targetposvectorset.cc \
+	applications/tracking/targetposvectorset.h
+$O/applications/tracking/appbasestation/appbasestation.o: applications/tracking/appbasestation/appbasestation.cc \
+	applications/app/app.h \
+	applications/tracking/appbasestation/appbasestation.h \
+	applications/tracking/estimator/targetpos.h \
+	applications/tracking/messagetracking_m.h \
+	applications/tracking/targetposvectorset.h \
 	linklayer/frame802154_m.h \
 	linklayer/link802154.h \
 	linklayer/packet802154_m.h \
 	networklayer/messagecr_m.h \
-	sensors/measurement.h
-$O/applications/appsensor.o: applications/appsensor.cc \
-	applications/app.h \
-	applications/appsensor.h \
-	applications/estimator/estimator.h \
-	applications/estimator/targetpos.h \
-	applications/meacoll.h \
-	applications/messagetracking_m.h \
+	sensors/ass/measurement.h
+$O/applications/tracking/appsensor/appsensor.o: applications/tracking/appsensor/appsensor.cc \
+	applications/app/app.h \
+	applications/tracking/appsensor/appsensor.h \
+	applications/tracking/estimator/estimator.h \
+	applications/tracking/estimator/targetpos.h \
+	applications/tracking/meacoll.h \
+	applications/tracking/messagetracking_m.h \
 	energy/energy.h \
 	linklayer/frame802154_m.h \
 	linklayer/link802154.h \
@@ -199,39 +225,29 @@ $O/applications/appsensor.o: applications/appsensor.cc \
 	mobility/mobility.h \
 	msgkind.h \
 	networklayer/messagecr_m.h \
-	sensors/measurement.h \
-	sensors/sensedresult_m.h \
+	sensors/ass/measurement.h \
+	sensors/ass/sensedresult_m.h \
 	util/statcollector.h \
 	util/worldutil.h
-$O/applications/meacoll.o: applications/meacoll.cc \
-	applications/meacoll.h \
-	sensors/measurement.h
-$O/applications/messagetracking_m.o: applications/messagetracking_m.cc \
-	applications/estimator/targetpos.h \
-	applications/messagetracking_m.h \
-	networklayer/messagecr_m.h \
-	sensors/measurement.h
-$O/applications/targetposvectorset.o: applications/targetposvectorset.cc \
-	applications/targetposvectorset.h
-$O/applications/estimator/estimator.o: applications/estimator/estimator.cc \
-	applications/estimator/estimator.h \
-	applications/estimator/targetpos.h \
-	sensors/measurement.h
-$O/applications/estimator/lateration.o: applications/estimator/lateration.cc \
-	applications/estimator/estimator.h \
-	applications/estimator/lateration.h \
-	applications/estimator/targetpos.h \
-	sensors/measurement.h \
+$O/applications/tracking/estimator/estimator.o: applications/tracking/estimator/estimator.cc \
+	applications/tracking/estimator/estimator.h \
+	applications/tracking/estimator/targetpos.h \
+	sensors/ass/measurement.h
+$O/applications/tracking/estimator/lateration.o: applications/tracking/estimator/lateration.cc \
+	applications/tracking/estimator/estimator.h \
+	applications/tracking/estimator/lateration.h \
+	applications/tracking/estimator/targetpos.h \
+	sensors/ass/measurement.h \
 	util/matrix.h
-$O/applications/estimator/targetpos.o: applications/estimator/targetpos.cc \
-	applications/estimator/targetpos.h
+$O/applications/tracking/estimator/targetpos.o: applications/tracking/estimator/targetpos.cc \
+	applications/tracking/estimator/targetpos.h
 $O/energy/energy.o: energy/energy.cc \
-	applications/app.h \
+	applications/app/app.h \
 	energy/energy.h
 $O/linklayer/frame802154_m.o: linklayer/frame802154_m.cc \
 	linklayer/frame802154_m.h
 $O/linklayer/link802154.o: linklayer/link802154.cc \
-	applications/app.h \
+	applications/app/app.h \
 	energy/energy.h \
 	linklayer/frame802154_m.h \
 	linklayer/link802154.h \
@@ -245,72 +261,72 @@ $O/mobility/mobility.o: mobility/mobility.cc \
 	mobility/mobility.h
 $O/networklayer/messagecr_m.o: networklayer/messagecr_m.cc \
 	networklayer/messagecr_m.h
-$O/networklayer/net.o: networklayer/net.cc \
-	linklayer/frame802154_m.h \
-	linklayer/link802154.h \
-	linklayer/packet802154_m.h \
-	mobility/mobility.h \
-	networklayer/net.h \
-	util/worldutil.h
-$O/networklayer/netemrp.o: networklayer/netemrp.cc \
-	applications/app.h \
-	applications/estimator/targetpos.h \
-	applications/messagetracking_m.h \
-	energy/energy.h \
-	linklayer/frame802154_m.h \
-	linklayer/link802154.h \
-	linklayer/packet802154_m.h \
-	mobility/mobility.h \
-	msgkind.h \
-	networklayer/messagecr_m.h \
-	networklayer/net.h \
-	networklayer/netemrp.h \
-	networklayer/packetcr_m.h \
-	networklayer/packetemrp_m.h \
-	sensors/measurement.h \
-	util/worldutil.h
 $O/networklayer/packetcr_m.o: networklayer/packetcr_m.cc \
 	linklayer/packet802154_m.h \
 	networklayer/packetcr_m.h
-$O/networklayer/packetemrp_m.o: networklayer/packetemrp_m.cc \
-	linklayer/packet802154_m.h \
-	networklayer/packetcr_m.h \
-	networklayer/packetemrp_m.h
-$O/sensors/asg.o: sensors/asg.cc \
-	mobility/mobility.h \
-	msgkind.h \
-	sensors/asg.h \
-	sensors/ass.h \
-	sensors/measurement.h \
-	sensors/sensedsignal_m.h \
-	sensors/sensereq_m.h \
-	util/gaussiannoise.h \
-	util/worldutil.h
-$O/sensors/ass.o: sensors/ass.cc \
+$O/networklayer/emrp/netemrp.o: networklayer/emrp/netemrp.cc \
+	applications/app/app.h \
+	applications/tracking/estimator/targetpos.h \
+	applications/tracking/messagetracking_m.h \
 	energy/energy.h \
+	linklayer/frame802154_m.h \
+	linklayer/link802154.h \
+	linklayer/packet802154_m.h \
 	mobility/mobility.h \
 	msgkind.h \
-	sensors/ass.h \
-	sensors/measurement.h \
-	sensors/sensedresult_m.h \
-	sensors/sensedsignal_m.h \
-	sensors/sensereq_m.h \
-	util/gaussiannoise.h \
+	networklayer/emrp/netemrp.h \
+	networklayer/emrp/packetemrp_m.h \
+	networklayer/messagecr_m.h \
+	networklayer/net/net.h \
+	networklayer/packetcr_m.h \
+	sensors/ass/measurement.h \
 	util/worldutil.h
-$O/sensors/measurement.o: sensors/measurement.cc \
-	sensors/measurement.h
-$O/sensors/sensedresult_m.o: sensors/sensedresult_m.cc \
-	sensors/measurement.h \
-	sensors/sensedresult_m.h
+$O/networklayer/emrp/packetemrp_m.o: networklayer/emrp/packetemrp_m.cc \
+	linklayer/packet802154_m.h \
+	networklayer/emrp/packetemrp_m.h \
+	networklayer/packetcr_m.h
+$O/networklayer/net/net.o: networklayer/net/net.cc \
+	linklayer/frame802154_m.h \
+	linklayer/link802154.h \
+	linklayer/packet802154_m.h \
+	mobility/mobility.h \
+	networklayer/net/net.h \
+	util/worldutil.h
 $O/sensors/sensedsignal_m.o: sensors/sensedsignal_m.cc \
 	sensors/sensedsignal_m.h
 $O/sensors/sensereq_m.o: sensors/sensereq_m.cc \
 	mobility/mobility.h \
-	sensors/ass.h \
-	sensors/measurement.h \
+	sensors/ass/ass.h \
+	sensors/ass/measurement.h \
 	sensors/sensedsignal_m.h \
 	sensors/sensereq_m.h \
 	util/gaussiannoise.h
+$O/sensors/asg/asg.o: sensors/asg/asg.cc \
+	mobility/mobility.h \
+	msgkind.h \
+	sensors/asg/asg.h \
+	sensors/ass/ass.h \
+	sensors/ass/measurement.h \
+	sensors/sensedsignal_m.h \
+	sensors/sensereq_m.h \
+	util/gaussiannoise.h \
+	util/worldutil.h
+$O/sensors/ass/ass.o: sensors/ass/ass.cc \
+	energy/energy.h \
+	mobility/mobility.h \
+	msgkind.h \
+	sensors/ass/ass.h \
+	sensors/ass/measurement.h \
+	sensors/ass/sensedresult_m.h \
+	sensors/sensedsignal_m.h \
+	sensors/sensereq_m.h \
+	util/gaussiannoise.h \
+	util/worldutil.h
+$O/sensors/ass/measurement.o: sensors/ass/measurement.cc \
+	sensors/ass/measurement.h
+$O/sensors/ass/sensedresult_m.o: sensors/ass/sensedresult_m.cc \
+	sensors/ass/measurement.h \
+	sensors/ass/sensedresult_m.h
 $O/util/channelutil.o: util/channelutil.cc \
 	linklayer/frame802154_m.h \
 	linklayer/link802154.h \
@@ -331,10 +347,10 @@ $O/util/worldutil.o: util/worldutil.cc \
 	linklayer/link802154.h \
 	linklayer/packet802154_m.h \
 	mobility/mobility.h \
+	networklayer/emrp/netemrp.h \
+	networklayer/emrp/packetemrp_m.h \
 	networklayer/messagecr_m.h \
-	networklayer/net.h \
-	networklayer/netemrp.h \
+	networklayer/net/net.h \
 	networklayer/packetcr_m.h \
-	networklayer/packetemrp_m.h \
 	util/worldutil.h
 

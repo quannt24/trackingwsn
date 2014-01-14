@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from applications/messagetracking.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from applications/tracking/messagetracking.msg.
 //
 
 #ifndef _MESSAGETRACKING_M_H_
@@ -24,7 +24,7 @@
 
 
 /**
- * Enum generated from <tt>applications/messagetracking.msg</tt> by opp_msgc.
+ * Enum generated from <tt>applications/tracking/messagetracking.msg</tt> by opp_msgc.
  * <pre>
  * enum MessageType {
  *     MSG_SYNC_REQUEST = 0; 
@@ -40,7 +40,7 @@ enum MessageType {
 };
 
 /**
- * Class generated from <tt>applications/messagetracking.msg</tt> by opp_msgc.
+ * Class generated from <tt>applications/tracking/messagetracking.msg</tt> by opp_msgc.
  * <pre>
  * packet MsgTracking extends MessageCR {
  *     int msgType;
@@ -81,7 +81,7 @@ inline void doPacking(cCommBuffer *b, MsgTracking& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, MsgTracking& obj) {obj.parsimUnpack(b);}
 
 /**
- * Class generated from <tt>applications/messagetracking.msg</tt> by opp_msgc.
+ * Class generated from <tt>applications/tracking/messagetracking.msg</tt> by opp_msgc.
  * <pre>
  * packet MsgSyncRequest extends MsgTracking {
  *     int routingType = RT_BROADCAST;
@@ -123,7 +123,7 @@ inline void doPacking(cCommBuffer *b, MsgSyncRequest& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, MsgSyncRequest& obj) {obj.parsimUnpack(b);}
 
 /**
- * Class generated from <tt>applications/messagetracking.msg</tt> by opp_msgc.
+ * Class generated from <tt>applications/tracking/messagetracking.msg</tt> by opp_msgc.
  * <pre>
  * packet MsgSenseResult extends MsgTracking {
  *     int routingType = RT_BROADCAST;
@@ -185,7 +185,7 @@ inline void doPacking(cCommBuffer *b, MsgSenseResult& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, MsgSenseResult& obj) {obj.parsimUnpack(b);}
 
 /**
- * Class generated from <tt>applications/messagetracking.msg</tt> by opp_msgc.
+ * Class generated from <tt>applications/tracking/messagetracking.msg</tt> by opp_msgc.
  * <pre>
  * packet MsgTrackResult extends MsgTracking {
  *     int routingType = RT_TO_BS;

@@ -13,12 +13,14 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.applications;
+package trackingwsn.applications.tracking.estimator;
 
 //
-// Abstract module for application layer
+// Lateration tracking algorithm
 //
-simple App
+simple Lateration like IEstimator
 {
-    @display("i=block/app");
+    parameters:
+        int minNumMeasurement = 3;
+        @display("i=block/app");
 }

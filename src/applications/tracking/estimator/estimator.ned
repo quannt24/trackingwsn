@@ -13,27 +13,14 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.applications;
+package trackingwsn.applications.tracking.estimator;
 
 //
-// Sensor's Application Layer
+// Abstract module for a tracking estimator
 //
-simple AppSensor extends App
+simple Estimator like IEstimator
 {
     parameters:
-        double senseInterval = default(0.5);
-        // Collect measurement period
-        double collMeaPeriod = default(0.05);
-        // Report measurement period (should shorter than collMeaPeriod
-        double repMeaPeriod = default(0.04);
-
-        bool enableSleep = default(true); // If false, node will stay awake all time
-        double idleTime = default(5); // Idle time before sensor goes to sleep
-        double sleepTime = default(20); // Max sleep time
-
-        @class("AppSensor");
+        int minNumMeasurement = default(3);
         @display("i=block/app");
-    gates:
-        inout ssGate; // Connect acoustic signal sensor (ass)
-        inout netGate; // Connect network layer
 }

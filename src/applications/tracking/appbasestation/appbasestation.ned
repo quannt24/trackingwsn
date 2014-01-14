@@ -13,11 +13,22 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.applications.estimator;
+package trackingwsn.applications.tracking.appbasestation;
 
-moduleinterface IEstimator
+import trackingwsn.applications.app.App;
+
+//
+// Base station's Application Layer
+//
+simple AppBaseStation extends App
 {
     parameters:
-        int minNumMeasurement;
+        @class("AppBaseStation");
         @display("i=block/app");
+        
+        @signal[e2e_delay](type="simtime_t");
+        @statistic[e2eDelay](title="End to end delay"; source="e2e_delay"; record=vector);
+        
+    gates:
+        inout netGate; // Connect network layer
 }

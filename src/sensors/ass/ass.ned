@@ -13,14 +13,18 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.applications.estimator;
+package trackingwsn.sensors.ass;
 
 //
-// Abstract module for a tracking estimator
+// Acoustic signal sensor
 //
-simple Estimator like IEstimator
+simple Ass
 {
     parameters:
-        int minNumMeasurement = default(3);
-        @display("i=block/app");
+        double responseDelay = default(0.05);
+        @display("i=block/wrx");
+
+    gates:
+        input sigIn @directIn; // Gate for receiving target's signal
+        inout appGate;
 }

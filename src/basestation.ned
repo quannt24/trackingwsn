@@ -16,7 +16,7 @@
 package trackingwsn;
 
 import trackingwsn.nodes.Node802154;
-import trackingwsn.applications.AppBaseStation;
+import trackingwsn.applications.tracking.appbasestation.AppBaseStation;
 
 module BaseStation extends Node802154
 {

@@ -13,14 +13,11 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.applications.estimator;
+package trackingwsn.applications.tracking.estimator;
 
-//
-// Lateration tracking algorithm
-//
-simple Lateration like IEstimator
+moduleinterface IEstimator
 {
     parameters:
-        int minNumMeasurement = 3;
+        int minNumMeasurement;
         @display("i=block/app");
 }

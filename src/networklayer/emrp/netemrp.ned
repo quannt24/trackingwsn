@@ -13,7 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.networklayer;
+package trackingwsn.networklayer.emrp;
+
+import trackingwsn.networklayer.net.Net;
 
 //
 // Network layer using EMRP protocol

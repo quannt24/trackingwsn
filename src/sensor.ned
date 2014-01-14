@@ -16,9 +16,9 @@
 package trackingwsn;
 
 import trackingwsn.nodes.Node802154;
-import trackingwsn.applications.AppSensor;
-import trackingwsn.applications.estimator.IEstimator;
-import trackingwsn.sensors.Ass;
+import trackingwsn.applications.tracking.appsensor.AppSensor;
+import trackingwsn.applications.tracking.estimator.IEstimator;
+import trackingwsn.sensors.ass.Ass;
 
 module Sensor extends Node802154
 {

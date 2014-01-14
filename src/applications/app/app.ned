@@ -13,18 +13,12 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.sensors;
+package trackingwsn.applications.app;
 
 //
-// Acoustic signal sensor
+// Abstract module for application layer
 //
-simple Ass
+simple App
 {
-    parameters:
-        double responseDelay = default(0.05);
-        @display("i=block/wrx");
-
-    gates:
-        input sigIn @directIn; // Gate for receiving target's signal
-        inout appGate;
+    @display("i=block/app");
 }

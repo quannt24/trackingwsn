@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
   <inputs>
-    <inputs name="/TrackingWSN/simulations/results/Wsn-*.vec"/>
-    <inputs name="/TrackingWSN/simulations/results/Wsn-*.sca"/>
+    <inputs name="/TrackingWSN/simulations/results/Default-0.vec"/>
+    <inputs name="/TrackingWSN/simulations/results/Default-0.sca"/>
   </inputs>
   <datasets>
     <datasets name="BS output">
@@ -59,7 +59,7 @@
       </items>
     </datasets>
     <datasets name="E2E Delay">
-      <items xsi:type="scave:Add" filterPattern="file(/TrackingWSN/simulations/results/Wsn-0.vec) AND attr:configname(Wsn) AND attr:runnumber(0) AND module(Wsn.bs.app) AND name(e2eDelay:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/TrackingWSN/simulations/results/Default-0.vec) AND attr:configname(Default) AND attr:runnumber(0) AND module(Wsn.bs.app) AND name(e2eDelay:vector)" type="VECTOR"/>
       <items xsi:type="scave:Group">
         <items xsi:type="scave:ComputeScalar" scalarName="max_delay" valueExpr="max('e2eDelay:vector') " moduleExpr="" groupByExpr=""/>
         <items xsi:type="scave:ComputeScalar" scalarName="mean_e2e_delay" valueExpr="mean('e2eDelay:vector') " moduleExpr="" groupByExpr=""/>
@@ -72,7 +72,7 @@
       </items>
     </datasets>
     <datasets name="Estimation Error">
-      <items xsi:type="scave:Add" filterPattern="file(/TrackingWSN/simulations/results/Wsn-0.vec) AND attr:configname(Wsn) AND attr:runnumber(0) AND module(Wsn.sc) AND name(estimationError:vector)" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="file(/TrackingWSN/simulations/results/Default-0.vec) AND attr:configname(Default) AND attr:runnumber(0) AND module(Wsn.sc) AND name(estimationError:vector)" type="VECTOR"/>
       <items xsi:type="scave:Group" name="">
         <items xsi:type="scave:ComputeScalar" scalarName="mean_error" valueExpr="mean('estimationError:vector') " moduleExpr="" groupByExpr=""/>
         <items xsi:type="scave:ComputeScalar" scalarName="max_error" valueExpr="max('estimationError:vector') " moduleExpr="" groupByExpr=""/>

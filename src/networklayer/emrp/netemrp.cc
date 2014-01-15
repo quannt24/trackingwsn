@@ -22,7 +22,6 @@
 #include "mobility.h"
 #include "worldutil.h"
 #include "msgkind.h"
-#include "app.h"
 
 Define_Module(NetEMRP);
 
@@ -155,13 +154,6 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
             notifyApp();
         }
     }
-}
-
-/* Notify application layer that some events occur */
-void NetEMRP::notifyApp()
-{
-    App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
-    app->notifyEvent();
 }
 
 /*

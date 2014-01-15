@@ -11,7 +11,7 @@
 // 
 // You should have received a copy of the GNU Lesser General Public License
 // along with this program.  If not, see http://www.gnu.org/licenses/.
-// 
+//
 
 cplusplus {{
 #include "packetcr_m.h"
@@ -19,13 +19,18 @@ cplusplus {{
 
 packet PacketCR;
 
-// EMRP network packet
-packet PacketEMRP extends PacketCR {
+// Network packet
+packet PacketARPEES extends PacketCR {
 }
 
-// EMRP relay info packet
-packet PacketEMRP_RelayInfo extends PacketEMRP {
-    txType = TX_PPP;
+// Relay request packet
+packet PacketARPEES_RelayReq extends PacketARPEES {
+    txType = TX_BROADCAST;
+    pkType = PK_REQ_RELAY;
+}
+
+// Relay info packet
+packet PacketARPEES_RelayInfo extends PacketARPEES {
     pkType = PK_RELAY_INFO;
     bool bsFlag; // Flag on if sender is base station, 1 byte
     double energy; // Current energy, 4 bytes
@@ -34,12 +39,4 @@ packet PacketEMRP_RelayInfo extends PacketEMRP {
     double dBS; // Distance to base station
     
     pkSize = 35; // 18 + 17
-}
-
-// EMRP energy report packet
-packet PacketEMRP_EnergyInfo extends PacketEMRP {
-    pkType = PK_ENERGY_INFO;
-    double consumedEnergy; // Predicted energy to send relayed packet
-    
-    pkSize = 22; // 18 + 4
 }

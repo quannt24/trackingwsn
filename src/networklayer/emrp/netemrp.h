@@ -47,9 +47,6 @@ class NetEMRP : public Net
         void recvMessage(MessageCR *msg);
         /* Process received packet from lower layer */
         void recvPacket(PacketEMRP *pkt);
-        /* Create a message to notify application layer that some events occur but the content is
-         * not forwarded to application */
-        void notifyApp();
         /* Broadcast request for info of base station/relay/backup node.
          * The flag 'init' is used when calling this function at initial phase. */
         void requestRelay(bool init = false);

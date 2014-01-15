@@ -36,6 +36,9 @@ class Net : public cSimpleModule
         virtual void handleMessage(cMessage *msg);
         /* Get MAC address from link layer. At initial stage, this address may not available. */
         int getMacAddr();
+        /* Create a message to notify application layer that some events occur but the content is
+         * not forwarded to application */
+        void notifyApp();
 
     public:
         Net();

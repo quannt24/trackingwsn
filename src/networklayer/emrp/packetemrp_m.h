@@ -56,6 +56,7 @@ inline void doUnpacking(cCommBuffer *b, PacketEMRP& obj) {obj.parsimUnpack(b);}
  * Class generated from <tt>networklayer/emrp/packetemrp.msg</tt> by opp_msgc.
  * <pre>
  * packet PacketEMRP_RelayInfo extends PacketEMRP {
+ *     txType = TX_PPP;
  *     pkType = PK_RELAY_INFO;
  *     bool bsFlag; 
  *     double energy; 

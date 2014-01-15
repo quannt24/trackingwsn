@@ -26,6 +26,7 @@ INCLUDE_PATH = \
     -Ilinklayer \
     -Imobility \
     -Inetworklayer \
+    -Inetworklayer/arpees \
     -Inetworklayer/emrp \
     -Inetworklayer/net \
     -Inodes \
@@ -58,6 +59,7 @@ OBJS = \
     $O/energy/energy.o \
     $O/linklayer/link802154.o \
     $O/mobility/mobility.o \
+    $O/networklayer/arpees/netarpees.o \
     $O/networklayer/emrp/netemrp.o \
     $O/networklayer/net/net.o \
     $O/sensors/asg/asg.o \
@@ -73,6 +75,7 @@ OBJS = \
     $O/linklayer/frame802154_m.o \
     $O/networklayer/packetcr_m.o \
     $O/networklayer/messagecr_m.o \
+    $O/networklayer/arpees/packetarpees_m.o \
     $O/networklayer/emrp/packetemrp_m.o \
     $O/sensors/sensereq_m.o \
     $O/sensors/sensedsignal_m.o \
@@ -85,6 +88,7 @@ MSGFILES = \
     linklayer/frame802154.msg \
     networklayer/packetcr.msg \
     networklayer/messagecr.msg \
+    networklayer/arpees/packetarpees.msg \
     networklayer/emrp/packetemrp.msg \
     sensors/sensereq.msg \
     sensors/sensedsignal.msg \
@@ -172,6 +176,7 @@ clean:
 	$(Q)-rm -f linklayer/*_m.cc linklayer/*_m.h
 	$(Q)-rm -f mobility/*_m.cc mobility/*_m.h
 	$(Q)-rm -f networklayer/*_m.cc networklayer/*_m.h
+	$(Q)-rm -f networklayer/arpees/*_m.cc networklayer/arpees/*_m.h
 	$(Q)-rm -f networklayer/emrp/*_m.cc networklayer/emrp/*_m.h
 	$(Q)-rm -f networklayer/net/*_m.cc networklayer/net/*_m.h
 	$(Q)-rm -f nodes/*_m.cc nodes/*_m.h
@@ -185,7 +190,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc applications/app/*.cc applications/tracking/*.cc applications/tracking/appbasestation/*.cc applications/tracking/appsensor/*.cc applications/tracking/estimator/*.cc energy/*.cc linklayer/*.cc mobility/*.cc networklayer/*.cc networklayer/emrp/*.cc networklayer/net/*.cc nodes/*.cc sensors/*.cc sensors/asg/*.cc sensors/ass/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc applications/app/*.cc applications/tracking/*.cc applications/tracking/appbasestation/*.cc applications/tracking/appsensor/*.cc applications/tracking/estimator/*.cc energy/*.cc linklayer/*.cc mobility/*.cc networklayer/*.cc networklayer/arpees/*.cc networklayer/emrp/*.cc networklayer/net/*.cc nodes/*.cc sensors/*.cc sensors/asg/*.cc sensors/ass/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/applications/app/app.o: applications/app/app.cc \
@@ -264,8 +269,18 @@ $O/networklayer/messagecr_m.o: networklayer/messagecr_m.cc \
 $O/networklayer/packetcr_m.o: networklayer/packetcr_m.cc \
 	linklayer/packet802154_m.h \
 	networklayer/packetcr_m.h
+$O/networklayer/arpees/netarpees.o: networklayer/arpees/netarpees.cc \
+	linklayer/packet802154_m.h \
+	networklayer/arpees/netarpees.h \
+	networklayer/arpees/packetarpees_m.h \
+	networklayer/messagecr_m.h \
+	networklayer/net/net.h \
+	networklayer/packetcr_m.h
+$O/networklayer/arpees/packetarpees_m.o: networklayer/arpees/packetarpees_m.cc \
+	linklayer/packet802154_m.h \
+	networklayer/arpees/packetarpees_m.h \
+	networklayer/packetcr_m.h
 $O/networklayer/emrp/netemrp.o: networklayer/emrp/netemrp.cc \
-	applications/app/app.h \
 	applications/tracking/estimator/targetpos.h \
 	applications/tracking/messagetracking_m.h \
 	energy/energy.h \
@@ -286,6 +301,7 @@ $O/networklayer/emrp/packetemrp_m.o: networklayer/emrp/packetemrp_m.cc \
 	networklayer/emrp/packetemrp_m.h \
 	networklayer/packetcr_m.h
 $O/networklayer/net/net.o: networklayer/net/net.cc \
+	applications/app/app.h \
 	linklayer/frame802154_m.h \
 	linklayer/link802154.h \
 	linklayer/packet802154_m.h \

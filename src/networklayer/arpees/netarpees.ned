@@ -20,11 +20,11 @@ import trackingwsn.networklayer.net.Net;
 //
 // Network layer using ARPEES protocol
 //
-simple NetArpees extends Net
+simple NetARPEES extends Net
 {
     parameters:
         // Period for responsing for a relay request in initial period
         double resRelayPeriod = default(0.1);
         
-        @class("NetArpees");
+        @class("NetARPEES");
 }

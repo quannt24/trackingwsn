@@ -19,7 +19,14 @@ package trackingwsn.networklayer;
 moduleinterface INet
 {
     parameters:
+        // Flag for distinguishing between base station and sensor node
         bool isBaseStation;
+        // This parameter is used for protocol which needs an initialization stage at start of
+        // simulation. This value is set to 0 by default.
+        // Period for broadcast first relay request. If this period is too short, channel may be
+        // too busy and some nodes may fail to complete initializing procedure. The warm-up period
+        // will be dependent to this period.
+        double initInterval;
 
         @display("i=block/layer");
     gates:

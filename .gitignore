@@ -2,6 +2,7 @@
 *~
 *.swp
 *.svg
+.tkenvrc
 out/
 src/TrackingWSN
 simulations/.tkenvlog

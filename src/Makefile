@@ -270,12 +270,16 @@ $O/networklayer/packetcr_m.o: networklayer/packetcr_m.cc \
 	linklayer/packet802154_m.h \
 	networklayer/packetcr_m.h
 $O/networklayer/arpees/netarpees.o: networklayer/arpees/netarpees.cc \
+	energy/energy.h \
 	linklayer/packet802154_m.h \
+	mobility/mobility.h \
+	msgkind.h \
 	networklayer/arpees/netarpees.h \
 	networklayer/arpees/packetarpees_m.h \
 	networklayer/messagecr_m.h \
 	networklayer/net/net.h \
-	networklayer/packetcr_m.h
+	networklayer/packetcr_m.h \
+	util/worldutil.h
 $O/networklayer/arpees/packetarpees_m.o: networklayer/arpees/packetarpees_m.cc \
 	linklayer/packet802154_m.h \
 	networklayer/arpees/packetarpees_m.h \

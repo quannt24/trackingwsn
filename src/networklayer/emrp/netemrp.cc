@@ -36,7 +36,7 @@ void NetEMRP::handleMessage(cMessage *msg)
     if (msg->isSelfMessage()) {
         if (msg == initMsg) {
             requestRelay(true);
-        } else if (msg->getKind() == EMRP_RES_RELAY) {
+        } else if (msg->getKind() == RES_RELAY) {
             // This message has a packet passed in context pointer
             sendRelayInfo((PacketEMRP*) msg->getContextPointer());
             delete msg;
@@ -96,10 +96,10 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
 {
     if (pkt->getPkType() == PK_REQ_RELAY) {
         // Receive a request for relay information
-        cMessage *resRelayMsg = new cMessage("ResRelayMsg");
-        resRelayMsg->setKind(EMRP_RES_RELAY);
-        resRelayMsg->setContextPointer(pkt->dup()); // Pack sender information with timer message
-        scheduleAt(simTime() + uniform(0, par("resRelayPeriod").doubleValue()), resRelayMsg);
+        cMessage *resRelayTimer = new cMessage("ResRelayTimer");
+        resRelayTimer->setKind(RES_RELAY);
+        resRelayTimer->setContextPointer(pkt->dup()); // Pack sender information with timer
+        scheduleAt(simTime() + uniform(0, par("resRelayPeriod").doubleValue()), resRelayTimer);
         delete pkt;
 
         // Notify application that event occurs
@@ -178,6 +178,8 @@ void NetEMRP::requestRelay(bool init)
  */
 void NetEMRP::sendRelayInfo(PacketEMRP *reqPkt)
 {
+    if (reqPkt == NULL) return;
+
     PacketEMRP_RelayInfo *pkt = new PacketEMRP_RelayInfo();
     pkt->setTxType(TX_PPP);
     pkt->setPkType(PK_RELAY_INFO); // WARNING: do not confuse with PK_REQ_RELAY

@@ -136,7 +136,7 @@ void Link802154::setRadioMode(int mode, bool dutyCycling)
         radioMode = mode;
 
         if (mode == RADIO_ON) {
-            EV << "Radio on\n";
+            //EV << "Radio on\n";
             if (!rxConsumeTimer->isScheduled()) {
                 // Turn on transceiver and set power consuming timer for simulation
                 rxConsumeTimer->setTimestamp();
@@ -147,7 +147,7 @@ void Link802154::setRadioMode(int mode, bool dutyCycling)
             cancelEvent(dcSleepTimer);
             if (dutyCycling) scheduleAt(simTime() + par("lR").doubleValue(), dcSleepTimer);
         } else if (mode == RADIO_OFF) {
-            EV << "Radio off\n";
+            //EV << "Radio off\n";
             if (rxConsumeTimer->isScheduled()) {
                 // Turn off transceiver and calculate consumed energy of last incomplete timer's period
                 double onTime = SIMTIME_DBL(simTime() - rxConsumeTimer->getTimestamp());

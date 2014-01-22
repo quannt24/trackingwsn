@@ -23,10 +23,6 @@ import trackingwsn.networklayer.net.Net;
 simple NetEMRP extends Net
 {
     parameters:
-        // Period for broadcast first relay request. If this period is too short, channel may be
-        // too busy and some nodes may fail to complete initializing procedure. The warm-up period
-        // will be dependent to this period.
-        double initInterval = default(10);
         // Period for responsing for a relay request in initial period
         double resRelayPeriod = default(0.2);
         // Differential amount of relay/backup nodes' energy that triggers switch nodes

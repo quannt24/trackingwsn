@@ -24,18 +24,21 @@
 /**
  * Network layer using ARPEES protocol
  */
-class NetArpees : public Net
+class NetARPEES : public Net
 {
     private:
         // MAC addresses for routing
         // Value 0 means connection info is not initialized.
-        int bsAddr;
-        int rnAddr;
+        int bsAddr; // Base station
+        int rnAddr; // Relay node
 
-        /*// Stored information about relay/backup nodes
+        // Stored information about relay/backup nodes
         double enerRn; // Energy
         double dRnBs; // Distance from relay node to base station in meter
-        double dRn; // Distance from relay node to this node*/
+        double dRn; // Distance from relay node to this node
+
+        cPacketQueue outMsgQueue; // Message queue waiting for sending
+        cMessage *recvRelayInfoTimer; // For finishing receiving relay info and start sending
 
         /* Process received message from upper layer */
         void recvMessage(MessageCR *msg);
@@ -46,21 +49,33 @@ class NetArpees : public Net
         void requestRelay();
         /* Response to a request for relay node, given the requesting packet */
         void sendRelayInfo(PacketARPEES *reqPkt);
-        /* Function for assessing a candidate for relaying.
+        /*
+         * Compare new relay info with current relay node; if it's better, select it as new relay
+         * node.
+         */
+        void considerRelay(PacketARPEES_RelayInfo *ri);
+        /*
+         * Function for assessing a candidate for relaying.
          * Parameters:
          *  ener: energy of relay candidate
          *  dRc: distance from this node to relay candidate
          *  dBs: distance from this node to base station
-         *  dRcBs: distance from relay candidate to base station */
+         *  dRcBs: distance from relay candidate to base station
+         */
         double assessRelay(double ener, double dRc, double dBs, double dRcBs);
+        /*
+         * Package and send all queued messages from upper layer down to lower layer.
+         * When finish reset relay node address (to find new relay node next time).
+         */
+        void sendMessages();
 
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
 
     public:
-        NetArpees();
-        ~NetArpees();
+        NetARPEES();
+        ~NetARPEES();
 };
 
 #endif

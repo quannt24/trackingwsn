@@ -6,4 +6,7 @@
 out/
 src/TrackingWSN
 simulations/.tkenvlog
-simulations/results
+simulations/results/*.vec
+simulations/results/*.vci
+simulations/results/*.sca
+simulations/results/*.data

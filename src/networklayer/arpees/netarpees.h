@@ -37,13 +37,19 @@ class NetARPEES : public Net
         double dRnBs; // Distance from relay node to base station in meter
         double dRn; // Distance from relay node to this node
 
-        cPacketQueue outMsgQueue; // Message queue waiting for sending
+        cPacketQueue outQueue; // Packet queue waiting for sending
         cMessage *recvRelayInfoTimer; // For finishing receiving relay info and start sending
 
         /* Process received message from upper layer */
         void recvMessage(MessageCR *msg);
         /* Process received packet from lower layer */
         void recvPacket(PacketARPEES *pkt);
+
+        /* Create a packet encapsulating a message. */
+        PacketARPEES* createPacket(MessageCR *msg);
+        /* Send all queued packets.
+         * When finish reset relay node address (to find new relay node next time). */
+        void sendPackets();
 
         /* Broadcast packet for requesting relay information */
         void requestRelay();
@@ -63,11 +69,6 @@ class NetARPEES : public Net
          *  dRcBs: distance from relay candidate to base station
          */
         double assessRelay(double ener, double dRc, double dBs, double dRcBs);
-        /*
-         * Package and send all queued messages from upper layer down to lower layer.
-         * When finish reset relay node address (to find new relay node next time).
-         */
-        void sendMessages();
 
     protected:
         virtual void initialize();

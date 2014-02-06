@@ -30,7 +30,7 @@ void NetARPEES::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
         if (msg == recvRelayInfoTimer) {
-            sendMessages();
+            sendPackets();
         } else if (msg->getKind() == RES_RELAY) {
             // This message has a packet passed in context pointer
             sendRelayInfo((PacketARPEES*) msg->getContextPointer());
@@ -52,7 +52,7 @@ NetARPEES::NetARPEES()
     bsAddr = 0;
     rnAddr = 0;
 
-    recvRelayInfoTimer = new cMessage("SendMsgTimer");
+    recvRelayInfoTimer = new cMessage("RecvRelayInfoTimer");
 }
 
 NetARPEES::~NetARPEES()
@@ -62,8 +62,10 @@ NetARPEES::~NetARPEES()
 
 void NetARPEES::recvMessage(MessageCR* msg)
 {
-    // Queue the message
-    outMsgQueue.insert(msg);
+    if (msg == NULL) return;
+
+    // Encapsulate the message then enqueue it
+    outQueue.insert(createPacket(msg));
 
     if (!recvRelayInfoTimer->isScheduled()) {
         if (msg->getRoutingType() == RT_TO_BS) {
@@ -74,8 +76,8 @@ void NetARPEES::recvMessage(MessageCR* msg)
             // Plan timer for sending message
             scheduleAt(simTime() + par("resRelayPeriod").doubleValue(), recvRelayInfoTimer);
         } else {
-            // Send the new queued message immediately (there should no other message in the queue
-            sendMessages();
+            // Send the new queued packets immediately (there should no other packet in the queue)
+            sendPackets();
         }
     }
 }
@@ -94,9 +96,6 @@ void NetARPEES::recvPacket(PacketARPEES* pkt)
         scheduleAt(simTime() + uniform(0, par("resRelayPeriod").doubleValue()), resRelayTimer);
         delete pkt;
 
-        // Notify application that event occurs
-        notifyApp();
-
     } else if (pkt->getPkType() == PK_RELAY_INFO) {
         if (recvRelayInfoTimer->isScheduled()) {
             // Receive relay information (only when recvRelayInfoTimer is set)
@@ -108,9 +107,6 @@ void NetARPEES::recvPacket(PacketARPEES* pkt)
                     considerRelay(ri);
                 }
             }
-
-            // Notify application that event occurs
-            notifyApp();
         }
         delete pkt;
 
@@ -128,17 +124,85 @@ void NetARPEES::recvPacket(PacketARPEES* pkt)
             delete pkt;
         } else {
             pkt->setSrcMacAddr(getMacAddr());
-            if (bsAddr > 0) {
-                pkt->setDesMacAddr(bsAddr);
-            } else {
-                pkt->setDesMacAddr(rnAddr);
-            }
-            send(pkt, "linkGate$o");
+            // Note: Destination address will be set just before sending in sendPackets()
 
-            // Notify application that event occurs
-            notifyApp();
+            // Queue the packet
+            outQueue.insert(pkt);
+            if (!recvRelayInfoTimer->isScheduled()) {
+                // Clear relay node address
+                rnAddr = 0;
+                // Send relay request then send packet
+                requestRelay();
+                // Plan timer for sending packet
+                scheduleAt(simTime() + par("resRelayPeriod").doubleValue(), recvRelayInfoTimer);
+            }
         }
     }
+
+    // Notify application that event occurs
+    notifyApp();
+}
+
+/*
+ * Create a packet encapsulating a message (from application layer).
+ */
+PacketARPEES* NetARPEES::createPacket(MessageCR *msg)
+{
+    if (msg == NULL) return NULL;
+
+    PacketARPEES *pkt;
+
+    pkt = new PacketARPEES();
+    if (msg->getRoutingType() == RT_TO_AN) {
+        pkt->setTxType(TX_PPP);
+        pkt->setPkType(PK_PAYLOAD_TO_AN);
+        pkt->setDesMacAddr(msg->getDesMacAddr());
+    } else if (msg->getRoutingType() == RT_TO_BS) {
+        pkt->setTxType(TX_PPP);
+        pkt->setPkType(PK_PAYLOAD_TO_BS);
+    } else if (msg->getRoutingType() == RT_BROADCAST) {
+        pkt->setTxType(TX_BROADCAST);
+        pkt->setPkType(PK_PAYLOAD_TO_AN);
+        // No need to set desMacAddr here
+    }
+    pkt->setSrcMacAddr(getMacAddr());
+    pkt->setStrobeFlag(msg->getStrobeFlag());
+
+    pkt->setByteLength(pkt->getPkSize());
+    pkt->encapsulate(msg); // Packet length will be increased by message length
+
+    return pkt;
+}
+
+/*
+ * Send all queued packets.
+ * When finish reset relay node address (to find new relay node next time).
+ */
+void NetARPEES::sendPackets()
+{
+    PacketARPEES *pkt;
+
+    while (!outQueue.isEmpty()) {
+        pkt = check_and_cast<PacketARPEES*>(outQueue.pop());
+
+        // Set destination address for 'payload to bs'
+        if (pkt->getPkType() == PK_PAYLOAD_TO_BS) {
+            if (bsAddr > 0) {
+                pkt->setDesMacAddr(bsAddr);
+            } else if (rnAddr > 0) {
+                pkt->setDesMacAddr(rnAddr);
+            } else {
+                EV << "NetARPEES: Cannot send packet. There is no relay node.";
+                delete pkt;
+                continue;
+            }
+        }
+
+        send(pkt, "linkGate$o");
+    }
+
+    // Reset relay node address
+    rnAddr = 0;
 }
 
 /* Broadcast packet for requesting relay information */
@@ -229,48 +293,3 @@ double NetARPEES::assessRelay(double ener, double dRc, double dBs, double dRcBs)
     return ener / dRcBs * cosa;
 }
 
-/*
- * Package and send all queued messages from upper layer down to lower layer.
- * When finish reset relay node address (to find new relay node next time).
- */
-void NetARPEES::sendMessages()
-{
-    MessageCR *msg;
-    PacketARPEES *pkt;
-
-    while (!outMsgQueue.isEmpty()) {
-        msg = check_and_cast<MessageCR*>(outMsgQueue.pop());
-
-        pkt = new PacketARPEES();
-        if (msg->getRoutingType() == RT_TO_AN) {
-            pkt->setTxType(TX_PPP);
-            pkt->setPkType(PK_PAYLOAD_TO_AN);
-            pkt->setDesMacAddr(msg->getDesMacAddr());
-        } else if (msg->getRoutingType() == RT_TO_BS) {
-            if (rnAddr <= 0) {
-                EV << "NetARPEES: Cannot send message down. There is no relay node.\n";
-                EV << "NetARPEES: Deleting message\n";
-                delete pkt;
-                delete msg;
-                return;
-            }
-            pkt->setTxType(TX_PPP);
-            pkt->setPkType(PK_PAYLOAD_TO_BS);
-            pkt->setDesMacAddr(rnAddr);
-        } else if (msg->getRoutingType() == RT_BROADCAST) {
-            pkt->setTxType(TX_BROADCAST);
-            pkt->setPkType(PK_PAYLOAD_TO_AN);
-            // No need to set desMacAddr here
-        }
-        pkt->setSrcMacAddr(getMacAddr());
-        pkt->setStrobeFlag(msg->getStrobeFlag());
-
-        pkt->setByteLength(pkt->getPkSize());
-        pkt->encapsulate(msg); // Packet length will be increased by message length
-
-        send(pkt, "linkGate$o");
-    }
-
-    // Reset relay node address
-    rnAddr = 0;
-}

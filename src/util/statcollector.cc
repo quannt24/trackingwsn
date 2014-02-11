@@ -19,6 +19,7 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <cconfiguration.h>
 
 Define_Module(StatCollector);
 
@@ -103,19 +104,25 @@ void StatCollector::recRemainingEnergy()
 {
     using namespace std;
 
+    cConfigurationEx *configEx = ev.getConfigEx();
+    string buffer;
     cModule *wsn = getModuleByPath("Wsn");
     Energy *ener;
     Mobility *mob;
     int nss = wsn->par("numSensors").longValue();
     int i;
 
-    ofstream out("results/remain_ener.data", ios::out | ios::trunc);
+    buffer.append("results/remain_ener_");
+    buffer.append(configEx->getActiveConfigName());
+    buffer.append(".data\0");
+    ofstream out(buffer.c_str(), ios::out | ios::trunc);
 
     if (!out) {
         cerr << "Cannot output data\n";
         return;
     }
 
+    out << "# Config: " << configEx->getActiveConfigName() << '\n';
     out << "# Remaining energy" << endl;
     out << '#' << right << setw(3) << "row" << ' ' << setw(4) << "col" << ' '
             << setw(7) << "x" << ' ' << setw(7) << "y" << ' '

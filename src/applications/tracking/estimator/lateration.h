@@ -33,7 +33,7 @@ class Lateration : public Estimator
     public:
         /* Minimum number of measurements so that the estimator can work properly */
         virtual unsigned int minNumMeasurement() { return par("minNumMeasurement").longValue(); };
-        virtual TargetPos estimate(std::list<Measurement> meaList);
+        virtual TargetPos* estimate(std::list<Measurement> meaList);
 };
 
 #endif

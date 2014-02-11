@@ -57,6 +57,8 @@ class Matrix
         double getDet();
         /* Get inverted matrix */
         Matrix inverse();
+        /* Print matrix to standard output */
+        void print();
 
         friend void swap(Matrix &m1, Matrix &m2);
 };

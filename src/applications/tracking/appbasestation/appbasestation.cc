@@ -61,19 +61,19 @@ void AppBaseStation::recvMessage(MsgTracking *msg)
 {
     if (msg->getMsgType() == MSG_TRACK_RESULT) {
         EV << "Tracking result\n";
-        std::list<TargetPos> tpList = ((MsgTrackResult*) msg)->getTpList();
-        TargetPos tp;
+        std::list<TargetPos*> tpList = ((MsgTrackResult*) msg)->getTpList();
+        TargetPos *tp;
         TargetPosVectorSet *tpvs;
 
-        for (std::list<TargetPos>::iterator it = tpList.begin(); it != tpList.end(); it++) {
+        for (std::list<TargetPos*>::iterator it = tpList.begin(); it != tpList.end(); it++) {
             tp = *it;
 
             // Record tracked target position
-            EV << tp.getTarId() << ' ' << tp.getX() << ' ' << tp.getY() << '\n';
+            EV << tp->getTarId() << ' ' << tp->getX() << ' ' << tp->getY() << '\n';
             for (std::list<TargetPosVectorSet*>::iterator tpvsIt = tpvsList.begin(); tpvsIt != tpvsList.end(); tpvsIt++) {
                 tpvs = *tpvsIt;
-                if (tpvs->getTarId() == tp.getTarId()) {
-                    tpvs->record(tp.getX(), tp.getY());
+                if (tpvs->getTarId() == tp->getTarId()) {
+                    tpvs->record(tp->getX(), tp->getY());
                     break;
                 }
             }

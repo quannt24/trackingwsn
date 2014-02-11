@@ -26,13 +26,13 @@ void Lateration::handleMessage(cMessage *msg)
 {
 }
 
-TargetPos Lateration::estimate(std::list<Measurement> meaList)
+TargetPos* Lateration::estimate(std::list<Measurement> meaList)
 {
-    if ((unsigned) meaList.size() < par("minNumMeasurement").longValue()) throw NOT_ENOUGH_MEASUREMENT;
+    if ((unsigned) meaList.size() < par("minNumMeasurement").longValue()) return NULL;
 
-    Matrix tarPos = Matrix(2, 1);
     Matrix A = Matrix(meaList.size() - 1, 2);
     Matrix B = Matrix(meaList.size() - 1, 1);
+    Matrix AA = Matrix(meaList.size() - 1, meaList.size() - 1);
     Measurement &m0 = meaList.front();
     double x0 = m0.getNodePosX();
     double y0 = m0.getNodePosY();
@@ -57,7 +57,13 @@ TargetPos Lateration::estimate(std::list<Measurement> meaList)
         i++; // Next row
     }
 
-    tarPos = (A.transpose() * A).inverse() * A.transpose() * B;
-
-    return TargetPos(tarPos.getCell(0, 0), tarPos.getCell(1, 0));
+    AA = A.transpose() * A;
+    if (AA.getDet() != 0) {
+        Matrix tarPosMat(2, 1);
+        tarPosMat = AA.inverse() * A.transpose() * B;
+        TargetPos *tarPos = new TargetPos(tarPosMat.getCell(0, 0), tarPosMat.getCell(1, 0));
+        return tarPos;
+    } else {
+        return NULL;
+    }
 }

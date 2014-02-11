@@ -255,7 +255,8 @@ void AppSensor::trackTargets()
     Estimator *est = (Estimator*) getParentModule()->getSubmodule("est");
     double myCHValue; // Evaluated CH value of this node for a target
     bool isCH = false; // True if this node is CH of at least one target (global CH flag)
-    std::list<TargetPos> tpList;
+    std::list<TargetPos*> tpList;
+    TargetPos *tp = NULL;
 
     double err = 0; // Estimation error
     StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
@@ -293,14 +294,19 @@ void AppSensor::trackTargets()
         if ((*ite).flagCH) {
             isCH = true; // This node is CH of at least one target
             // Estimate targets' positions
-            TargetPos tp = est->estimate((*ite).meaList);
-            tp.setTarId((*ite).tarId); // Label the position with target's ID
-            //EV << "Estimated pos: " << tp.getX() << " ; " << tp.getY();
-            tpList.push_back(tp);
+            tp = est->estimate((*ite).meaList);
 
-            // Calculate error
-            err = distance(tp.getX(), tp.getY(), (*ite).meaList.front().getTarPosX(), (*ite).meaList.front().getTarPosY());
-            sc->recEstError(err);
+            // If estimate complete successfully
+            if (tp != NULL) {
+                tp->setTarId((*ite).tarId); // TODO Label the position with target's ID
+                //EV << "Estimated pos: " << tp.getX() << " ; " << tp.getY();
+                tpList.push_back(tp);
+
+                // Calculate error
+                err = distance(tp->getX(), tp->getY(), (*ite).meaList.front().getTarPosX(),
+                        (*ite).meaList.front().getTarPosY());
+                sc->recEstError(err);
+            }
         }
     }
 

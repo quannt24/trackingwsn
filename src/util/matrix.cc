@@ -7,6 +7,7 @@
 
 #include "matrix.h"
 #include <algorithm>
+#include <iostream>
 
 /*
  * Initialize matrix with size rows*cols and having initial setup initMat.
@@ -257,6 +258,21 @@ Matrix Matrix::inverse()
     }
 
     return Ct;
+}
+
+/* Print matrix to standard output */
+void Matrix::print()
+{
+    int r, c;
+    if (cell != NULL) {
+        for (r = 0; r < rows; r++) {
+            for (c = 0; c < cols; c++) {
+                std::cout << cell[r][c] << ' ';
+            }
+            std::cout << '\n';
+        }
+        std::cout << '\n';
+    }
 }
 
 void swap(Matrix &m1, Matrix &m2) {

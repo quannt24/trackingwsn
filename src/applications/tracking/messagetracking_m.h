@@ -18,7 +18,7 @@
     #include "measurement.h"
     #include "targetpos.h"
     typedef std::list<Measurement> MeasurementList;
-    typedef std::list<TargetPos> TargetPosList;
+    typedef std::list<TargetPos*> TargetPosList;
 // }}
 
 

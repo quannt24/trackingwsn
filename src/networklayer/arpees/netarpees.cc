@@ -60,6 +60,7 @@ NetARPEES::~NetARPEES()
     cancelAndDelete(recvRelayInfoTimer);
 }
 
+/* Process received message from upper layer */
 void NetARPEES::recvMessage(MessageCR* msg)
 {
     if (msg == NULL) return;
@@ -67,6 +68,7 @@ void NetARPEES::recvMessage(MessageCR* msg)
     // Encapsulate the message then enqueue it
     outQueue.insert(createPacket(msg));
 
+    // If not receiving relay info
     if (!recvRelayInfoTimer->isScheduled()) {
         if (msg->getRoutingType() == RT_TO_BS) {
             // Clear relay node address
@@ -76,10 +78,13 @@ void NetARPEES::recvMessage(MessageCR* msg)
             // Plan timer for sending message
             scheduleAt(simTime() + par("resRelayPeriod").doubleValue(), recvRelayInfoTimer);
         } else {
-            // Send the new queued packets immediately (there should no other packet in the queue)
+            // Send the new queued packets immediately without need of relay to BS.
+            // There should no other packet in the queue.
             sendPackets();
         }
     }
+    // else {} // If receiving relay info, all packets will be sent when the timer tick,
+    // therefore no need to do anything here.
 }
 
 void NetARPEES::recvPacket(PacketARPEES* pkt)
@@ -87,7 +92,8 @@ void NetARPEES::recvPacket(PacketARPEES* pkt)
     if (pkt->getPkType() == PK_REQ_RELAY) {
         // Receive a request for relay information
 
-        // Setting a timer for responsing
+        // Setting a timer for responding
+        // Cannot use local pointer because there may be more than one request to response.
         cMessage *resRelayTimer = new cMessage("ResRelayTimer");
         resRelayTimer->setKind(RES_RELAY);
         // Pack sender information with the timer. Duplicate requesting packet and delete original
@@ -192,6 +198,7 @@ void NetARPEES::sendPackets()
             } else if (rnAddr > 0) {
                 pkt->setDesMacAddr(rnAddr);
             } else {
+                // TODO Report failure
                 EV << "NetARPEES: Cannot send packet. There is no relay node.";
                 delete pkt;
                 continue;
@@ -288,8 +295,6 @@ void NetARPEES::considerRelay(PacketARPEES_RelayInfo *ri)
  */
 double NetARPEES::assessRelay(double ener, double dRc, double dBs, double dRcBs)
 {
-    // TODO use arpees assess function
     double cosa = (dRc * dRc + dBs * dBs - dRcBs * dRcBs) / (2 * dRcBs * dBs);
-    return ener / dRcBs * cosa;
+    return ener * dRc / dRcBs * cosa;
 }
-

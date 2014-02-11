@@ -86,6 +86,7 @@ NetEMRP::~NetEMRP()
 /* Process received message from upper layer */
 void NetEMRP::recvMessage(MessageCR *msg)
 {
+    // TODO Use queue instead of sending right away
     sendMsgDown(msg);
 }
 
@@ -102,10 +103,9 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
         scheduleAt(simTime() + uniform(0, par("resRelayPeriod").doubleValue()), resRelayTimer);
         delete pkt;
 
-        // Notify application that event occurs
-        notifyApp();
     } else if (pkt->getPkType() == PK_RELAY_INFO) {
         // Receive relay information
+        // This packet can be received at any time
         PacketEMRP_RelayInfo *ri = check_and_cast<PacketEMRP_RelayInfo*>(pkt);
         if (ri->getBsFlag() == true) {
             bsAddr = ri->getSrcMacAddr();
@@ -117,19 +117,16 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
         }
         delete pkt;
 
-        // Notify application that event occurs
-        notifyApp();
     } else if (pkt->getPkType() == PK_ENERGY_INFO) {
         // Receive energy information
         updateRelayEnergy(check_and_cast<PacketEMRP_EnergyInfo*>(pkt));
 
-        // Notify application that event occurs
-        notifyApp();
     } else if (pkt->getPkType() == PK_PAYLOAD_TO_AN) {
         // Send message to upper layer
         MessageCR *msg = (MessageCR*) pkt->decapsulate();
         send(msg, "appGate$o");
         delete pkt;
+
     } else if (pkt->getPkType() == PK_PAYLOAD_TO_BS) {
         if (par("isBaseStation").boolValue() == true) {
             // Here is the destination, send message to upper layer
@@ -149,11 +146,11 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
 
             // Send back a report about energy
             sendEnergyInfo(sender, pkt->getBitLength());
-
-            // Notify application that event occurs
-            notifyApp();
         }
     }
+
+    // Notify application that event occurs
+    notifyApp();
 }
 
 /*

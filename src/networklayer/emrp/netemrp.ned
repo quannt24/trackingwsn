@@ -24,7 +24,7 @@ simple NetEMRP extends Net
 {
     parameters:
         // Period for responsing for a relay request in initial period
-        double resRelayPeriod = default(0.2);
+        double resRelayPeriod = default(0.1);
         // Differential amount of relay/backup nodes' energy that triggers switch nodes
         double switchingEnergy @unit(J)= default(0.1J);
         // Critical energy level that a node cannot guarantees reliable transmission

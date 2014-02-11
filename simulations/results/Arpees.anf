@@ -58,6 +58,7 @@
           <properties name="Graph.Title" value="End to end delay"/>
           <properties name="X.Axis.Title" value="Time (s)"/>
           <properties name="Y.Axis.Title" value="Delay (s)"/>
+          <properties name="Line.Type" value="Dots"/>
         </items>
         <items xsi:type="scave:ComputeScalar" scalarName="max_delay" valueExpr="max('e2eDelay:vector')" moduleExpr="" groupByExpr=""/>
         <items xsi:type="scave:ComputeScalar" scalarName="mean_delay" valueExpr="mean('e2eDelay:vector')" moduleExpr="" groupByExpr=""/>
@@ -69,6 +70,7 @@
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.2 //@datasets/@datasets.0/@items.3 //@datasets/@datasets.0/@items.4 //@datasets/@datasets.0/@items.5 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.2/@items.0/@items.1 //@datasets/@datasets.2/@items.1/@items.1"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.2 //@datasets/@datasets.0/@items.3 //@datasets/@datasets.0/@items.4 //@datasets/@datasets.0/@items.5"/>
+    <chartSheets name="Efficiency" charts="//@datasets/@datasets.1/@items.1 //@datasets/@datasets.2/@items.0/@items.1 //@datasets/@datasets.2/@items.1/@items.1"/>
   </chartSheets>
 </scave:Analysis>

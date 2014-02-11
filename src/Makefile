@@ -279,6 +279,7 @@ $O/networklayer/arpees/netarpees.o: networklayer/arpees/netarpees.cc \
 	networklayer/messagecr_m.h \
 	networklayer/net/net.h \
 	networklayer/packetcr_m.h \
+	util/statcollector.h \
 	util/worldutil.h
 $O/networklayer/arpees/packetarpees_m.o: networklayer/arpees/packetarpees_m.cc \
 	linklayer/packet802154_m.h \
@@ -299,6 +300,7 @@ $O/networklayer/emrp/netemrp.o: networklayer/emrp/netemrp.cc \
 	networklayer/net/net.h \
 	networklayer/packetcr_m.h \
 	sensors/ass/measurement.h \
+	util/statcollector.h \
 	util/worldutil.h
 $O/networklayer/emrp/packetemrp_m.o: networklayer/emrp/packetemrp_m.cc \
 	linklayer/packet802154_m.h \

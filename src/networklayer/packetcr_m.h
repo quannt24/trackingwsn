@@ -43,8 +43,10 @@ enum PacketType {
  * Class generated from <tt>networklayer/packetcr.msg</tt> by opp_msgc.
  * <pre>
  * packet PacketCR extends Packet802154 {
+ *     txType = TX_PPP; 
  *     int pkType; 
- *     int pkSize = 19; 
+ *     int hopLimit = 64; 
+ *     int pkSize = 20; 
  * }
  * </pre>
  */
@@ -52,6 +54,7 @@ class PacketCR : public ::Packet802154
 {
   protected:
     int pkType_var;
+    int hopLimit_var;
     int pkSize_var;
 
   private:
@@ -73,6 +76,8 @@ class PacketCR : public ::Packet802154
     // field getter/setter methods
     virtual int getPkType() const;
     virtual void setPkType(int pkType);
+    virtual int getHopLimit() const;
+    virtual void setHopLimit(int hopLimit);
     virtual int getPkSize() const;
     virtual void setPkSize(int pkSize);
 };

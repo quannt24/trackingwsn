@@ -81,7 +81,7 @@ void Link802154::handleMessage(cMessage *msg)
                 if (frame->getType() == FR_PAYLOAD) {
                     // Count lost payload frame
                     StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
-                    sc->incLostFrame();
+                    sc->incLostPacket();
                 }
                 delete msg;
             }
@@ -212,7 +212,10 @@ int Link802154::addAdjNode(int addr)
 Frame802154* Link802154::createFrame(Packet802154* packet)
 {
     // TODO Process long packet
-    if (packet->getByteLength() > par("maxPacketSize").longValue()) throw PACKET_TOO_LONG;
+    if (packet->getByteLength() > par("maxPacketSize").longValue()) {
+        EV << "Link802154::createFrame: packet length " << packet->getByteLength() << '\n';
+        throw PACKET_TOO_LONG;
+    }
 
     Frame802154 *frm = new Frame802154();
     frm->setSrcAddr(macAddress);
@@ -245,12 +248,8 @@ void Link802154::sendFrame(Frame802154 *frame, simtime_t propagationDelay, simti
         const char *inputGateName, int gateIndex)
 {
     StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
-    if (frame->getType() == FR_PAYLOAD) {
-        // Count sent payload frame
-        sc->incSentFrame();
-    }
-
     ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
+
     if (cu->hasCollision(desNode)) {
         /* At this time, this node has acquired channel and collision by hidden node problem may occur.
          * In simulation, collision may be gone before this frame is sent completely;
@@ -260,7 +259,7 @@ void Link802154::sendFrame(Frame802154 *frame, simtime_t propagationDelay, simti
 
         if (frame->getType() == FR_PAYLOAD) {
             // Count lost payload frame
-            sc->incLostFrame();
+            sc->incLostPacket();
         }
         delete frame;
     } else {
@@ -283,7 +282,7 @@ void Link802154::recvFrame(Frame802154* frame)
         if (frame->getType() == FR_PAYLOAD) {
             // Count lost payload frame
             StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
-            sc->incLostFrame();
+            sc->incLostPacket();
         }
         delete frame;
         return;
@@ -298,7 +297,7 @@ void Link802154::recvFrame(Frame802154* frame)
         if (frame->getType() == FR_PAYLOAD) {
             // Count lost payload frame
             StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
-            sc->incLostFrame();
+            sc->incLostPacket();
         }
         delete frame;
         return;

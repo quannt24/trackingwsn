@@ -19,6 +19,7 @@
 #include "energy.h"
 #include "mobility.h"
 #include "worldutil.h"
+#include "statcollector.h"
 
 Define_Module(NetARPEES);
 
@@ -30,7 +31,7 @@ void NetARPEES::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
         if (msg == recvRelayInfoTimer) {
-            sendPackets();
+            sendQueuedPackets();
         } else if (msg->getKind() == RES_RELAY) {
             // This message has a packet passed in context pointer
             sendRelayInfo((PacketARPEES*) msg->getContextPointer());
@@ -80,7 +81,7 @@ void NetARPEES::recvMessage(MessageCR* msg)
         } else {
             // Send the new queued packets immediately without need of relay to BS.
             // There should no other packet in the queue.
-            sendPackets();
+            sendQueuedPackets();
         }
     }
     // else {} // If receiving relay info, all packets will be sent when the timer tick,
@@ -89,6 +90,23 @@ void NetARPEES::recvMessage(MessageCR* msg)
 
 void NetARPEES::recvPacket(PacketARPEES* pkt)
 {
+    // Increase number of received packets
+    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+    sc->incRecvPacket();
+
+    // Notify application that event occurs
+    notifyApp();
+
+    if (pkt->getHopLimit() < 0) {
+        // Count packet loss
+        sc->incLostPacket();
+
+        delete pkt;
+        return;
+    } else {
+        pkt->setHopLimit(pkt->getHopLimit() - 1); // Reduce hop limit
+    }
+
     if (pkt->getPkType() == PK_REQ_RELAY) {
         // Receive a request for relay information
 
@@ -144,9 +162,20 @@ void NetARPEES::recvPacket(PacketARPEES* pkt)
             }
         }
     }
+}
 
-    // Notify application that event occurs
-    notifyApp();
+/* Send packet to link layer for sending out */
+void NetARPEES::sendPacket(PacketCR *pkt)
+{
+    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+
+    if (pkt->getHopLimit() > 0) {
+        send(pkt, "linkGate$o");
+    } else {
+        EV << "NetARPEES: Hop limit exceeded\n";
+        sc->incLostPacket(); // Count packet loss
+        delete pkt;
+    }
 }
 
 /*
@@ -184,7 +213,7 @@ PacketARPEES* NetARPEES::createPacket(MessageCR *msg)
  * Send all queued packets.
  * When finish reset relay node address (to find new relay node next time).
  */
-void NetARPEES::sendPackets()
+void NetARPEES::sendQueuedPackets()
 {
     PacketARPEES *pkt;
 
@@ -205,7 +234,7 @@ void NetARPEES::sendPackets()
             }
         }
 
-        send(pkt, "linkGate$o");
+        sendPacket(pkt);
     }
 
     // Reset relay node address
@@ -222,7 +251,7 @@ void NetARPEES::requestRelay()
 
     pkt->setByteLength(pkt->getPkSize());
 
-    send(pkt, "linkGate$o");
+    sendPacket(pkt);
 }
 
 /* Response to a request for relay node, given the requesting packet */
@@ -250,7 +279,7 @@ void NetARPEES::sendRelayInfo(PacketARPEES* reqPkt)
 
     pkt->setByteLength(pkt->getPkSize());
 
-    send(pkt, "linkGate$o");
+    sendPacket(pkt);
     delete reqPkt;
 }
 

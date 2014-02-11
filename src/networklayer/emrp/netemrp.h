@@ -47,6 +47,8 @@ class NetEMRP : public Net
         void recvMessage(MessageCR *msg);
         /* Process received packet from lower layer */
         void recvPacket(PacketEMRP *pkt);
+        /* Send packet to link layer for sending out */
+        void sendPacket(PacketCR *pkt);
         /* Broadcast request for info of base station/relay/backup node.
          * The flag 'init' is used when calling this function at initial phase. */
         void requestRelay(bool init = false);

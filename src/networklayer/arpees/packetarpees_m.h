@@ -92,13 +92,13 @@ inline void doUnpacking(cCommBuffer *b, PacketARPEES_RelayReq& obj) {obj.parsimU
  * <pre>
  * packet PacketARPEES_RelayInfo extends PacketARPEES {
  *     pkType = PK_RELAY_INFO;
+ *     pkSize = 37; 
+ *     
  *     bool bsFlag; 
  *     double energy; 
  *     double posX; 
  *     double posY; 
  *     double dBS; 
- *     
- *     pkSize = 35; 
  * }
  * </pre>
  */

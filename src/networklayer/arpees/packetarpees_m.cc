@@ -449,7 +449,7 @@ Register_Class(PacketARPEES_RelayInfo);
 PacketARPEES_RelayInfo::PacketARPEES_RelayInfo(const char *name, int kind) : PacketARPEES(name,kind)
 {
     this->setPkType(PK_RELAY_INFO);
-    this->setPkSize(35);
+    this->setPkSize(37);
 
     this->bsFlag_var = 0;
     this->energy_var = 0;

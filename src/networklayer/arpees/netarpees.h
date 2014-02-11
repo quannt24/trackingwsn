@@ -45,11 +45,13 @@ class NetARPEES : public Net
         /* Process received packet from lower layer */
         void recvPacket(PacketARPEES *pkt);
 
+        /* Send packet to link layer for sending out */
+        void sendPacket(PacketCR *pkt);
         /* Create a packet encapsulating a message. */
         PacketARPEES* createPacket(MessageCR *msg);
         /* Send all queued packets.
          * When finish reset relay node address (to find new relay node next time). */
-        void sendPackets();
+        void sendQueuedPackets();
 
         /* Broadcast packet for requesting relay information */
         void requestRelay();

@@ -13,24 +13,28 @@
         <properties name="Graph.Title" value="Tracked path TID2"/>
         <properties name="X.Axis.Title" value="x (m)"/>
         <properties name="Y.Axis.Title" value="y (m)"/>
+        <properties name="Symbols.Type" value="None"/>
       </items>
       <items xsi:type="scave:ScatterChart" name="Tracked path TID2" xDataPattern="module(Wsn.bs.app) AND name(tracked_tid3_x)">
         <filters xsi:type="scave:Select" filterPattern="tracked_tid3*" type="VECTOR"/>
         <properties name="Graph.Title" value="Tracked path TID2"/>
         <properties name="X.Axis.Title" value="x (m)"/>
         <properties name="Y.Axis.Title" value="y (m)"/>
+        <properties name="Symbols.Type" value="None"/>
       </items>
       <items xsi:type="scave:ScatterChart" name="True path TID2" xDataPattern="module(Wsn.target[0].mobility) AND name(id2_x)">
         <filters xsi:type="scave:Select" filterPattern="id2*" type="VECTOR"/>
         <properties name="Graph.Title" value="True path TID2"/>
         <properties name="X.Axis.Title" value="x (m)"/>
         <properties name="Y.Axis.Title" value="y (m)"/>
+        <properties name="Symbols.Type" value="None"/>
       </items>
       <items xsi:type="scave:ScatterChart" name="True path TID3" xDataPattern="module(Wsn.target[1].mobility) AND name(id3_x)">
         <filters xsi:type="scave:Select" filterPattern="id3*" type="VECTOR"/>
         <properties name="Graph.Title" value="True path TID3"/>
         <properties name="X.Axis.Title" value="x (m)"/>
         <properties name="Y.Axis.Title" value="y (m)"/>
+        <properties name="Symbols.Type" value="None"/>
       </items>
     </datasets>
     <datasets name="Estimation error">
@@ -66,8 +70,8 @@
       </items>
     </datasets>
     <datasets name="Frame count">
-      <items xsi:type="scave:Add" filterPattern="numSentFrame:last or numLostFrame:last"/>
-      <items xsi:type="scave:ComputeScalar" scalarName="percent_lost_frame" valueExpr="'numLostFrame:last' / 'numSentFrame:last' * 100" moduleExpr="" groupByExpr=""/>
+      <items xsi:type="scave:Add" filterPattern="numRecvPacket:last or numLostPacket:last"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="percentLostPacket" valueExpr="'numLostPacket:last' / ('numRecvPacket:last' + 'numLostPacket:last') * 100" moduleExpr="" groupByExpr=""/>
     </datasets>
   </datasets>
   <chartSheets>

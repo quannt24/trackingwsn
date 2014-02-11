@@ -25,21 +25,20 @@ packet PacketEMRP extends PacketCR {
 
 // EMRP relay info packet
 packet PacketEMRP_RelayInfo extends PacketEMRP {
-    txType = TX_PPP;
     pkType = PK_RELAY_INFO;
+    pkSize = 37; // plus 17 bytes of new fields
+    
     bool bsFlag; // Flag on if sender is base station, 1 byte
     double energy; // Current energy, 4 bytes
-    double posX; // Coordination x in meter
-    double posY; // Coordination y in meter
-    double dBS; // Distance to base station
-    
-    pkSize = 35; // 18 + 17
+    double posX; // Coordination x in meter, 4 bytes
+    double posY; // Coordination y in meter, 4 bytes
+    double dBS; // Distance to base station, 4 bytes
 }
 
 // EMRP energy report packet
 packet PacketEMRP_EnergyInfo extends PacketEMRP {
     pkType = PK_ENERGY_INFO;
-    double consumedEnergy; // Predicted energy to send relayed packet
+    double consumedEnergy; // Predicted energy to send relayed packet (4 bytes)
     
-    pkSize = 22; // 18 + 4
+    pkSize = 24; // plus 4 bytes of new fields
 }

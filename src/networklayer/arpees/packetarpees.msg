@@ -32,11 +32,11 @@ packet PacketARPEES_RelayReq extends PacketARPEES {
 // Relay info packet
 packet PacketARPEES_RelayInfo extends PacketARPEES {
     pkType = PK_RELAY_INFO;
+    pkSize = 37; // plus 17 bytes of new fields
+    
     bool bsFlag; // Flag on if sender is base station, 1 byte
     double energy; // Current energy, 4 bytes
-    double posX; // Coordination x in meter
-    double posY; // Coordination y in meter
-    double dBS; // Distance to base station
-    
-    pkSize = 35; // 18 + 17
+    double posX; // Coordination x in meter, 4 bytes
+    double posY; // Coordination y in meter, 4 bytes
+    double dBS; // Distance to base station, 4 bytes
 }

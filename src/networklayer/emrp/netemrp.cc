@@ -22,6 +22,7 @@
 #include "mobility.h"
 #include "worldutil.h"
 #include "msgkind.h"
+#include "statcollector.h"
 
 Define_Module(NetEMRP);
 
@@ -95,6 +96,24 @@ void NetEMRP::recvMessage(MessageCR *msg)
  */
 void NetEMRP::recvPacket(PacketEMRP *pkt)
 {
+    // Increase number of received packets
+    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+    sc->incRecvPacket();
+
+    // Notify application that event occurs
+    notifyApp();
+
+    if (pkt->getHopLimit() < 0) {
+        // Count packet loss
+        StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+        sc->incLostPacket();
+
+        delete pkt;
+        return;
+    } else {
+        pkt->setHopLimit(pkt->getHopLimit() - 1); // Reduce hop limit
+    }
+
     if (pkt->getPkType() == PK_REQ_RELAY) {
         // Receive a request for relay information
         cMessage *resRelayTimer = new cMessage("ResRelayTimer");
@@ -120,6 +139,7 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
     } else if (pkt->getPkType() == PK_ENERGY_INFO) {
         // Receive energy information
         updateRelayEnergy(check_and_cast<PacketEMRP_EnergyInfo*>(pkt));
+        delete pkt;
 
     } else if (pkt->getPkType() == PK_PAYLOAD_TO_AN) {
         // Send message to upper layer
@@ -142,15 +162,27 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
             } else {
                 pkt->setDesMacAddr(rnAddr);
             }
-            send(pkt, "linkGate$o");
+
+            sendPacket(pkt);
 
             // Send back a report about energy
             sendEnergyInfo(sender, pkt->getBitLength());
         }
     }
+}
 
-    // Notify application that event occurs
-    notifyApp();
+/* Send packet to link layer for sending out */
+void NetEMRP::sendPacket(PacketCR *pkt)
+{
+    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+
+    if (pkt->getHopLimit() > 0) {
+        send(pkt, "linkGate$o");
+    } else {
+        EV << "NetEMRP: Hop limit exceeded\n";
+        sc->incLostPacket(); // Count packet loss
+        delete pkt;
+    }
 }
 
 /*
@@ -167,7 +199,7 @@ void NetEMRP::requestRelay(bool init)
 
     pkt->setByteLength(pkt->getPkSize());
 
-    send(pkt, "linkGate$o");
+    sendPacket(pkt);
 }
 
 /*
@@ -197,7 +229,7 @@ void NetEMRP::sendRelayInfo(PacketEMRP *reqPkt)
 
     pkt->setByteLength(pkt->getPkSize());
 
-    send(pkt, "linkGate$o");
+    sendPacket(pkt);
     delete reqPkt;
 }
 
@@ -323,7 +355,7 @@ void NetEMRP::sendEnergyInfo(int addr, int bitLen)
 
     ei->setByteLength(ei->getPkSize());
 
-    send(ei, "linkGate$o");
+    sendPacket(ei);
 }
 
 /*
@@ -333,7 +365,6 @@ void NetEMRP::sendEnergyInfo(int addr, int bitLen)
 void NetEMRP::updateRelayEnergy(PacketEMRP_EnergyInfo *ei)
 {
     enerRn -= ei->getConsumedEnergy();
-    delete ei;
 
     // Check critical energy value
     if (enerRn < par("criticalEnergy").doubleValue()) {
@@ -414,5 +445,5 @@ void NetEMRP::sendMsgDown(MessageCR *msg)
     pkt->setByteLength(pkt->getPkSize());
     pkt->encapsulate(msg); // Packet length will be increased by message length
 
-    send(pkt, "linkGate$o");
+    sendPacket(pkt);
 }

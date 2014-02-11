@@ -240,9 +240,8 @@ Register_Class(PacketEMRP_RelayInfo);
 
 PacketEMRP_RelayInfo::PacketEMRP_RelayInfo(const char *name, int kind) : PacketEMRP(name,kind)
 {
-    this->setTxType(TX_PPP);
     this->setPkType(PK_RELAY_INFO);
-    this->setPkSize(35);
+    this->setPkSize(37);
 
     this->bsFlag_var = 0;
     this->energy_var = 0;
@@ -565,7 +564,7 @@ Register_Class(PacketEMRP_EnergyInfo);
 PacketEMRP_EnergyInfo::PacketEMRP_EnergyInfo(const char *name, int kind) : PacketEMRP(name,kind)
 {
     this->setPkType(PK_ENERGY_INFO);
-    this->setPkSize(22);
+    this->setPkSize(24);
 
     this->consumedEnergy_var = 0;
 }

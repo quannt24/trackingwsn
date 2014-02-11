@@ -44,8 +44,11 @@ Register_Class(PacketCR);
 
 PacketCR::PacketCR(const char *name, int kind) : Packet802154(name,kind)
 {
+    this->setTxType(TX_PPP);
+
     this->pkType_var = 0;
-    this->pkSize_var = 19;
+    this->hopLimit_var = 64;
+    this->pkSize_var = 20;
 }
 
 PacketCR::PacketCR(const PacketCR& other) : Packet802154(other)
@@ -68,6 +71,7 @@ PacketCR& PacketCR::operator=(const PacketCR& other)
 void PacketCR::copy(const PacketCR& other)
 {
     this->pkType_var = other.pkType_var;
+    this->hopLimit_var = other.hopLimit_var;
     this->pkSize_var = other.pkSize_var;
 }
 
@@ -75,6 +79,7 @@ void PacketCR::parsimPack(cCommBuffer *b)
 {
     Packet802154::parsimPack(b);
     doPacking(b,this->pkType_var);
+    doPacking(b,this->hopLimit_var);
     doPacking(b,this->pkSize_var);
 }
 
@@ -82,6 +87,7 @@ void PacketCR::parsimUnpack(cCommBuffer *b)
 {
     Packet802154::parsimUnpack(b);
     doUnpacking(b,this->pkType_var);
+    doUnpacking(b,this->hopLimit_var);
     doUnpacking(b,this->pkSize_var);
 }
 
@@ -93,6 +99,16 @@ int PacketCR::getPkType() const
 void PacketCR::setPkType(int pkType)
 {
     this->pkType_var = pkType;
+}
+
+int PacketCR::getHopLimit() const
+{
+    return hopLimit_var;
+}
+
+void PacketCR::setHopLimit(int hopLimit)
+{
+    this->hopLimit_var = hopLimit;
 }
 
 int PacketCR::getPkSize() const
@@ -152,7 +168,7 @@ const char *PacketCRDescriptor::getProperty(const char *propertyname) const
 int PacketCRDescriptor::getFieldCount(void *object) const
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
+    return basedesc ? 3+basedesc->getFieldCount(object) : 3;
 }
 
 unsigned int PacketCRDescriptor::getFieldTypeFlags(void *object, int field) const
@@ -166,8 +182,9 @@ unsigned int PacketCRDescriptor::getFieldTypeFlags(void *object, int field) cons
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
 }
 
 const char *PacketCRDescriptor::getFieldName(void *object, int field) const
@@ -180,9 +197,10 @@ const char *PacketCRDescriptor::getFieldName(void *object, int field) const
     }
     static const char *fieldNames[] = {
         "pkType",
+        "hopLimit",
         "pkSize",
     };
-    return (field>=0 && field<2) ? fieldNames[field] : NULL;
+    return (field>=0 && field<3) ? fieldNames[field] : NULL;
 }
 
 int PacketCRDescriptor::findField(void *object, const char *fieldName) const
@@ -190,7 +208,8 @@ int PacketCRDescriptor::findField(void *object, const char *fieldName) const
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
     if (fieldName[0]=='p' && strcmp(fieldName, "pkType")==0) return base+0;
-    if (fieldName[0]=='p' && strcmp(fieldName, "pkSize")==0) return base+1;
+    if (fieldName[0]=='h' && strcmp(fieldName, "hopLimit")==0) return base+1;
+    if (fieldName[0]=='p' && strcmp(fieldName, "pkSize")==0) return base+2;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -205,8 +224,9 @@ const char *PacketCRDescriptor::getFieldTypeString(void *object, int field) cons
     static const char *fieldTypeStrings[] = {
         "int",
         "int",
+        "int",
     };
-    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
+    return (field>=0 && field<3) ? fieldTypeStrings[field] : NULL;
 }
 
 const char *PacketCRDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
@@ -247,7 +267,8 @@ std::string PacketCRDescriptor::getFieldAsString(void *object, int field, int i)
     PacketCR *pp = (PacketCR *)object; (void)pp;
     switch (field) {
         case 0: return long2string(pp->getPkType());
-        case 1: return long2string(pp->getPkSize());
+        case 1: return long2string(pp->getHopLimit());
+        case 2: return long2string(pp->getPkSize());
         default: return "";
     }
 }
@@ -263,7 +284,8 @@ bool PacketCRDescriptor::setFieldAsString(void *object, int field, int i, const 
     PacketCR *pp = (PacketCR *)object; (void)pp;
     switch (field) {
         case 0: pp->setPkType(string2long(value)); return true;
-        case 1: pp->setPkSize(string2long(value)); return true;
+        case 1: pp->setHopLimit(string2long(value)); return true;
+        case 2: pp->setPkSize(string2long(value)); return true;
         default: return false;
     }
 }
@@ -279,8 +301,9 @@ const char *PacketCRDescriptor::getFieldStructName(void *object, int field) cons
     static const char *fieldStructNames[] = {
         NULL,
         NULL,
+        NULL,
     };
-    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
+    return (field>=0 && field<3) ? fieldStructNames[field] : NULL;
 }
 
 void *PacketCRDescriptor::getFieldStructPointer(void *object, int field, int i) const

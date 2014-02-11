@@ -28,11 +28,11 @@ simple StatCollector
         @signal[total_sensor_energy](type="double");
         @statistic[totalEnergy](title="Total energy"; source="total_sensor_energy"; record=vector);
 
-        @signal[sent_frame](type="int");
-        @statistic[numSentFrame](title="Number of sent frames"; source="sent_frame"; record=last);
+        @signal[recv_packet](type="int");
+        @statistic[numRecvPacket](title="Number of received packets"; source="recv_packet"; record=last);
 
-        @signal[lost_frame](type="int");
-        @statistic[numLostFrame](title="Number of lost frames"; source="lost_frame"; record=last);
+        @signal[lost_packet](type="int");
+        @statistic[numLostPacket](title="Number of lost packets"; source="lost_packet"; record=last);
 
         @signal[est_err](type="double");
         @statistic[estimationError](title="Estimation error"; source="est_err"; record=vector);

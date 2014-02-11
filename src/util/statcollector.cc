@@ -26,8 +26,8 @@ Define_Module(StatCollector);
 void StatCollector::initialize()
 {
     totalSensorEnergySignal = registerSignal("total_sensor_energy");
-    sentFrameSignal = registerSignal("sent_frame");
-    lostFrameSignal = registerSignal("lost_frame");
+    sigRecvPacket = registerSignal("recv_packet");
+    sigLostPacket = registerSignal("lost_packet");
     // Signal for emitting estimation error
     estErrSignal = registerSignal("est_err");
 
@@ -49,8 +49,8 @@ void StatCollector::handleMessage(cMessage *msg)
 StatCollector::StatCollector()
 {
     pollTSE = new cMessage();
-    numSentFrame = 0;
-    numLostFrame = 0;
+    numRecvPacket = 0;
+    numLostPacket = 0;
 }
 
 StatCollector::~StatCollector()
@@ -75,18 +75,18 @@ void StatCollector::pollTotalSensorEnergy()
     emit(totalSensorEnergySignal, totalEnergy);
 }
 
-void StatCollector::incSentFrame()
+void StatCollector::incRecvPacket()
 {
-    Enter_Method_Silent("incSentFrame");
-    numSentFrame++;
-    emit(sentFrameSignal, numSentFrame);
+    Enter_Method_Silent("incRecvPacket");
+    numRecvPacket++;
+    emit(sigRecvPacket, numRecvPacket);
 }
 
-void StatCollector::incLostFrame()
+void StatCollector::incLostPacket()
 {
-    Enter_Method_Silent("incLostFrame");
-    numLostFrame++;
-    emit(lostFrameSignal, numLostFrame);
+    Enter_Method_Silent("incLostPacket");
+    numLostPacket++;
+    emit(sigLostPacket, numLostPacket);
 }
 
 void StatCollector::recEstError(double err)

@@ -31,6 +31,8 @@ enum PacketType {
 // Generic packet for clustering routing protocol upon 802.15.4 link layer
 //
 packet PacketCR extends Packet802154 {
+    txType = TX_PPP; // Default Tx type is PPP
     int pkType; // Packet type
-    int pkSize = 19; // 18 bytes from 4 fields of Packet802154 + 1 byte pkType
+    int hopLimit = 64; // Number of hop limit, use 1 bite, max value is 255
+    int pkSize = 20; // Fields of Packet802154 + 1 byte pkType + 1 byte hopLimit
 }

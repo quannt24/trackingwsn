@@ -50,6 +50,7 @@
           <properties name="Graph.Title" value="Total energy"/>
           <properties name="X.Axis.Title" value="Time (s)"/>
           <properties name="Y.Axis.Title" value="Total energy (J)"/>
+          <properties name="Symbols.Type" value="None"/>
         </items>
       </items>
       <items xsi:type="scave:Group" name="Delay">

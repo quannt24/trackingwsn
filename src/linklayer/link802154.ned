@@ -62,7 +62,9 @@ simple Link802154
 		int macMaxNB = default(4); // 0 ~ 5
 		int macMinBE = default(3); // 0 ~ 3
 		
-		// X-MAC duty cycling (RADIO_OFF mode)
+		// X-MAC duty cycling
+		// Enable/Disable X-MAC. If disabled, even strobe flag of packet will be ignored.
+		bool enableXmac = default(true);
 		// Receiver
 		double lR @unit(s) = default(0.005s); // Listen period, must long enough to receive one of two consecutive strobes
 		double sR @unit(s) = default(0.1s); // Sleep period (radio totally off), causes delay

@@ -158,8 +158,10 @@ void Link802154::setRadioMode(int mode, bool dutyCycling)
             }
 
             // Plan a listen timer
-            cancelEvent(dcListenTimer);
-            scheduleAt(simTime() + par("sR").doubleValue(), dcListenTimer);
+            if (par("enableXmac").boolValue()) {
+                cancelEvent(dcListenTimer);
+                scheduleAt(simTime() + par("sR").doubleValue(), dcListenTimer);
+            }
         } else if (mode == RADIO_FULL_OFF) {
             EV << "Radio full off\n";
             if (rxConsumeTimer->isScheduled()) {
@@ -356,7 +358,9 @@ void Link802154::prepareSending()
     if (!outQueue.isEmpty()) {
         Frame802154 *frame = check_and_cast<Frame802154*>(outQueue.front());
         Packet802154 *pkt = (Packet802154*) frame->getEncapsulatedPacket();
-        if (frame->getType() == FR_PAYLOAD && pkt != NULL && pkt->getStrobeFlag()) {
+        if (par("enableXmac").boolValue()
+                && frame->getType() == FR_PAYLOAD
+                && pkt != NULL && pkt->getStrobeFlag()) {
             // Prepare strobes
             nStrobe = (int) ceil(par("sR").doubleValue() / par("strobePeriod").doubleValue());
             EV<< "Link802154: Sending " << nStrobe << " strobes\n";

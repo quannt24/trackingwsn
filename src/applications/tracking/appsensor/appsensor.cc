@@ -156,6 +156,9 @@ void AppSensor::recvSenseResult(SensedResult *result)
         EV << "Nothing sensed\n";
         syncSense = false; // Come back to unsynchronized state
     } else {
+        // Self notify for event so that the node can wake up if target was sensed
+        notifyEvent();
+
         if (!syncSense) {
             EV << "Synchronizing sensing\n";
             MsgSyncRequest *notify = new MsgSyncRequest("SyncRequest");
@@ -358,7 +361,7 @@ void AppSensor::setWorkMode(int mode)
                 scheduleAt(simTime() + par("sleepTime"), activeTimer);
 
                 // Cancel sensing timer
-                cancelEvent(senseTimer);
+                //cancelEvent(senseTimer);
                 break;
 
             case WORK_MODE_ACTIVE:

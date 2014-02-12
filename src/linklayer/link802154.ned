@@ -66,13 +66,15 @@ simple Link802154
 		// Enable/Disable X-MAC. If disabled, even strobe flag of packet will be ignored.
 		bool enableXmac = default(true);
 		// Receiver
-		double lR @unit(s) = default(0.005s); // Listen period, must long enough to receive one of two consecutive strobes
-		double sR @unit(s) = default(0.1s); // Sleep period (radio totally off), causes delay
+		// Listen period, must long enough to receive one of two consecutive strobes
+		double lR @unit(s) = default(0.003s);
+		// Sleep period (radio totally off), causes delay
+		double sR @unit(s) = default(0.1s);
 		// Sender
 		// Strobe period: time between sending 2 strobes. Must be long enough for receiving strobe
 		// ACK and short enough so that current strobe and next strobe fit in one listen period (lR)
 		// Transmit 27 bytes over 250kbps channel takes 0.000864s ~> 0.001s
-		double strobePeriod @unit(s) = default(0.003s);
+		double strobePeriod @unit(s) = default(0.002s);
 
         @display("i=block/wrxtx");
 

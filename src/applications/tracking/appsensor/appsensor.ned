@@ -31,7 +31,7 @@ simple AppSensor extends App
 
         bool enableSleep = default(true); // If false, node will stay awake all time
         double idleTime = default(5); // Idle time before sensor goes to sleep
-        double sleepTime = default(20); // Max sleep time
+        double sleepTime = default(30); // Max sleep time
 
         @class("AppSensor");
         @display("i=block/app");

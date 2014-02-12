@@ -29,13 +29,13 @@ Define_Module(NetEMRP);
 void NetEMRP::initialize()
 {
     // Set timer for initialize EMRP first time
-    scheduleAt(uniform(0, par("initInterval")), initMsg);
+    scheduleAt(uniform(0, par("initInterval")), initTimer);
 }
 
 void NetEMRP::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
-        if (msg == initMsg) {
+        if (msg == initTimer) {
             requestRelay(true);
         } else if (msg->getKind() == RES_RELAY) {
             // This message has a packet passed in context pointer
@@ -53,6 +53,10 @@ void NetEMRP::handleMessage(cMessage *msg)
                 EV << "Error: Cannot send data to BS now\n";
             }
             delete msg;
+        } else if (msg == waitEnergyInfoTimeout) {
+            // Demote current relay node
+            rnAddr = 0;
+            updateRelayEnergy(NULL);
         }
     } else {
         if (msg->getArrivalGate() == gate("appGate$i")) {
@@ -76,12 +80,14 @@ NetEMRP::NetEMRP()
     enerBn = 0;
     dBnBs = 0;
 
-    initMsg = new cMessage("InitEmrpMsg");
+    initTimer = new cMessage("InitEmrpTimer");
+    waitEnergyInfoTimeout = new cMessage("WaitEnergyInfoTimeout");
 }
 
 NetEMRP::~NetEMRP()
 {
-    cancelAndDelete(initMsg);
+    cancelAndDelete(initTimer);
+    cancelAndDelete(waitEnergyInfoTimeout);
 }
 
 /* Process received message from upper layer */
@@ -134,11 +140,19 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
                 if (!ret) considerBackup(ri);
             }
         }
+
+        // Cancel timeout for waiting updating energy info (if any)
+        if (waitEnergyInfoTimeout->isScheduled()) cancelEvent(waitEnergyInfoTimeout);
+
         delete pkt;
 
     } else if (pkt->getPkType() == PK_ENERGY_INFO) {
         // Receive energy information
         updateRelayEnergy(check_and_cast<PacketEMRP_EnergyInfo*>(pkt));
+
+        // Cancel timeout for waiting updating energy info (if any)
+        if (waitEnergyInfoTimeout->isScheduled()) cancelEvent(waitEnergyInfoTimeout);
+
         delete pkt;
 
     } else if (pkt->getPkType() == PK_PAYLOAD_TO_AN) {
@@ -152,21 +166,30 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
             // Here is the destination, send message to upper layer
             MessageCR *msg = (MessageCR*) pkt->decapsulate();
             send(msg, "appGate$o");
+
+            // Send back a report about energy (like a ACK)
+            sendEnergyInfo(pkt->getSrcMacAddr(), 0);
+
             delete pkt;
         } else {
-            // Forward to base station
             int sender = pkt->getSrcMacAddr();
+
+            // Plan a timer for updating energy info deadline
+            if (!waitEnergyInfoTimeout->isScheduled()) {
+                scheduleAt(simTime() + par("waitEnergyInfoTimeout").doubleValue(), waitEnergyInfoTimeout);
+            }
+
+            // Send back a report about energy (like a ACK)
+            sendEnergyInfo(sender, pkt->getBitLength());
+
+            // Forward to base station
             pkt->setSrcMacAddr(getMacAddr());
             if (bsAddr > 0) {
                 pkt->setDesMacAddr(bsAddr);
             } else {
                 pkt->setDesMacAddr(rnAddr);
             }
-
             sendPacket(pkt);
-
-            // Send back a report about energy
-            sendEnergyInfo(sender, pkt->getBitLength());
         }
     }
 }
@@ -360,15 +383,16 @@ void NetEMRP::sendEnergyInfo(int addr, int bitLen)
 
 /*
  * Update energy of relay node when receive an energy reporting packet.
- * Perform switch relay node or find new relay node if neccessary.
+ * Perform switch relay node or find new relay node if necessary.
  */
 void NetEMRP::updateRelayEnergy(PacketEMRP_EnergyInfo *ei)
 {
-    enerRn -= ei->getConsumedEnergy();
+    // Update enerRn
+    if (ei != NULL) enerRn -= ei->getConsumedEnergy();
 
     // Check critical energy value
-    if (enerRn < par("criticalEnergy").doubleValue()) {
-        if (enerBn < par("criticalEnergy").doubleValue()) {
+    if (enerRn < par("criticalEnergy").doubleValue() || rnAddr <= 0) {
+        if (enerBn < par("criticalEnergy").doubleValue() || bnAddr <= 0) {
             // Find new relay/backup nodes
             requestRelay(false);
         } else {
@@ -376,9 +400,7 @@ void NetEMRP::updateRelayEnergy(PacketEMRP_EnergyInfo *ei)
             switchRN();
         }
         return;
-    }
-
-    if (enerBn - enerRn >= par("switchingEnergy").doubleValue()) {
+    } else if (enerBn - enerRn >= par("switchingEnergy").doubleValue()) {
         switchRN();
     }
 }
@@ -434,6 +456,10 @@ void NetEMRP::sendMsgDown(MessageCR *msg)
         pkt->setTxType(TX_PPP);
         pkt->setPkType(PK_PAYLOAD_TO_BS);
         pkt->setDesMacAddr(rnAddr);
+        // Plan a timer for updating energy info deadline
+        if (!waitEnergyInfoTimeout->isScheduled()) {
+            scheduleAt(simTime() + par("waitEnergyInfoTimeout").doubleValue(), waitEnergyInfoTimeout);
+        }
     } else if (msg->getRoutingType() == RT_BROADCAST) {
         pkt->setTxType(TX_BROADCAST);
         pkt->setPkType(PK_PAYLOAD_TO_AN);

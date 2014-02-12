@@ -41,7 +41,8 @@ class NetEMRP : public Net
         double dBnBs;
         double dBn;
 
-        cMessage *initMsg; // Self message for initializing EMRP procedure
+        cMessage *initTimer; // Self message for initializing EMRP procedure
+        cMessage *waitEnergyInfoTimeout; // Timer, Please refer to "waitEnergyInfoTimeout" parameter
 
         /* Process received message from upper layer */
         void recvMessage(MessageCR *msg);

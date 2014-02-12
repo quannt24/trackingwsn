@@ -18,7 +18,7 @@
 
 #include <omnetpp.h>
 
-#define MAX_PATH_LEN 1000
+#define MAX_PATH_LEN 10000
 
 /**
  * Provide logic about position and mobility of an Entity

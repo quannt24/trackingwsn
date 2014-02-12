@@ -22,6 +22,7 @@ simple Mobility
 {
     parameters:
         bool moving = default(false); // Equal 'true' if object is moving
+        bool stopSimWhenFinishMoving = default(false);
 
         // Parameters for static (non-moving) Entity
         double posX @unit(m) = default(0);

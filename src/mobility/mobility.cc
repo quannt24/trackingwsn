@@ -65,7 +65,13 @@ void Mobility::handleMessage(cMessage *msg)
     vecPosY->record(getY());
 
     updateDisplay();
-    if (posId < pathLen) scheduleAt(simTime() + par("movingTimeStep").doubleValue(), msg);
+    if (posId < pathLen) {
+        scheduleAt(simTime() + par("movingTimeStep").doubleValue(), msg);
+    } else {
+        if (par("stopSimWhenFinishMoving").boolValue()) {
+            endSimulation();
+        }
+    }
 }
 
 Mobility::Mobility()

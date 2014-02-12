@@ -21,6 +21,6 @@ package trackingwsn.applications.tracking.estimator;
 simple Lateration like IEstimator
 {
     parameters:
-        int minNumMeasurement = 3;
+        int minNumMeasurement = default(3);
         @display("i=block/app");
 }

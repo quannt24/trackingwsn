@@ -112,9 +112,9 @@ void StatCollector::recRemainingEnergy()
     int nss = wsn->par("numSensors").longValue();
     int i;
 
-    buffer.append("results/remain_ener_");
+    buffer.append("results/");
     buffer.append(configEx->getActiveConfigName());
-    buffer.append(".data\0");
+    buffer.append("_RemainEnergy.data\0");
     ofstream out(buffer.c_str(), ios::out | ios::trunc);
 
     if (!out) {

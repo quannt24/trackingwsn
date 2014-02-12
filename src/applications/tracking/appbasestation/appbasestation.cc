@@ -15,7 +15,6 @@
 
 #include "appbasestation.h"
 #include "link802154.h"
-#include <sstream>
 #include <iostream>
 #include <fstream>
 
@@ -25,13 +24,32 @@ void AppBaseStation::initialize()
 {
     cModule *wsn = simulation.getModuleByPath("Wsn");
     cModule *tar;
+    int numTargets = wsn->par("numTargets").longValue();
     int i;
+    cConfigurationEx *configEx = ev.getConfigEx();
+    std::ostringstream oss;
+    std::ofstream out;
 
-    // Prepare output vectors
-    for (i = 0; i < wsn->par("numTargets").longValue(); i++) {
+    for (i = 0; i < numTargets; i++) {
         tar = wsn->getSubmodule("target", i);
+
+        // Prepare output vectors
         TargetPosVectorSet *tpvs = new TargetPosVectorSet(tar->getId());
         tpvsList.push_back(tpvs);
+
+        // Prepare output files
+        oss.seekp(0);
+        oss << "results/";
+        oss << configEx->getActiveConfigName() << "_TrackedPath_ID" << tar->getId() << ".data\0";
+        out.open(oss.str().c_str(), std::ios::out | std::ios::trunc);
+        if (!out) {
+            std::cerr << "Cannot open file " << oss.str() << endl;
+        } else {
+            out << "# Config: " << configEx->getActiveConfigName() << endl;
+            out << "# Tracked path ID" << tar->getId() << endl;
+            out << "# x y" << endl;
+            out.close();
+        }
     }
 
     // Turn on tranceiver
@@ -74,6 +92,7 @@ void AppBaseStation::recvMessage(MsgTracking *msg)
                 tpvs = *tpvsIt;
                 if (tpvs->getTarId() == tp->getTarId()) {
                     tpvs->record(tp->getX(), tp->getY());
+                    outputTarPos(tp->getTarId(), tp->getX(), tp->getY());
                     break;
                 }
             }
@@ -82,4 +101,25 @@ void AppBaseStation::recvMessage(MsgTracking *msg)
         emit(e2edelaySignal, simTime() - ((MsgTrackResult*) msg)->getTsSense());
     }
     delete msg;
+}
+
+/* Output target position to file */
+void AppBaseStation::outputTarPos(int tarId, double x, double y)
+{
+    cConfigurationEx *configEx = ev.getConfigEx();
+    std::ostringstream oss;
+    std::ofstream out;
+
+    // Note: File name must be matched with the file prepared in initialize()
+    oss << "results/";
+    oss << configEx->getActiveConfigName() << "_TrackedPath_ID" << tarId << ".data\0";
+    out.open(oss.str().c_str(), std::ios::app);
+
+    if (!out) {
+        std::cerr << "Cannot open file " << oss.str() << endl;
+        return;
+    } else {
+        out << x << ' ' << y << endl;
+        out.close();
+    }
 }

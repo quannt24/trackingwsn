@@ -31,6 +31,8 @@ class AppBaseStation : public App
         simsignal_t e2edelaySignal;
 
         void recvMessage(MsgTracking *msg);
+        /* Output target position to file */
+        void outputTarPos(int tarId, double x, double y);
 
     protected:
         virtual void initialize();

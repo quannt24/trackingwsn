@@ -185,6 +185,7 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
             // Forward to base station
             pkt->setSrcMacAddr(getMacAddr());
             if (bsAddr > 0) {
+                pkt->setStrobeFlag(false);
                 pkt->setDesMacAddr(bsAddr);
             } else {
                 pkt->setDesMacAddr(rnAddr);
@@ -455,7 +456,11 @@ void NetEMRP::sendMsgDown(MessageCR *msg)
     } else if (msg->getRoutingType() == RT_TO_BS) {
         pkt->setTxType(TX_PPP);
         pkt->setPkType(PK_PAYLOAD_TO_BS);
-        pkt->setDesMacAddr(rnAddr);
+        if (bsAddr > 0) {
+            pkt->setDesMacAddr(bsAddr);
+        } else {
+            pkt->setDesMacAddr(rnAddr);
+        }
         // Plan a timer for updating energy info deadline
         if (!waitEnergyInfoTimeout->isScheduled()) {
             scheduleAt(simTime() + par("waitEnergyInfoTimeout").doubleValue(), waitEnergyInfoTimeout);
@@ -466,7 +471,12 @@ void NetEMRP::sendMsgDown(MessageCR *msg)
         // No need to set desMacAddr here
     }
     pkt->setSrcMacAddr(getMacAddr());
-    pkt->setStrobeFlag(msg->getStrobeFlag());
+
+    if (msg->getRoutingType() == RT_TO_BS && bsAddr > 0) {
+        pkt->setStrobeFlag(false);
+    } else {
+        pkt->setStrobeFlag(msg->getStrobeFlag());
+    }
 
     pkt->setByteLength(pkt->getPkSize());
     pkt->encapsulate(msg); // Packet length will be increased by message length

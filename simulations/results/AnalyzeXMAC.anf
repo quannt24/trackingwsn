@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="Default-*.vec"/>
+    <inputs name="Default-*.sca"/>
+    <inputs name="NoXMAC-*.vec"/>
+    <inputs name="NoXMAC-*.sca"/>
+  </inputs>
+  <datasets>
+    <datasets name="EstimationError">
+      <items xsi:type="scave:Add" filterPattern="name(estimationError:vector) " type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="Estimation error" lineNameFormat="">
+        <properties name="Graph.Title" value="Estimation error"/>
+        <properties name="X.Axis.Title" value="Time (s)"/>
+        <properties name="Y.Axis.Title" value="Error (m)"/>
+        <properties name="Y.Axis.Max" value="100.0"/>
+        <properties name="Legend.Display" value="true"/>
+        <properties name="Legend.Border" value="true"/>
+        <properties name="Legend.Position" value="Inside"/>
+        <properties name="Legend.Anchoring" value="NorthEast"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/Default-0.vec Default-0-20140213-15:34:47-5054 Default" value="With X-MAC"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140213-15:40:16-5210 NoXMAC" value="Without X-MAC"/>
+        <properties name="Line.Type" value="Dots"/>
+        <properties name="Line.Type//TrackingWSN/simulations/results/Default-0.vec Default-0-20140213-16:24:55-5420 Default" value="Dots"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/Default-0.vec Default-0-20140213-16:24:55-5420 Default" value="With X-MAC"/>
+        <properties name="Line.Type//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140213-16:25:45-5469 NoXMAC" value="Dots"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140213-16:25:45-5469 NoXMAC" value="Without X-MAC"/>
+      </items>
+      <items xsi:type="scave:ComputeScalar" scalarName="Max error" valueExpr="max('estimationError:vector') " moduleExpr="" groupByExpr=""/>
+      <items xsi:type="scave:ComputeScalar" scalarName="Mean error" valueExpr="mean('estimationError:vector') " moduleExpr="" groupByExpr=""/>
+    </datasets>
+    <datasets name="Energy">
+      <items xsi:type="scave:Add" filterPattern="totalEnergy:vector" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="Total energy" lineNameFormat="">
+        <properties name="Graph.Title" value="Total energy"/>
+        <properties name="X.Axis.Title" value="Time (s)"/>
+        <properties name="Y.Axis.Title" value="Total energy (J)"/>
+        <properties name="Y.Axis.Min" value="600.0"/>
+        <properties name="Y.Axis.Max" value="1300.0"/>
+        <properties name="Legend.Display" value="true"/>
+        <properties name="Legend.Border" value="true"/>
+        <properties name="Legend.Position" value="Inside"/>
+        <properties name="Legend.Anchoring" value="SouthWest"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/Default-0.vec Default-0-20140213-15:34:47-5054 Default" value="With X-MAC"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140213-15:40:16-5210 NoXMAC" value="Without X-MAC"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/Default-0.vec Default-0-20140213-16:24:55-5420 Default" value="With X-MAC"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140213-16:25:45-5469 NoXMAC" value="Without X-MAC"/>
+        <properties name="Symbols.Type" value="None"/>
+      </items>
+    </datasets>
+    <datasets name="Delay">
+      <items xsi:type="scave:Add" filterPattern="e2eDelay:vector" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="End-to-end delay" lineNameFormat="">
+        <properties name="Graph.Title" value="End-to-end delay"/>
+        <properties name="X.Axis.Title" value="Time (s)"/>
+        <properties name="Y.Axis.Title" value="Delay (s)"/>
+        <properties name="Legend.Display" value="true"/>
+        <properties name="Legend.Border" value="true"/>
+        <properties name="Legend.Position" value="Inside"/>
+        <properties name="Legend.Anchoring" value="NorthEast"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/Default-0.vec Default-0-20140213-16:24:55-5420 Default" value="With X-MAC"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140213-16:25:45-5469 NoXMAC" value="Without X-MAC"/>
+        <properties name="Line.Type" value="Dots"/>
+      </items>
+      <items xsi:type="scave:ComputeScalar" scalarName="Max delay" valueExpr="max('e2eDelay:vector') " moduleExpr="" groupByExpr=""/>
+      <items xsi:type="scave:ComputeScalar" scalarName="Mean delay" valueExpr="mean('e2eDelay:vector') " moduleExpr="" groupByExpr=""/>
+    </datasets>
+    <datasets name="PacketCount">
+      <items xsi:type="scave:Add" filterPattern="numLostPacket:last or numRecvPacket:last"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="Packet loss percent" valueExpr="'numLostPacket:last' / ('numRecvPacket:last' + 'numLostPacket:last') * 100" moduleExpr="" groupByExpr=""/>
+    </datasets>
+  </datasets>
+  <chartSheets>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.1 //@datasets/@datasets.1/@items.1 //@datasets/@datasets.2/@items.1"/>
+  </chartSheets>
+</scave:Analysis>

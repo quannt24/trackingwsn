@@ -61,13 +61,11 @@ void AppSensor::handleMessage(cMessage *msg)
         }
     } else {
         if (msg->getArrivalGate() == gate("ssGate$i")) {
-            if (workMode == WORK_MODE_ACTIVE) {
-                // Only process sensing result when in active mode
-                if (msg->getKind() == SS_RESULT) {
-                    SensedResult *result = check_and_cast<SensedResult*>(msg);
-                    recvSenseResult(result);
-                }
+            if (msg->getKind() == SS_RESULT) {
+                SensedResult *result = check_and_cast<SensedResult*>(msg);
+                recvSenseResult(result);
             } else {
+                std::cerr << "AppSensor: Unexpected message from ssGate\n";
                 delete msg;
             }
         } else if (msg->getArrivalGate() == gate("netGate$i")) {

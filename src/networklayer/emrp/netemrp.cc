@@ -102,9 +102,13 @@ void NetEMRP::recvMessage(MessageCR *msg)
  */
 void NetEMRP::recvPacket(PacketEMRP *pkt)
 {
-    // Increase number of received packets
     StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
-    sc->incRecvPacket();
+
+    // Increase number of received packets
+    if (pkt->getPkType() != PK_PAYLOAD_TO_BS
+            || (pkt->getPkType() == PK_PAYLOAD_TO_BS && par("isBaseStation").boolValue())) {
+        sc->incRecvPacket();
+    }
 
     // Notify application that event occurs
     notifyApp();

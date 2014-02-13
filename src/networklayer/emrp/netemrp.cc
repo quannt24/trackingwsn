@@ -213,6 +213,8 @@ void NetEMRP::sendPacket(PacketCR *pkt)
 {
     StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
 
+    notifyApp();
+
     std::cerr << "NetEMRP::sendPacket: " << pkt->getPkType() << ' ' << pkt->getSrcMacAddr() << ' ' << pkt-> getDesMacAddr() << '\n';
     if (pkt->getHopLimit() > 0) {
         send(pkt, "linkGate$o");

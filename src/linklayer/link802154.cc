@@ -55,11 +55,11 @@ void Link802154::handleMessage(cMessage *msg)
         } else if (msg == dcListenTimer) {
             // In radio duty cycling, turn on radio for short period
             setRadioMode(RADIO_ON, true);
-            getParentModule()->bubble("Radio ON");
+            //getParentModule()->bubble("Radio ON");
         } else if (msg == dcSleepTimer) {
             // In radio duty cycling
             setRadioMode(RADIO_OFF, true);
-            getParentModule()->bubble("Radio OFF");
+            //getParentModule()->bubble("Radio OFF");
         }
     } else {
         if (msg->getArrivalGate() == gate("netGate$i")) {
@@ -147,7 +147,27 @@ void Link802154::setRadioMode(int mode, bool dutyCycling)
             cancelEvent(dcSleepTimer);
             if (dutyCycling) scheduleAt(simTime() + par("lR").doubleValue(), dcSleepTimer);
         } else if (mode == RADIO_OFF) {
-            //EV << "Radio off\n";
+            // Clear pending transmissions
+            nStrobe = 0;
+            cPacket *pkt;
+            while (!outQueue.isEmpty()) {
+                pkt = outQueue.pop();
+                delete pkt;
+                getParentModule()->bubble("Frame discarded");
+            }
+
+            if (outFrame != NULL) {
+                delete outFrame;
+                outFrame = NULL;
+                getParentModule()->bubble("Frame discarded");
+            }
+            if (txFrame != NULL) {
+                delete txFrame;
+                txFrame = NULL;
+                getParentModule()->bubble("Frame discarded");
+            }
+
+            // Calculate consumed energy
             if (rxConsumeTimer->isScheduled()) {
                 // Turn off transceiver and calculate consumed energy of last incomplete timer's period
                 double onTime = SIMTIME_DBL(simTime() - rxConsumeTimer->getTimestamp());
@@ -628,13 +648,21 @@ void Link802154::useEnergyRx(double onTime)
 void Link802154::poweroff()
 {
     cPacket *pkt;
+
+    nStrobe = 0;
     while (!outQueue.isEmpty()) {
         pkt = outQueue.pop();
         delete pkt;
     }
 
-    if (txFrame != NULL) delete txFrame;
-    txFrame = NULL;
+    if (outFrame != NULL) {
+        delete outFrame;
+        outFrame = NULL;
+    }
+    if (txFrame != NULL) {
+        delete txFrame;
+        txFrame = NULL;
+    }
 
     cancelEvent(strobeTimer);
     cancelEvent(dcSleepTimer);

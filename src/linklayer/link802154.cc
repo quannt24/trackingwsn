@@ -143,10 +143,17 @@ void Link802154::setRadioMode(int mode, bool dutyCycling)
                 scheduleAt(simTime() + par("rxConsumingPeriod").doubleValue(), rxConsumeTimer);
             }
 
-            // If called by duty cycling, plan a sleep timer
             cancelEvent(dcSleepTimer);
-            if (dutyCycling) scheduleAt(simTime() + par("lR").doubleValue(), dcSleepTimer);
+            cancelEvent(dcListenTimer);
+            // If called by duty cycling, plan a sleep timer
+            if (par("enableXmac").boolValue() && dutyCycling) {
+                scheduleAt(simTime() + par("lR").doubleValue(), dcSleepTimer);
+            }
         } else if (mode == RADIO_OFF) {
+            cancelEvent(strobeTimer);
+            cancelEvent(dcSleepTimer);
+            cancelEvent(dcListenTimer);
+
             // Clear pending transmissions
             nStrobe = 0;
             cPacket *pkt;

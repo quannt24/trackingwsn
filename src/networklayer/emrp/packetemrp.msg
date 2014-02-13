@@ -38,7 +38,10 @@ packet PacketEMRP_RelayInfo extends PacketEMRP {
 // EMRP energy report packet
 packet PacketEMRP_EnergyInfo extends PacketEMRP {
     pkType = PK_ENERGY_INFO;
-    double consumedEnergy; // Predicted energy to send relayed packet (4 bytes)
+    // Note: only use consumedEnergy (for original EMRP) or remainEnergy. Therefore pkSize is still
+    // be 24 bytes
+    //double consumedEnergy; // Predicted energy to send relayed packet (4 bytes)
+    double remainEnergy;
     
     pkSize = 24; // plus 4 bytes of new fields
 }

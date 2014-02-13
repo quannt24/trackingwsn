@@ -566,7 +566,7 @@ PacketEMRP_EnergyInfo::PacketEMRP_EnergyInfo(const char *name, int kind) : Packe
     this->setPkType(PK_ENERGY_INFO);
     this->setPkSize(24);
 
-    this->consumedEnergy_var = 0;
+    this->remainEnergy_var = 0;
 }
 
 PacketEMRP_EnergyInfo::PacketEMRP_EnergyInfo(const PacketEMRP_EnergyInfo& other) : PacketEMRP(other)
@@ -588,29 +588,29 @@ PacketEMRP_EnergyInfo& PacketEMRP_EnergyInfo::operator=(const PacketEMRP_EnergyI
 
 void PacketEMRP_EnergyInfo::copy(const PacketEMRP_EnergyInfo& other)
 {
-    this->consumedEnergy_var = other.consumedEnergy_var;
+    this->remainEnergy_var = other.remainEnergy_var;
 }
 
 void PacketEMRP_EnergyInfo::parsimPack(cCommBuffer *b)
 {
     PacketEMRP::parsimPack(b);
-    doPacking(b,this->consumedEnergy_var);
+    doPacking(b,this->remainEnergy_var);
 }
 
 void PacketEMRP_EnergyInfo::parsimUnpack(cCommBuffer *b)
 {
     PacketEMRP::parsimUnpack(b);
-    doUnpacking(b,this->consumedEnergy_var);
+    doUnpacking(b,this->remainEnergy_var);
 }
 
-double PacketEMRP_EnergyInfo::getConsumedEnergy() const
+double PacketEMRP_EnergyInfo::getRemainEnergy() const
 {
-    return consumedEnergy_var;
+    return remainEnergy_var;
 }
 
-void PacketEMRP_EnergyInfo::setConsumedEnergy(double consumedEnergy)
+void PacketEMRP_EnergyInfo::setRemainEnergy(double remainEnergy)
 {
-    this->consumedEnergy_var = consumedEnergy;
+    this->remainEnergy_var = remainEnergy;
 }
 
 class PacketEMRP_EnergyInfoDescriptor : public cClassDescriptor
@@ -686,7 +686,7 @@ const char *PacketEMRP_EnergyInfoDescriptor::getFieldName(void *object, int fiel
         field -= basedesc->getFieldCount(object);
     }
     static const char *fieldNames[] = {
-        "consumedEnergy",
+        "remainEnergy",
     };
     return (field>=0 && field<1) ? fieldNames[field] : NULL;
 }
@@ -695,7 +695,7 @@ int PacketEMRP_EnergyInfoDescriptor::findField(void *object, const char *fieldNa
 {
     cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount(object) : 0;
-    if (fieldName[0]=='c' && strcmp(fieldName, "consumedEnergy")==0) return base+0;
+    if (fieldName[0]=='r' && strcmp(fieldName, "remainEnergy")==0) return base+0;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
 
@@ -750,7 +750,7 @@ std::string PacketEMRP_EnergyInfoDescriptor::getFieldAsString(void *object, int 
     }
     PacketEMRP_EnergyInfo *pp = (PacketEMRP_EnergyInfo *)object; (void)pp;
     switch (field) {
-        case 0: return double2string(pp->getConsumedEnergy());
+        case 0: return double2string(pp->getRemainEnergy());
         default: return "";
     }
 }
@@ -765,7 +765,7 @@ bool PacketEMRP_EnergyInfoDescriptor::setFieldAsString(void *object, int field, 
     }
     PacketEMRP_EnergyInfo *pp = (PacketEMRP_EnergyInfo *)object; (void)pp;
     switch (field) {
-        case 0: pp->setConsumedEnergy(string2double(value)); return true;
+        case 0: pp->setRemainEnergy(string2double(value)); return true;
         default: return false;
     }
 }

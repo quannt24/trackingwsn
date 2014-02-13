@@ -222,7 +222,11 @@ void NetEMRP::sendPacket(PacketCR *pkt)
 
     notifyApp();
 
-    std::cerr << "NetEMRP::sendPacket: " << pkt->getPkType() << ' ' << pkt->getSrcMacAddr() << ' ' << pkt-> getDesMacAddr() << '\n';
+    std::cerr << "NetEMRP::sendPacket: "
+            << simTime() << ' '
+            << pkt->getPkType() << ' '
+            << pkt->getSrcMacAddr() << ' '
+            << pkt-> getDesMacAddr() << '\n';
     if (pkt->getHopLimit() > 0) {
         send(pkt, "linkGate$o");
     } else {
@@ -386,6 +390,7 @@ void NetEMRP::sendEnergyInfo(int addr, int bitLen)
     ei->setDesMacAddr(addr);
 
     // Estimate consumed energy (original protocol, not accurate)
+    /*
     Link802154* link = (Link802154*) getParentModule()->getSubmodule("link");
     double e_elec = link->par("e_elec").doubleValue();
     double e_fs = link->par("e_fs").doubleValue();
@@ -397,8 +402,12 @@ void NetEMRP::sendEnergyInfo(int addr, int bitLen)
         eTotal = bitLen * e_elec + (bitLen * e_elec + bitLen * e_fs * d * d * d * d);
     }
     ei->setConsumedEnergy(eTotal);
+    */
 
-    // Note: It's better to use current energy
+    // Note: It's better to use current energy. If using remainEnergy, no need to use consumedEnergy
+    // so that packet size is not increased.
+    Energy *energy = check_and_cast<Energy*>(getParentModule()->getSubmodule("energy"));
+    ei->setRemainEnergy(energy->getCapacity());
 
     ei->setByteLength(ei->getPkSize());
 
@@ -413,8 +422,10 @@ void NetEMRP::sendEnergyInfo(int addr, int bitLen)
  */
 void NetEMRP::updateRelayEnergy(PacketEMRP_EnergyInfo *ei)
 {
+    if (bsAddr > 0) return; // No need to update
     // Update enerRn
-    if (ei != NULL) enerRn -= ei->getConsumedEnergy();
+    //if (ei != NULL) enerRn -= ei->getConsumedEnergy(); // Original EMRP
+    if (ei != NULL) enerRn = ei->getRemainEnergy();
 
     // Check critical energy value
     if (enerRn < par("criticalEnergy").doubleValue() || rnAddr <= 0) {
@@ -426,7 +437,7 @@ void NetEMRP::updateRelayEnergy(PacketEMRP_EnergyInfo *ei)
             switchRN();
         }
         return;
-    } else if (enerBn - enerRn >= par("switchingEnergy").doubleValue()) {
+    } else if (enerBn - enerRn > par("switchingEnergy").doubleValue()) {
         switchRN();
     }
 }

@@ -31,7 +31,7 @@ simple NetEMRP extends Net
         // This timeout must long enough for max CSMA/CA backoff time (of two nodes) plus sending
         // time of relayed packet and energy info packet as:
         // t = maxBackoff * 2 + maxXMACstrobeTime + sendingTime(relay packet + energy info packet)
-        double waitEnergyInfoTimeout = default(0.1);
+        double waitEnergyInfoTimeout = default(0.2);
         // Differential amount of relay/backup nodes' energy that triggers switch nodes
         double switchingEnergy @unit(J)= default(0.1J);
         // Critical energy level that a node cannot guarantees reliable transmission

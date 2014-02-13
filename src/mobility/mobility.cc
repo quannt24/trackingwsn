@@ -28,7 +28,9 @@ void Mobility::initialize()
 
     if (par("moving").boolValue()) {
         // Load path from file
-        pathLen = loadPath();
+        pathLen = loadPath() - 1;
+        // Note: because of file reading, total number of read lines may be increase at end of file.
+        // Therefore we discard the last.
         if (pathLen < 1) {
             EV<< "Target: path error";
             return;
@@ -57,15 +59,19 @@ void Mobility::handleMessage(cMessage *msg)
 {
     // Self message: move
     // Move target to next position in path array
-    setX(xArr[posId]);
-    setY(yArr[posId]);
     posId++;
-    // Record position
-    vecPosX->record(getX());
-    vecPosY->record(getY());
-
-    updateDisplay();
     if (posId < pathLen) {
+        setX(xArr[posId]);
+        setY(yArr[posId]);
+
+        if (getX() == 0 && getY() == 0) {
+            EV << "trouble here\n";
+        }
+        // Record position
+        vecPosX->record(getX());
+        vecPosY->record(getY());
+
+        updateDisplay();
         scheduleAt(simTime() + par("movingTimeStep").doubleValue(), msg);
     } else {
         if (par("stopSimWhenFinishMoving").boolValue()) {

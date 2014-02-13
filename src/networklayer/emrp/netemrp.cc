@@ -122,9 +122,12 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
     }
 
     if (pkt->getPkType() == PK_REQ_RELAY) {
-        // Receive a request for relay information
-        // TODO Prevent loop
-        if (!(rnAddr > 0 && pkt->getSrcMacAddr() == rnAddr)) {
+        // Receive a request for relay information. If this node is not a dead end then response to
+        // the request.
+        if (par("isBaseStation").boolValue()
+                || bsAddr >= 0
+                || !(rnAddr > 0 && pkt->getSrcMacAddr() == rnAddr)) {
+            // There may be more than one request
             cMessage *resRelayTimer = new cMessage("ResRelayTimer");
             resRelayTimer->setKind(RES_RELAY);
             resRelayTimer->setContextPointer(pkt->dup()); // Pack sender information with timer
@@ -178,15 +181,15 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
         } else {
             int sender = pkt->getSrcMacAddr();
 
-            // TODO Prevent loop and deadend
-            if (rnAddr == 0 || pkt->getSrcMacAddr() == rnAddr) {
-                EV<< "NetEMRP: Cannot forward packet, deadend!\n";
+            if (bsAddr <= 0 && (rnAddr <= 0 || pkt->getSrcMacAddr() == rnAddr)) {
+                // Prevent loop and deadend
+                EV << "NetEMRP: Cannot forward packet, deadend!\n";
                 // Refresh relay node
                 rnAddr = 0;
                 updateRelayEnergy(NULL);
                 delete pkt;
             } else {
-                // Plan a timer for updating energy info deadline
+                // Plan a timer for deadline of updating energy info
                 if (!waitEnergyInfoTimeout->isScheduled()) {
                     scheduleAt(simTime() + par("waitEnergyInfoTimeout").doubleValue(), waitEnergyInfoTimeout);
                 }
@@ -256,7 +259,7 @@ void NetEMRP::sendRelayInfo(PacketEMRP *reqPkt)
     pkt->setDesMacAddr(reqPkt->getSrcMacAddr());
 
     // Add relay info
-    if (par("isBaseStation").boolValue() == true) {
+    if (par("isBaseStation").boolValue()) {
         pkt->setBsFlag(true);
     } else {
         pkt->setBsFlag(false);

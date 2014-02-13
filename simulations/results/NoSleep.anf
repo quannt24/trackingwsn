@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="/TrackingWSN/simulations/results/NoSleep-*.vec"/>
+    <inputs name="/TrackingWSN/simulations/results/NoSleep-*.sca"/>
+  </inputs>
+  <datasets>
+    <datasets name="Paths">
+      <items xsi:type="scave:Add" filterPattern="tracked_tid*" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="id*" type="VECTOR"/>
+      <items xsi:type="scave:ScatterChart" name="Tracked path TID2" xDataPattern="module(Wsn.bs.app) AND name(tracked_tid2_x)">
+        <filters xsi:type="scave:Select" filterPattern="tracked_tid2*" type="VECTOR"/>
+        <properties name="Graph.Title" value="Tracked path TID2"/>
+        <properties name="X.Axis.Title" value="x (m)"/>
+        <properties name="Y.Axis.Title" value="y (m)"/>
+        <properties name="Symbols.Type" value="None"/>
+      </items>
+      <items xsi:type="scave:ScatterChart" name="Tracked path TID2" xDataPattern="module(Wsn.bs.app) AND name(tracked_tid3_x)">
+        <filters xsi:type="scave:Select" filterPattern="tracked_tid3*" type="VECTOR"/>
+        <properties name="Graph.Title" value="Tracked path TID2"/>
+        <properties name="X.Axis.Title" value="x (m)"/>
+        <properties name="Y.Axis.Title" value="y (m)"/>
+        <properties name="Symbols.Type" value="None"/>
+      </items>
+      <items xsi:type="scave:ScatterChart" name="True path TID2" xDataPattern="module(Wsn.target[0].mobility) AND name(id2_x)">
+        <filters xsi:type="scave:Select" filterPattern="id2*" type="VECTOR"/>
+        <properties name="Graph.Title" value="True path TID2"/>
+        <properties name="X.Axis.Title" value="x (m)"/>
+        <properties name="Y.Axis.Title" value="y (m)"/>
+        <properties name="Symbols.Type" value="None"/>
+      </items>
+      <items xsi:type="scave:ScatterChart" name="True path TID3" xDataPattern="module(Wsn.target[1].mobility) AND name(id3_x)">
+        <filters xsi:type="scave:Select" filterPattern="id3*" type="VECTOR"/>
+        <properties name="Graph.Title" value="True path TID3"/>
+        <properties name="X.Axis.Title" value="x (m)"/>
+        <properties name="Y.Axis.Title" value="y (m)"/>
+        <properties name="Symbols.Type" value="None"/>
+      </items>
+    </datasets>
+    <datasets name="Estimation error">
+      <items xsi:type="scave:Add" filterPattern="estimationError:vector" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="Estimation error" lineNameFormat="${configname}">
+        <properties name="Graph.Title" value="Estimation error"/>
+        <properties name="X.Axis.Title" value="Time (s)"/>
+        <properties name="Y.Axis.Title" value="Error (m)"/>
+      </items>
+      <items xsi:type="scave:ComputeScalar" scalarName="mean_error" valueExpr="mean('estimationError:vector')" moduleExpr="" groupByExpr=""/>
+      <items xsi:type="scave:ComputeScalar" scalarName="max_error" valueExpr="max('estimationError:vector')" moduleExpr="" groupByExpr=""/>
+    </datasets>
+    <datasets name="Efficiency">
+      <items xsi:type="scave:Group" name="Energy">
+        <items xsi:type="scave:Add" filterPattern="totalEnergy:vector" type="VECTOR"/>
+        <items xsi:type="scave:LineChart" name="Total energy" lineNameFormat="${configname}">
+          <properties name="Graph.Title" value="Total energy"/>
+          <properties name="X.Axis.Title" value="Time (s)"/>
+          <properties name="Y.Axis.Title" value="Total energy (J)"/>
+          <properties name="Symbols.Type" value="None"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Delay">
+        <items xsi:type="scave:Add" filterPattern="e2eDelay:vector" type="VECTOR"/>
+        <items xsi:type="scave:LineChart" name="End to end delay" lineNameFormat="${configname}">
+          <properties name="Graph.Title" value="End to end delay"/>
+          <properties name="X.Axis.Title" value="Time (s)"/>
+          <properties name="Y.Axis.Title" value="Delay (s)"/>
+          <properties name="Line.Type" value="Dots"/>
+        </items>
+        <items xsi:type="scave:ComputeScalar" scalarName="max_delay" valueExpr="max('e2eDelay:vector')" moduleExpr="" groupByExpr=""/>
+        <items xsi:type="scave:ComputeScalar" scalarName="mean_delay" valueExpr="mean('e2eDelay:vector')" moduleExpr="" groupByExpr=""/>
+      </items>
+    </datasets>
+    <datasets name="Frame count">
+      <items xsi:type="scave:Add" filterPattern="numRecvPacket:last or numLostPacket:last"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="percentLostPacket" valueExpr="'numLostPacket:last' / ('numRecvPacket:last' + 'numLostPacket:last') * 100" moduleExpr="" groupByExpr=""/>
+    </datasets>
+  </datasets>
+  <chartSheets>
+    <chartSheets name="default" charts="//@datasets/@datasets.0/@items.2 //@datasets/@datasets.0/@items.3 //@datasets/@datasets.0/@items.4 //@datasets/@datasets.0/@items.5"/>
+    <chartSheets name="Efficiency" charts="//@datasets/@datasets.1/@items.1 //@datasets/@datasets.2/@items.0/@items.1 //@datasets/@datasets.2/@items.1/@items.1"/>
+  </chartSheets>
+</scave:Analysis>

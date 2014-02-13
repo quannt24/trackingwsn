@@ -550,7 +550,7 @@ void Link802154::transmit()
                     sendFrame(copy, 0, txDuration, des, "radioIn");
                 } else {
                     EV << "Link802154::transmitFrames : destination error, ID " << adjNode[i] << '\n';
-                    delete copy;
+                    //delete copy;
                 }
             }
             delete txFrame; // Original frame is redundant
@@ -560,7 +560,8 @@ void Link802154::transmit()
             if (des != NULL) {
                 sendFrame(txFrame, 0, txDuration, des, "radioIn");
             } else {
-                EV << "Link802154::transmitFrames : destination error, ID " << desAddr << '\n';
+                std::cerr << "Link802154::transmit : destination error, ID " << desAddr << '\n';
+                std::cerr << "Link802154::transmit: " << txFrame->getType() << '\n';
                 delete txFrame;
             }
         }

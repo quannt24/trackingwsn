@@ -113,6 +113,7 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
         // Count packet loss
         StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
         sc->incLostPacket();
+        EV << "NetEMRP::recvPacket: out of date packet\n";
 
         delete pkt;
         return;
@@ -122,10 +123,13 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
 
     if (pkt->getPkType() == PK_REQ_RELAY) {
         // Receive a request for relay information
-        cMessage *resRelayTimer = new cMessage("ResRelayTimer");
-        resRelayTimer->setKind(RES_RELAY);
-        resRelayTimer->setContextPointer(pkt->dup()); // Pack sender information with timer
-        scheduleAt(simTime() + uniform(0, par("resRelayPeriod").doubleValue()), resRelayTimer);
+        // TODO Prevent loop
+        if (!(rnAddr > 0 && pkt->getSrcMacAddr() == rnAddr)) {
+            cMessage *resRelayTimer = new cMessage("ResRelayTimer");
+            resRelayTimer->setKind(RES_RELAY);
+            resRelayTimer->setContextPointer(pkt->dup()); // Pack sender information with timer
+            scheduleAt(simTime() + uniform(0, par("resRelayPeriod").doubleValue()), resRelayTimer);
+        }
         delete pkt;
 
     } else if (pkt->getPkType() == PK_RELAY_INFO) {
@@ -174,23 +178,32 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
         } else {
             int sender = pkt->getSrcMacAddr();
 
-            // Plan a timer for updating energy info deadline
-            if (!waitEnergyInfoTimeout->isScheduled()) {
-                scheduleAt(simTime() + par("waitEnergyInfoTimeout").doubleValue(), waitEnergyInfoTimeout);
-            }
-
-            // Send back a report about energy (like a ACK)
-            sendEnergyInfo(sender, pkt->getBitLength());
-
-            // Forward to base station
-            pkt->setSrcMacAddr(getMacAddr());
-            if (bsAddr > 0) {
-                pkt->setStrobeFlag(false);
-                pkt->setDesMacAddr(bsAddr);
+            // TODO Prevent loop and deadend
+            if (rnAddr == 0 || pkt->getSrcMacAddr() == rnAddr) {
+                EV<< "NetEMRP: Cannot forward packet, deadend!\n";
+                // Refresh relay node
+                rnAddr = 0;
+                updateRelayEnergy(NULL);
+                delete pkt;
             } else {
-                pkt->setDesMacAddr(rnAddr);
+                // Plan a timer for updating energy info deadline
+                if (!waitEnergyInfoTimeout->isScheduled()) {
+                    scheduleAt(simTime() + par("waitEnergyInfoTimeout").doubleValue(), waitEnergyInfoTimeout);
+                }
+
+                // Send back a report about energy (like a ACK)
+                sendEnergyInfo(sender, pkt->getBitLength());
+
+                // Forward to base station
+                pkt->setSrcMacAddr(getMacAddr());
+                if (bsAddr > 0) {
+                    pkt->setStrobeFlag(false);
+                    pkt->setDesMacAddr(bsAddr);
+                } else {
+                    pkt->setDesMacAddr(rnAddr);
+                }
+                sendPacket(pkt);
             }
-            sendPacket(pkt);
         }
     }
 }
@@ -200,6 +213,7 @@ void NetEMRP::sendPacket(PacketCR *pkt)
 {
     StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
 
+    std::cerr << "NetEMRP::sendPacket: " << pkt->getPkType() << ' ' << pkt->getSrcMacAddr() << ' ' << pkt-> getDesMacAddr() << '\n';
     if (pkt->getHopLimit() > 0) {
         send(pkt, "linkGate$o");
     } else {
@@ -219,7 +233,7 @@ void NetEMRP::requestRelay(bool init)
     pkt->setTxType(TX_BROADCAST);
     pkt->setPkType(PK_REQ_RELAY);
     pkt->setSrcMacAddr(getMacAddr());
-    // No need to set desMacAddr here
+    pkt->setDesMacAddr(BROADCAST_ADDR);
 
     pkt->setByteLength(pkt->getPkSize());
 
@@ -385,6 +399,8 @@ void NetEMRP::sendEnergyInfo(int addr, int bitLen)
 /*
  * Update energy of relay node when receive an energy reporting packet.
  * Perform switch relay node or find new relay node if necessary.
+ * To discard current relay node and find new one (not guarantee new one is different from old one)
+ * assign rnAddr = 0 then call this method.
  */
 void NetEMRP::updateRelayEnergy(PacketEMRP_EnergyInfo *ei)
 {
@@ -468,7 +484,7 @@ void NetEMRP::sendMsgDown(MessageCR *msg)
     } else if (msg->getRoutingType() == RT_BROADCAST) {
         pkt->setTxType(TX_BROADCAST);
         pkt->setPkType(PK_PAYLOAD_TO_AN);
-        // No need to set desMacAddr here
+        pkt->setDesMacAddr(BROADCAST_ADDR);
     }
     pkt->setSrcMacAddr(getMacAddr());
 

@@ -50,7 +50,7 @@ void Net::setBSPos(double x, double y)
  */
 int Net::getMacAddr()
 {
-    if (macAddr < 0) {
+    if (macAddr <= 0) {
         macAddr = ((Link802154*) getParentModule()->getSubmodule("link"))->getAddr();
     }
     return macAddr;

@@ -15,7 +15,7 @@
         <properties name="Y.Axis.Title" value="y (m)"/>
         <properties name="Symbols.Type" value="None"/>
       </items>
-      <items xsi:type="scave:ScatterChart" name="Tracked path TID2" xDataPattern="module(Wsn.bs.app) AND name(tracked_tid3_x)">
+      <items xsi:type="scave:ScatterChart" name="Tracked path TID3" xDataPattern="module(Wsn.bs.app) AND name(tracked_tid3_x)">
         <filters xsi:type="scave:Select" filterPattern="tracked_tid3*" type="VECTOR"/>
         <properties name="Graph.Title" value="Tracked path TID2"/>
         <properties name="X.Axis.Title" value="x (m)"/>

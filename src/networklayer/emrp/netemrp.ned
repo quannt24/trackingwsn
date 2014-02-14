@@ -24,7 +24,7 @@ simple NetEMRP extends Net
 {
     parameters:
         // Period for responsing for a relay request
-        double resRelayPeriod = default(0.1);
+        double resRelayPeriod = default(0.2);
         // Timeout for Waiting for packet of energy update of relay node.
         // If updating info is not received before timeout, relay node will be changed (considered
         // as incident happended).
@@ -33,7 +33,7 @@ simple NetEMRP extends Net
         // t = maxBackoff * 2 + maxXMACstrobeTime + sendingTime(relay packet + energy info packet)
         double waitEnergyInfoTimeout = default(0.2);
         // Differential amount of relay/backup nodes' energy that triggers switch nodes
-        double switchingEnergy @unit(J)= default(0.1J);
+        double switchingEnergy @unit(J)= default(0.5J);
         // Critical energy level that a node cannot guarantees reliable transmission
         double criticalEnergy @unit(J) = default(0.2J);
         

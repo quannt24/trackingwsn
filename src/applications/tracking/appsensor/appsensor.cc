@@ -321,8 +321,8 @@ void AppSensor::trackTargets()
         MsgTrackResult *msgTrackResult = new MsgTrackResult();
         msgTrackResult->setTpList(tpList);
         /* Set message size
-         * Each TargetPos cons target ID + x + y will have size of 1 + 8 + 8 bytes */
-        msgTrackResult->setMsgSize(msgTrackResult->getMsgSize() + 17 * tpList.size());
+         * Each TargetPos contains target ID + x + y will have size of 1 + 4 + 4 bytes */
+        msgTrackResult->setMsgSize(msgTrackResult->getMsgSize() + 9 * tpList.size());
         msgTrackResult->setByteLength(msgTrackResult->getMsgSize());
         // Turn on strobe flag for this message
         msgTrackResult->setStrobeFlag(true);

@@ -1,3 +1,4 @@
 # Partial Tkenv config file -- see $HOME/.tkenvrc as well
 inspector "Wsn" "Wsn" "2" "713x712+0+25:normal"
+inspector "Wsn.sensor[335]" "Sensor" "2" "607x336+76+67:normal"
 

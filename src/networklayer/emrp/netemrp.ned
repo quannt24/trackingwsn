@@ -23,7 +23,7 @@ import trackingwsn.networklayer.net.Net;
 simple NetEMRP extends Net
 {
     parameters:
-        // Period for responsing for a relay request in initial period
+        // Period for responsing for a relay request
         double resRelayPeriod = default(0.1);
         // Timeout for Waiting for packet of energy update of relay node.
         // If updating info is not received before timeout, relay node will be changed (considered

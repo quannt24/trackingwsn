@@ -476,11 +476,14 @@ void NetEMRP::sendMsgDown(MessageCR *msg)
         // If at the time having a message need to be sent to BS, relay info is not ready
         // (may be due to incomplete initializing stage), send a request for relay info,
         // and delay sending this message for a short time.
+        // There may be more than one delayed message.
         cMessage *waitRelayMsg = new cMessage("WaitRelayMsg");
         waitRelayMsg->setKind(EMRP_WAIT_RELAY);
         waitRelayMsg->setContextPointer(msg);
         // Set timeout for waiting relay info
         scheduleAt(simTime() + par("resRelayPeriod").doubleValue(), waitRelayMsg);
+        // Send relay request
+        requestRelay();
         return;
     }
 

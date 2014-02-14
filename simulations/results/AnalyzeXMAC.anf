@@ -13,18 +13,21 @@
         <properties name="Graph.Title" value="Estimation error"/>
         <properties name="X.Axis.Title" value="Time (s)"/>
         <properties name="Y.Axis.Title" value="Error (m)"/>
-        <properties name="Y.Axis.Max" value="100.0"/>
         <properties name="Legend.Display" value="true"/>
         <properties name="Legend.Border" value="true"/>
         <properties name="Legend.Position" value="Inside"/>
         <properties name="Legend.Anchoring" value="NorthEast"/>
         <properties name="Line.Name//TrackingWSN/simulations/results/Default-0.vec Default-0-20140213-15:34:47-5054 Default" value="With X-MAC"/>
         <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140213-15:40:16-5210 NoXMAC" value="Without X-MAC"/>
-        <properties name="Line.Type" value="Dots"/>
-        <properties name="Line.Type//TrackingWSN/simulations/results/Default-0.vec Default-0-20140213-16:24:55-5420 Default" value="Dots"/>
         <properties name="Line.Name//TrackingWSN/simulations/results/Default-0.vec Default-0-20140213-16:24:55-5420 Default" value="With X-MAC"/>
-        <properties name="Line.Type//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140213-16:25:45-5469 NoXMAC" value="Dots"/>
         <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140213-16:25:45-5469 NoXMAC" value="Without X-MAC"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/Default-0.vec Default-0-20140214-13:05:08-5399 Default" value="With X-MAC"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140214-13:06:00-5445 NoXMAC" value="Without X-MAC"/>
+        <properties name="Line.Type" value="Dots"/>
+        <properties name="Line.Type//TrackingWSN/simulations/results/Default-0.vec Default-0-20140214-13:38:45-5917 Default" value="Dots"/>
+        <properties name="Line.Type//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140214-13:47:57-6182 NoXMAC" value="Dots"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/Default-0.vec Default-0-20140214-13:38:45-5917 Default" value="With X-MAC"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140214-13:47:57-6182 NoXMAC" value="Without X-MAC"/>
       </items>
       <items xsi:type="scave:ComputeScalar" scalarName="Max error" valueExpr="max('estimationError:vector') " moduleExpr="" groupByExpr=""/>
       <items xsi:type="scave:ComputeScalar" scalarName="Mean error" valueExpr="mean('estimationError:vector') " moduleExpr="" groupByExpr=""/>
@@ -35,8 +38,6 @@
         <properties name="Graph.Title" value="Total energy"/>
         <properties name="X.Axis.Title" value="Time (s)"/>
         <properties name="Y.Axis.Title" value="Total energy (J)"/>
-        <properties name="Y.Axis.Min" value="600.0"/>
-        <properties name="Y.Axis.Max" value="1300.0"/>
         <properties name="Legend.Display" value="true"/>
         <properties name="Legend.Border" value="true"/>
         <properties name="Legend.Position" value="Inside"/>
@@ -45,6 +46,10 @@
         <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140213-15:40:16-5210 NoXMAC" value="Without X-MAC"/>
         <properties name="Line.Name//TrackingWSN/simulations/results/Default-0.vec Default-0-20140213-16:24:55-5420 Default" value="With X-MAC"/>
         <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140213-16:25:45-5469 NoXMAC" value="Without X-MAC"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/Default-0.vec Default-0-20140214-13:05:08-5399 Default" value="With X-MAC"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140214-13:06:00-5445 NoXMAC" value="Without X-MAC"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/Default-0.vec Default-0-20140214-13:38:45-5917 Default" value="With X-MAC"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140214-13:47:57-6182 NoXMAC" value="Without X-MAC"/>
         <properties name="Symbols.Type" value="None"/>
       </items>
     </datasets>
@@ -60,7 +65,13 @@
         <properties name="Legend.Anchoring" value="NorthEast"/>
         <properties name="Line.Name//TrackingWSN/simulations/results/Default-0.vec Default-0-20140213-16:24:55-5420 Default" value="With X-MAC"/>
         <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140213-16:25:45-5469 NoXMAC" value="Without X-MAC"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/Default-0.vec Default-0-20140214-13:05:08-5399 Default" value="With X-MAC"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140214-13:06:00-5445 NoXMAC" value="Without X-MAC"/>
         <properties name="Line.Type" value="Dots"/>
+        <properties name="Line.Type//TrackingWSN/simulations/results/Default-0.vec Default-0-20140214-13:38:45-5917 Default" value="Dots"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/Default-0.vec Default-0-20140214-13:38:45-5917 Default" value="With X-MAC"/>
+        <properties name="Line.Type//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140214-13:47:57-6182 NoXMAC" value="Dots"/>
+        <properties name="Line.Name//TrackingWSN/simulations/results/NoXMAC-0.vec NoXMAC-0-20140214-13:47:57-6182 NoXMAC" value="Without X-MAC"/>
       </items>
       <items xsi:type="scave:ComputeScalar" scalarName="Max delay" valueExpr="max('e2eDelay:vector') " moduleExpr="" groupByExpr=""/>
       <items xsi:type="scave:ComputeScalar" scalarName="Mean delay" valueExpr="mean('e2eDelay:vector') " moduleExpr="" groupByExpr=""/>

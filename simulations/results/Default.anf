@@ -43,6 +43,7 @@
         <properties name="Graph.Title" value="Estimation error"/>
         <properties name="X.Axis.Title" value="Time (s)"/>
         <properties name="Y.Axis.Title" value="Error (m)"/>
+        <properties name="Line.Type" value="Dots"/>
       </items>
       <items xsi:type="scave:ComputeScalar" scalarName="mean_error" valueExpr="mean('estimationError:vector')" moduleExpr="" groupByExpr=""/>
       <items xsi:type="scave:ComputeScalar" scalarName="max_error" valueExpr="max('estimationError:vector')" moduleExpr="" groupByExpr=""/>

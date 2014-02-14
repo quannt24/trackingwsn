@@ -50,6 +50,8 @@ void AppSensor::handleMessage(cMessage *msg)
         } else if (msg == senseTimer) {
             cMessage *ssStartMsg = new cMessage("ssStartMsg", SS_START);
             send(ssStartMsg, "ssGate$o");
+            tsSense = simTime(); // Punch time stamp for sense action
+
             // Schedule next sensing
             scheduleAt(simTime() + par("senseInterval"), senseTimer);
         } else if (msg == reportTimer) {
@@ -191,7 +193,9 @@ void AppSensor::recvSenseResult(SensedResult *result)
                 // Add measurement object to collection
                 mc.addMeasurement(*it);
             }
-            tsSense = simTime(); // Punch time stamp for sense action
+
+            // Deprecated
+            // tsSense = simTime(); // Punch time stamp for sense action
 
             // Sensing is synchronized locally, collect measurements from other nodes
             EV << "Sensing is synchronized, collecting measurements\n";

@@ -70,9 +70,11 @@
         <items xsi:type="scave:ComputeScalar" scalarName="mean_delay" valueExpr="mean('e2eDelay:vector')" moduleExpr="" groupByExpr=""/>
       </items>
     </datasets>
-    <datasets name="Frame count">
+    <datasets name="Message count">
       <items xsi:type="scave:Add" filterPattern="numRecvPacket:last or numLostPacket:last"/>
+      <items xsi:type="scave:Add" filterPattern="numCreatedMTR:last or numRecvMTR:last"/>
       <items xsi:type="scave:ComputeScalar" scalarName="percentLostPacket" valueExpr="'numLostPacket:last' / ('numRecvPacket:last' + 'numLostPacket:last') * 100" moduleExpr="" groupByExpr=""/>
+      <items xsi:type="scave:ComputeScalar" scalarName="percentDeliveredMTR" valueExpr="'numRecvMTR:last' / 'numCreatedMTR:last' * 100" moduleExpr="" groupByExpr=""/>
     </datasets>
   </datasets>
   <chartSheets>

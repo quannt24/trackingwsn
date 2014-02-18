@@ -27,11 +27,15 @@ class StatCollector : public cSimpleModule
         cMessage *pollTSE; // Timer for polling total sensor energy
         int numRecvPacket; // Number of successfully received packets
         int numLostPacket; // Number of lost packets
+        int numCreatedMTR; // Number of MsgTrackResult messages created
+        int numRecvMTR; // Number of MsgTrackResult received at BS
 
-        simsignal_t totalSensorEnergySignal;
+        simsignal_t sigTotalSensorEnergy;
         simsignal_t sigRecvPacket;
         simsignal_t sigLostPacket;
-        simsignal_t estErrSignal;
+        simsignal_t sigEstErr;
+        simsignal_t sigCreatedMTR;
+        simsignal_t sigRecvMTR;
 
         /**
          * Record remaining energy of sensor nodes
@@ -53,6 +57,10 @@ class StatCollector : public cSimpleModule
         void incLostPacket();
         /* Record estimation error */
         void recEstError(double err);
+        /* Increase number of created message MsgTrackResult (aka DATA_TO_BS) */
+        void incCreatedMTR();
+        /* Increase number of successfully received MsgTrackResult */
+        void incRecvMTR();
 
         void finish();
 };

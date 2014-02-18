@@ -15,6 +15,7 @@
 
 #include "appbasestation.h"
 #include "link802154.h"
+#include "statcollector.h"
 #include <iostream>
 #include <fstream>
 
@@ -78,7 +79,11 @@ AppBaseStation::~AppBaseStation()
 void AppBaseStation::recvMessage(MsgTracking *msg)
 {
     if (msg->getMsgType() == MSG_TRACK_RESULT) {
-        EV << "Tracking result\n";
+        //EV << "Tracking result\n";
+        // Count number of received MsgTrackResult
+        StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+        sc->incRecvMTR();
+
         std::list<TargetPos*> tpList = ((MsgTrackResult*) msg)->getTpList();
         TargetPos *tp;
         TargetPosVectorSet *tpvs;

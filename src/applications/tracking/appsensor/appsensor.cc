@@ -334,6 +334,9 @@ void AppSensor::trackTargets()
         msgTrackResult->setTsSense(tsSense);
         // Send result to base station
         send(msgTrackResult, "netGate$o");
+
+        // Record number of created MsgTrackResult (aka DATA_TO_BS)
+        sc->incCreatedMTR();
     } else {
         getParentModule()->bubble("Non-CH");
     }

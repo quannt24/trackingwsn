@@ -215,7 +215,8 @@ $O/applications/tracking/appbasestation/appbasestation.o: applications/tracking/
 	linklayer/link802154.h \
 	linklayer/packet802154_m.h \
 	networklayer/messagecr_m.h \
-	sensors/ass/measurement.h
+	sensors/ass/measurement.h \
+	util/statcollector.h
 $O/applications/tracking/appsensor/appsensor.o: applications/tracking/appsensor/appsensor.cc \
 	applications/app/app.h \
 	applications/tracking/appsensor/appsensor.h \

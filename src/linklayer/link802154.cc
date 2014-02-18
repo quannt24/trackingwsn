@@ -472,7 +472,8 @@ void Link802154::sendStrobeAck(Frame802154 *strobe)
  */
 void Link802154::finishSending()
 {
-    if (--nStrobe > 0) {
+    if (nStrobe > 0) {
+        nStrobe--;
         // Set timer for sending next strobe
         scheduleAt(simTime() + par("strobePeriod").doubleValue(), strobeTimer);
     } else {

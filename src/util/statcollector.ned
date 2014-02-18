@@ -36,4 +36,10 @@ simple StatCollector
 
         @signal[est_err](type="double");
         @statistic[estimationError](title="Estimation error"; source="est_err"; record=vector);
+        
+        @signal[created_mtr](type="int");
+        @statistic[numCreatedMTR](title="Number of created MsgTrackResult"; source="created_mtr"; record=last);
+        
+        @signal[recv_mtr](type="int");
+        @statistic[numRecvMTR](title="Number of received MsgTrackResult"; source="recv_mtr"; record=last);
 }

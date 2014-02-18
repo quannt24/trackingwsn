@@ -25,11 +25,15 @@ Define_Module(StatCollector);
 
 void StatCollector::initialize()
 {
-    totalSensorEnergySignal = registerSignal("total_sensor_energy");
+    sigTotalSensorEnergy = registerSignal("total_sensor_energy");
     sigRecvPacket = registerSignal("recv_packet");
     sigLostPacket = registerSignal("lost_packet");
     // Signal for emitting estimation error
-    estErrSignal = registerSignal("est_err");
+    sigEstErr = registerSignal("est_err");
+    // For record number of created MsgTrackResult
+    sigCreatedMTR = registerSignal("created_mtr");
+    // For record number of MsgTrackResult received at BS
+    sigRecvMTR = registerSignal("recv_mtr");
 
     // Record total sensor energy for first time
     pollTotalSensorEnergy();
@@ -51,6 +55,8 @@ StatCollector::StatCollector()
     pollTSE = new cMessage();
     numRecvPacket = 0;
     numLostPacket = 0;
+    numCreatedMTR = 0;
+    numRecvMTR = 0;
 }
 
 StatCollector::~StatCollector()
@@ -72,7 +78,7 @@ void StatCollector::pollTotalSensorEnergy()
         totalEnergy += ener->getCapacity();
     }
 
-    emit(totalSensorEnergySignal, totalEnergy);
+    emit(sigTotalSensorEnergy, totalEnergy);
 }
 
 void StatCollector::incRecvPacket()
@@ -92,7 +98,21 @@ void StatCollector::incLostPacket()
 void StatCollector::recEstError(double err)
 {
     Enter_Method_Silent("recEstError");
-    emit(estErrSignal, err);
+    emit(sigEstErr, err);
+}
+
+void StatCollector::incCreatedMTR()
+{
+    Enter_Method("incCreatedMTR");
+    numCreatedMTR++;
+    emit(sigCreatedMTR, numCreatedMTR);
+}
+
+void StatCollector::incRecvMTR()
+{
+    Enter_Method("incRecvMTR");
+    numRecvMTR++;
+    emit(sigRecvMTR, numRecvMTR);
 }
 
 void StatCollector::finish()

@@ -81,6 +81,7 @@ void Link802154::handleMessage(cMessage *msg)
                 if (frame->getType() == FR_PAYLOAD) {
                     // Count lost payload frame
                     StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+                    sc->incLostFrame();
                     sc->incLostPacket();
                 }
                 delete msg;
@@ -286,6 +287,7 @@ void Link802154::sendFrame(Frame802154 *frame, simtime_t propagationDelay, simti
 
         if (frame->getType() == FR_PAYLOAD) {
             // Count lost payload frame
+            sc->incLostFrame();
             sc->incLostPacket();
         }
         delete frame;
@@ -300,6 +302,7 @@ void Link802154::sendFrame(Frame802154 *frame, simtime_t propagationDelay, simti
 void Link802154::recvFrame(Frame802154* frame)
 {
     ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
+    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
 
     /* Frame loss when collision still occurs at time when the frame is received completely. */
     if (cu->hasCollision(this)) {
@@ -308,7 +311,7 @@ void Link802154::recvFrame(Frame802154* frame)
 
         if (frame->getType() == FR_PAYLOAD) {
             // Count lost payload frame
-            StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+            sc->incLostFrame();
             sc->incLostPacket();
         }
         delete frame;
@@ -323,7 +326,7 @@ void Link802154::recvFrame(Frame802154* frame)
 
         if (frame->getType() == FR_PAYLOAD) {
             // Count lost payload frame
-            StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+            sc->incLostFrame();
             sc->incLostPacket();
         }
         delete frame;
@@ -333,6 +336,9 @@ void Link802154::recvFrame(Frame802154* frame)
     if (frame->getType() == FR_PAYLOAD) {
         // Forward to upper layer
         send(frame->decapsulate(), "netGate$o");
+
+        // Count received frame
+        sc->incRecvFrame();
         delete frame;
     } else if (frame->getType() == FR_STROBE) {
         getParentModule()->bubble("Get strobe");

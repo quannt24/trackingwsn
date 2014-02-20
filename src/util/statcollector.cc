@@ -26,10 +26,14 @@ Define_Module(StatCollector);
 void StatCollector::initialize()
 {
     sigTotalSensorEnergy = registerSignal("total_sensor_energy");
-    sigRecvPacket = registerSignal("recv_packet");
-    sigLostPacket = registerSignal("lost_packet");
     // Signal for emitting estimation error
     sigEstErr = registerSignal("est_err");
+    // Signals for received/lost packets (count at both network and link layer)
+    sigRecvPacket = registerSignal("recv_packet");
+    sigLostPacket = registerSignal("lost_packet");
+    // Signal for received/lost frames (count at link layer)
+    sigRecvFrame = registerSignal("recv_frame");
+    sigLostFrame = registerSignal("lost_frame");
     // For record number of created MsgTrackResult
     sigCreatedMTR = registerSignal("created_mtr");
     // For record number of MsgTrackResult received at BS
@@ -53,6 +57,8 @@ void StatCollector::handleMessage(cMessage *msg)
 StatCollector::StatCollector()
 {
     pollTSE = new cMessage();
+    numRecvFrame = 0;
+    numLostFrame = 0;
     numRecvPacket = 0;
     numLostPacket = 0;
     numCreatedMTR = 0;
@@ -81,6 +87,26 @@ void StatCollector::pollTotalSensorEnergy()
     emit(sigTotalSensorEnergy, totalEnergy);
 }
 
+void StatCollector::recEstError(double err)
+{
+    Enter_Method_Silent("recEstError");
+    emit(sigEstErr, err);
+}
+
+void StatCollector::incRecvFrame()
+{
+    Enter_Method_Silent("incRecvFrame");
+    numRecvFrame++;
+    emit(sigRecvFrame, numRecvFrame);
+}
+
+void StatCollector::incLostFrame()
+{
+    Enter_Method_Silent("incLostFrame");
+    numLostFrame++;
+    emit(sigLostFrame, numLostFrame);
+}
+
 void StatCollector::incRecvPacket()
 {
     Enter_Method_Silent("incRecvPacket");
@@ -93,12 +119,6 @@ void StatCollector::incLostPacket()
     Enter_Method_Silent("incLostPacket");
     numLostPacket++;
     emit(sigLostPacket, numLostPacket);
-}
-
-void StatCollector::recEstError(double err)
-{
-    Enter_Method_Silent("recEstError");
-    emit(sigEstErr, err);
 }
 
 void StatCollector::incCreatedMTR()

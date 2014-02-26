@@ -73,7 +73,7 @@ StatCollector::~StatCollector()
 void StatCollector::pollTotalSensorEnergy()
 {
     /* Calculate total sensor energy */
-    cModule *wsn = getModuleByPath("Wsn");
+    cModule *wsn = getModuleByPath("^");
     Energy *ener;
     int nss = wsn->par("numSensors").longValue();
     int i;
@@ -146,7 +146,7 @@ void StatCollector::recRemainingEnergy()
 
     cConfigurationEx *configEx = ev.getConfigEx();
     string buffer;
-    cModule *wsn = getModuleByPath("Wsn");
+    cModule *wsn = getModuleByPath("^");
     Energy *ener;
     Mobility *mob;
     int nss = wsn->par("numSensors").longValue();

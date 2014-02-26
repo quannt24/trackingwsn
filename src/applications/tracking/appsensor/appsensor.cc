@@ -268,7 +268,7 @@ void AppSensor::trackTargets()
     TargetPos *tp = NULL;
 
     double err = 0; // Estimation error
-    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
 
     for (ite = el->begin(); ite != el->end(); ++ite) {
         // Check if this node has its own measurement of a target (in range of that target)

@@ -90,7 +90,7 @@ void NetARPEES::recvMessage(MessageCR* msg)
 
 void NetARPEES::recvPacket(PacketARPEES* pkt)
 {
-    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
 
     // Increase number of received packets
     if (pkt->getPkType() != PK_PAYLOAD_TO_BS
@@ -171,7 +171,7 @@ void NetARPEES::recvPacket(PacketARPEES* pkt)
 /* Send packet to link layer for sending out */
 void NetARPEES::sendPacket(PacketCR *pkt)
 {
-    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
 
     if (pkt->getHopLimit() > 0) {
         send(pkt, "linkGate$o");

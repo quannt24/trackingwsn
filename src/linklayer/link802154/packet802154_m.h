@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from linklayer/packet802154.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from linklayer/link802154/packet802154.msg.
 //
 
 #ifndef _PACKET802154_M_H_
@@ -16,7 +16,7 @@
 
 
 /**
- * Enum generated from <tt>linklayer/packet802154.msg</tt> by opp_msgc.
+ * Enum generated from <tt>linklayer/link802154/packet802154.msg</tt> by opp_msgc.
  * <pre>
  * enum TxType {
  *     TX_PPP = 0; 
@@ -30,7 +30,7 @@ enum TxType {
 };
 
 /**
- * Class generated from <tt>linklayer/packet802154.msg</tt> by opp_msgc.
+ * Class generated from <tt>linklayer/link802154/packet802154.msg</tt> by opp_msgc.
  * <pre>
  * packet Packet802154 {
  *     

@@ -102,7 +102,7 @@ void NetEMRP::recvMessage(MessageCR *msg)
  */
 void NetEMRP::recvPacket(PacketEMRP *pkt)
 {
-    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
 
     // Increase number of received packets
     if (pkt->getPkType() != PK_PAYLOAD_TO_BS
@@ -115,7 +115,7 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
 
     if (pkt->getHopLimit() < 0) {
         // Count packet loss
-        StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+        StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
         sc->incLostPacket();
         EV << "NetEMRP::recvPacket: out of date packet\n";
 
@@ -218,7 +218,7 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
 /* Send packet to link layer for sending out */
 void NetEMRP::sendPacket(PacketCR *pkt)
 {
-    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
 
     notifyApp();
 

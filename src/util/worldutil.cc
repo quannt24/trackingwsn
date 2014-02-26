@@ -38,7 +38,7 @@ void WorldUtil::handleMessage(cMessage *msg)
 void WorldUtil::arrangeNodes()
 {
     // Arrange sensors
-    cModule *wsn = simulation.getModuleByPath("Wsn");
+    cModule *wsn = getModuleByPath("^");
     double wsnWidth = wsn->par("width");
     double wsnHeight = wsn->par("height");
     int ssRows = wsn->par("ssRows");
@@ -66,7 +66,7 @@ void WorldUtil::arrangeNodes()
  */
 void WorldUtil::connectNodes()
 {
-    cModule *wsn = simulation.getModuleByPath("Wsn");
+    cModule *wsn = getModuleByPath("^");
     cModule *ss1, *ss2, *bs;
     Mobility *mob1, *mob2;
     Link802154 *link1, *link2;

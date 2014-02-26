@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.linklayer;
+package trackingwsn.linklayer.linkxtmac;
 
 import trackingwsn.linklayer.link802154.Link802154;
 

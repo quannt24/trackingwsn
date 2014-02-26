@@ -18,7 +18,10 @@ package trackingwsn.networks;
 import trackingwsn.entities.*;
 import trackingwsn.util.*;
 
-network Wsn
+//
+// Wireless sensor network for tracking 1
+//
+network Wsn1
 {
     parameters:
         double width @unit(m) = default(400m);

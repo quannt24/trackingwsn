@@ -23,7 +23,7 @@ Define_Module(AppBaseStation);
 
 void AppBaseStation::initialize()
 {
-    cModule *wsn = simulation.getModuleByPath("Wsn");
+    cModule *wsn = getModuleByPath("^.^");
     cModule *tar;
     int numTargets = wsn->par("numTargets").longValue();
     int i;
@@ -81,7 +81,7 @@ void AppBaseStation::recvMessage(MsgTracking *msg)
     if (msg->getMsgType() == MSG_TRACK_RESULT) {
         //EV << "Tracking result\n";
         // Count number of received MsgTrackResult
-        StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+        StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
         sc->incRecvMTR();
 
         std::list<TargetPos*> tpList = ((MsgTrackResult*) msg)->getTpList();

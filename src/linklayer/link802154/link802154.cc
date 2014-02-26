@@ -80,7 +80,7 @@ void Link802154::handleMessage(cMessage *msg)
                 //getParentModule()->bubble("Radio OFF");
                 if (frame->getType() == FR_PAYLOAD) {
                     // Count lost payload frame
-                    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+                    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
                     sc->incLostFrame();
                     sc->incLostPacket();
                 }
@@ -275,8 +275,8 @@ void Link802154::queueFrame(Frame802154 *frame)
 void Link802154::sendFrame(Frame802154 *frame, simtime_t propagationDelay, simtime_t duration, Link802154 *desNode,
         const char *inputGateName, int gateIndex)
 {
-    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
-    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
+    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
+    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("cu");
 
     if (cu->hasCollision(desNode)) {
         /* At this time, this node has acquired channel and collision by hidden node problem may occur.
@@ -301,8 +301,8 @@ void Link802154::sendFrame(Frame802154 *frame, simtime_t propagationDelay, simti
  */
 void Link802154::recvFrame(Frame802154* frame)
 {
-    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
-    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("Wsn.sc"));
+    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("cu");
+    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
 
     /* Frame loss when collision still occurs at time when the frame is received completely. */
     if (cu->hasCollision(this)) {
@@ -528,7 +528,7 @@ void Link802154::backoff()
  */
 void Link802154::performCCA()
 {
-    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
+    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("cu");
 
     if (cu->acquireChannel(this) == 0) {
         // Acquire channel successfully (channel is idle)
@@ -610,7 +610,7 @@ void Link802154::transmit()
  */
 void Link802154::releaseChannel()
 {
-    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("Wsn.cu");
+    ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("cu");
     cu->releaseChannel(this);
     EV << "Link802154::releaseChannel\n";
     finishSending();

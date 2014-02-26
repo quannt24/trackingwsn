@@ -27,7 +27,7 @@ Define_Module(Ass);
 void Ass::initialize()
 {
     // TODO Configure noise
-    noise = new GaussianNoise(0, simulation.getModuleByPath("Wsn.target[0]")->par("range").doubleValue() / 25);
+    noise = new GaussianNoise(0, simulation.getModuleByPath("target[0]")->par("range").doubleValue() / 25);
     nSensedTarget = 0;
     nMeasurement = 0;
 }
@@ -74,7 +74,7 @@ Ass::~Ass()
  */
 void Ass::reqTargets()
 {
-    cModule *wsn = simulation.getModuleByPath("Wsn");
+    cModule *wsn = getModuleByPath("^.^");
     int numTargets = wsn->par("numTargets");
     int i;
     cCompoundModule *tar;

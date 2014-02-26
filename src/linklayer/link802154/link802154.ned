@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.linklayer;
+package trackingwsn.linklayer.link802154;
 
 //
 // Phy/Link layer using IEEE 802.15.4
@@ -30,7 +30,7 @@ simple Link802154
         // Time period for calculating energy consumed by transceiver listening
         // (for simulating continuously power consumtion)
         double rxConsumingPeriod = default(0.5);
-        
+
         // Transmission range
         double txRange @unit(m) = default(40m);
         // Bit rate

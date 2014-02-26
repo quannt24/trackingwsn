@@ -222,11 +222,13 @@ void NetEMRP::sendPacket(PacketCR *pkt)
 
     notifyApp();
 
+    /*
     std::cerr << "NetEMRP::sendPacket: "
             << simTime() << ' '
             << pkt->getPkType() << ' '
             << pkt->getSrcMacAddr() << ' '
             << pkt-> getDesMacAddr() << '\n';
+    */
     if (pkt->getHopLimit() > 0) {
         send(pkt, "linkGate$o");
     } else {

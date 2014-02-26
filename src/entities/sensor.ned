@@ -13,9 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+package trackingwsn.entities;
 
-import trackingwsn.nodes.Node802154;
+import trackingwsn.entities.Node802154;
 import trackingwsn.applications.tracking.appsensor.AppSensor;
 import trackingwsn.applications.tracking.estimator.IEstimator;
 import trackingwsn.sensors.ass.Ass;

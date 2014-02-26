@@ -13,22 +13,13 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.nodes;
+package trackingwsn.linklayer;
 
-import trackingwsn.linklayer.Link802154;
-import trackingwsn.networklayer.INet;
-import trackingwsn.networklayer.emrp.NetEMRP;
-import trackingwsn.energy.Energy;
+import trackingwsn.linklayer.link802154.Link802154;
 
-module Node802154 extends Entity
+//
+// Phy/Link layer IEEE 802.15.4, CSMA-CA, X-MAC. Support radio mode switching.
+//
+simple LinkXTMAC extends Link802154
 {
-    parameters:
-    	// Network layer module name
-        string netModuleName = default("NetEMRP");
-    submodules:
-        net: <netModuleName> like INet;
-        link: Link802154;
-        energy: Energy;
-    connections:
-        net.linkGate <--> link.netGate;
 }

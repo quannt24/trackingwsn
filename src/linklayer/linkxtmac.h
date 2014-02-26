@@ -13,20 +13,17 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+#ifndef __TRACKINGWSN_LINKXTMAC_H_
+#define __TRACKINGWSN_LINKXTMAC_H_
 
-import trackingwsn.nodes.Node802154;
-import trackingwsn.applications.tracking.appbasestation.AppBaseStation;
+#include "link802154.h"
+#include <omnetpp.h>
 
-module BaseStation extends Node802154
+/**
+ * Phy/Link layer IEEE 802.15.4, CSMA-CA, X-MAC. Support radio mode switching.
+ */
+class LinkXTMAC : public Link802154
 {
-    parameters:
-        mobility.moving = false;
-        energy.hasLinePower = true;
-        net.isBaseStation = true;
-        @display("i=device/antennatower");
-    submodules:
-        app: AppBaseStation;
-    connections:
-        app.netGate <--> net.appGate;
-}
+};
+
+#endif

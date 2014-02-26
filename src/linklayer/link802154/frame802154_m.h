@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from linklayer/frame802154.msg.
+// Generated file, do not edit! Created by opp_msgc 4.3 from linklayer/link802154/frame802154.msg.
 //
 
 #ifndef _FRAME802154_M_H_
@@ -16,7 +16,7 @@
 
 
 /**
- * Enum generated from <tt>linklayer/frame802154.msg</tt> by opp_msgc.
+ * Enum generated from <tt>linklayer/link802154/frame802154.msg</tt> by opp_msgc.
  * <pre>
  * enum FrType {
  *     FR_PAYLOAD = 0; 
@@ -32,7 +32,7 @@ enum FrType {
 };
 
 /**
- * Class generated from <tt>linklayer/frame802154.msg</tt> by opp_msgc.
+ * Class generated from <tt>linklayer/link802154/frame802154.msg</tt> by opp_msgc.
  * <pre>
  * packet Frame802154 {
  *     int type = FR_PAYLOAD; 

@@ -13,8 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+package trackingwsn.networks;
 
+import trackingwsn.entities.*;
 import trackingwsn.util.*;
 
 network Wsn

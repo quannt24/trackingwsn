@@ -13,15 +13,23 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.nodes;
+package trackingwsn.entities;
 
-import trackingwsn.mobility.Mobility;
+import trackingwsn.entities.Entity;
+import trackingwsn.sensors.asg.Asg;
 
 //
-// This module represent an entity in the network
+// Target to be tracked
 //
-module Entity
+module Target extends Entity
 {
+    parameters:
+        double range @unit(m) = default(30m);
+        mobility.moving = true;
+        @display("i=block/broadcast;r=$range");
+
     submodules:
-        mobility: Mobility;
+        asg: Asg {
+            ssRange = range;
+        }
 }

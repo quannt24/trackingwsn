@@ -13,23 +13,22 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn;
+package trackingwsn.entities;
 
-import trackingwsn.nodes.Entity;
-import trackingwsn.sensors.asg.Asg;
+import trackingwsn.linklayer.link802154.Link802154;
+import trackingwsn.networklayer.INet;
+import trackingwsn.networklayer.emrp.NetEMRP;
+import trackingwsn.energy.Energy;
 
-//
-// Target to be tracked
-//
-module Target extends Entity
+module Node802154 extends Entity
 {
     parameters:
-        double range @unit(m) = default(30m);
-        mobility.moving = true;
-        @display("i=block/broadcast;r=$range");
-
+    	// Network layer module name
+        string netModuleName = default("NetEMRP");
     submodules:
-        asg: Asg {
-            ssRange = range;
-        }
+        net: <netModuleName> like INet;
+        link: Link802154;
+        energy: Energy;
+    connections:
+        net.linkGate <--> link.netGate;
 }

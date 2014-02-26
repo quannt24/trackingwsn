@@ -15,10 +15,12 @@
 
 package trackingwsn.linklayer.link802154;
 
+import trackingwsn.linklayer.ILink;
+
 //
 // Phy/Link layer using IEEE 802.15.4
 //
-simple Link802154
+simple Link802154 like ILink
 {
     parameters:
         // Transmission range threshold. This parameter depends on environment and affects energy to transmit data.
@@ -38,9 +40,11 @@ simple Link802154
         // Random frame lost probability (0 ~ 1)
         double ranFrameLossProb = default(0.0);
         
-        int maxFrameSize = default(127); // Max size of a link layer frame in byte, not including physical layer header
-        int phyHeaderSize = default(6); // Physical layer header size in byte
+        // Max size of a link layer frame in byte, not including physical layer header
+        int maxFrameSize = default(127);
+        // Physical layer header size in byte
         // Physical (transmited) frame size = phyHeaderSize + link frame size
+        int phyHeaderSize = default(6);
         
         // Size of MAC layer fields in a frame in byte
         int fldFrameControl = default(2);

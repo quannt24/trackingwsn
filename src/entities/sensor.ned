@@ -22,12 +22,9 @@ import trackingwsn.networklayer.INet;
 import trackingwsn.linklayer.link802154.Link802154;
 import trackingwsn.energy.Energy;
 
-module Sensor extends Entity
+module Sensor extends Node
 {
     parameters:
-        // Network layer module name
-        string netModuleName = default("NetEMRP");
-        
         mobility.moving = false;
         net.isBaseStation = false;
         // Tracking algorithm. Default estimator always return (0, 0).
@@ -36,14 +33,8 @@ module Sensor extends Entity
         
     submodules:
         ass: Ass;
-        app: AppSensor;
         est: <estimatorName> like IEstimator;
-        net: <netModuleName> like INet;
-        link: Link802154;
-        energy: Energy;
         
     connections:
         app.ssGate <--> ass.appGate;
-        app.netGate <--> net.appGate;
-        net.linkGate <--> link.netGate;
 }

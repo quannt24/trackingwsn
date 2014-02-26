@@ -13,26 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.applications.tracking.appsensor;
+package trackingwsn.applications;
 
-import trackingwsn.applications.app.App;
-
-//
-// Sensor's Application Layer
-//
-simple AppSensor extends App
+// Module interface for application layer
+moduleinterface IApp
 {
     parameters:
-        double senseInterval = default(0.5);
-        // Collect measurement period
-        double collMeaPeriod = default(0.05);
-        // Report measurement period (should shorter than collMeaPeriod
-        double repMeaPeriod = default(0.04);
-
-        bool enableSleep = default(true); // If false, node will stay awake all time
-        double idleTime = default(5); // Idle time before sensor goes to sleep
-        double sleepTime = default(30); // Max sleep time
-
-        @class("AppSensor");
         @display("i=block/app");
+        
+    gates:
+        inout ssGate; // For connecting sensor
+        inout netGate; // For connection network layer
 }

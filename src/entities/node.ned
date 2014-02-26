@@ -13,18 +13,30 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.applications.app;
+package trackingwsn.entities;
 
 import trackingwsn.applications.IApp;
+import trackingwsn.networklayer.INet;
+import trackingwsn.linklayer.ILink;
+import trackingwsn.energy.Energy;
 
-//
-// Abstract module for application layer
-//
-simple App like IApp
+module Node extends Entity
 {
     parameters:
-    	@display("i=block/app");
-    gates:
-        inout ssGate @loose; // Connect sensor
-        inout netGate; // Connect network layer
+        // Application layer module name
+        string appModuleName = default("AppSensor");
+        // Network layer module name
+        string netModuleName = default("NetEMRP");
+        // Link layer module name
+        string linkModuleName = default("Link802154");
+
+    submodules:
+        app: <appModuleName> like IApp;
+        net: <netModuleName> like INet;
+        link: <linkModuleName> like ILink;
+        energy: Energy;
+        
+    connections:
+        app.netGate <--> net.appGate;
+        net.linkGate <--> link.netGate;
 }

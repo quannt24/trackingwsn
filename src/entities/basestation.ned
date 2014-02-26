@@ -15,29 +15,15 @@
 
 package trackingwsn.entities;
 
-import trackingwsn.applications.tracking.appbasestation.AppBaseStation;
 import trackingwsn.networklayer.INet;
 import trackingwsn.linklayer.link802154.Link802154;
 import trackingwsn.energy.Energy;
 
-module BaseStation extends Entity
+module BaseStation extends Node
 {
     parameters:
-        // Network layer module name
-        string netModuleName = default("NetEMRP");
-        
         mobility.moving = false;
         energy.hasLinePower = true;
         net.isBaseStation = true;
         @display("i=device/antennatower");
-        
-    submodules:
-        app: AppBaseStation;
-        net: <netModuleName> like INet;
-        link: Link802154;
-        energy: Energy;
-        
-    connections:
-        app.netGate <--> net.appGate;
-        net.linkGate <--> link.netGate;
 }

@@ -16,6 +16,7 @@
 #include "link802154.h"
 #include "frame802154_m.h"
 #include "packet802154_m.h"
+#include "packetcr_m.h"
 #include "wsnexception.h"
 #include "channelutil.h"
 #include "energy.h"
@@ -83,6 +84,13 @@ void Link802154::handleMessage(cMessage *msg)
                     StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
                     sc->incLostFrame();
                     sc->incLostPacket();
+
+                    // TODO For counting number of lost payload to BS by link layer
+                    PacketCR *pkt = check_and_cast<PacketCR*>(frame->decapsulate());
+                    if (pkt->getPkType() == PK_PAYLOAD_TO_BS) {
+                        sc->incLostMTRbyLink();
+                    }
+                    delete pkt;
                 }
                 delete msg;
             }
@@ -289,6 +297,13 @@ void Link802154::sendFrame(Frame802154 *frame, simtime_t propagationDelay, simti
             // Count lost payload frame
             sc->incLostFrame();
             sc->incLostPacket();
+
+            // TODO For counting number of lost payload to BS by link layer
+            PacketCR *pkt = check_and_cast<PacketCR*>(frame->decapsulate());
+            if (pkt->getPkType() == PK_PAYLOAD_TO_BS) {
+                sc->incLostMTRbyLink();
+            }
+            delete pkt;
         }
         delete frame;
     } else {
@@ -313,6 +328,13 @@ void Link802154::recvFrame(Frame802154* frame)
             // Count lost payload frame
             sc->incLostFrame();
             sc->incLostPacket();
+
+            // TODO For counting number of lost payload to BS by link layer
+            PacketCR *pkt = check_and_cast<PacketCR*>(frame->decapsulate());
+            if (pkt->getPkType() == PK_PAYLOAD_TO_BS) {
+                sc->incLostMTRbyLink();
+            }
+            delete pkt;
         }
         delete frame;
         return;
@@ -328,6 +350,13 @@ void Link802154::recvFrame(Frame802154* frame)
             // Count lost payload frame
             sc->incLostFrame();
             sc->incLostPacket();
+
+            // TODO For counting number of lost payload to BS by link layer
+            PacketCR *pkt = check_and_cast<PacketCR*>(frame->decapsulate());
+            if (pkt->getPkType() == PK_PAYLOAD_TO_BS) {
+                sc->incLostMTRbyLink();
+            }
+            delete pkt;
         }
         delete frame;
         return;
@@ -544,6 +573,16 @@ void Link802154::performCCA()
             backoff();
         } else {
             // TODO Transmission failure
+            // TODO For counting number of lost payload to BS by link layer
+            StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
+            cPacket *pkt = txFrame->decapsulate();
+            if (pkt != NULL) {
+                if (((PacketCR*) pkt)->getPkType() == PK_PAYLOAD_TO_BS) {
+                    sc->incLostMTRbyLink();
+                }
+                delete pkt;
+            }
+
             delete txFrame;
             txFrame = NULL;
             EV << "Link802154::csmaTransmit : Transmission failure\n";

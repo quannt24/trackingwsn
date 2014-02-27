@@ -32,6 +32,8 @@ class StatCollector : public cSimpleModule
         int numLostPacket; // Number of lost packets
         int numCreatedMTR; // Number of MsgTrackResult messages created
         int numRecvMTR; // Number of MsgTrackResult received at BS
+        int numLostMTRbyLink; // Number of MsgTrackResult lost by link layer
+        int numLostMTRbyNet; // Number of MsgTrackResult lost by net layer
 
         simsignal_t sigTotalSensorEnergy;
         simsignal_t sigEstErr;
@@ -41,6 +43,8 @@ class StatCollector : public cSimpleModule
         simsignal_t sigLostPacket;
         simsignal_t sigCreatedMTR;
         simsignal_t sigRecvMTR;
+        simsignal_t sigLostMTRbyLink;
+        simsignal_t sigLostMTRbyNet;
 
         /**
          * Record remaining energy of sensor nodes
@@ -70,6 +74,10 @@ class StatCollector : public cSimpleModule
         void incCreatedMTR();
         /* Increase number of successfully received MsgTrackResult */
         void incRecvMTR();
+        /* Increase number of lost MsgTrackResult by link layer */
+        void incLostMTRbyLink();
+        /* Increase number of lost MsgTrackResult by network layer */
+        void incLostMTRbyNet();
 
         void finish();
 };

@@ -38,6 +38,10 @@ void StatCollector::initialize()
     sigCreatedMTR = registerSignal("created_mtr");
     // For record number of MsgTrackResult received at BS
     sigRecvMTR = registerSignal("recv_mtr");
+    // For record number of MsgTrackResult lost by link layer
+    sigLostMTRbyLink = registerSignal("lost_mtr_link");
+    // For record number of MsgTrackResult lost by network layer
+    sigLostMTRbyNet = registerSignal("lost_mtr_net");
 
     // Record total sensor energy for first time
     pollTotalSensorEnergy();
@@ -63,6 +67,8 @@ StatCollector::StatCollector()
     numLostPacket = 0;
     numCreatedMTR = 0;
     numRecvMTR = 0;
+    numLostMTRbyLink = 0;
+    numLostMTRbyNet = 0;
 }
 
 StatCollector::~StatCollector()
@@ -133,6 +139,22 @@ void StatCollector::incRecvMTR()
     Enter_Method("incRecvMTR");
     numRecvMTR++;
     emit(sigRecvMTR, numRecvMTR);
+}
+
+/* Increase number of lost MsgTrackResult by link layer */
+void StatCollector::incLostMTRbyLink()
+{
+    Enter_Method("incLostMTRbyLink");
+    numLostMTRbyLink++;
+    emit(sigLostMTRbyLink, numLostMTRbyLink);
+}
+
+/* Increase number of lost MsgTrackResult by network layer */
+void StatCollector::incLostMTRbyNet()
+{
+    Enter_Method("incLostMTRbyNet");
+    numLostMTRbyNet++;
+    emit(sigLostMTRbyNet, numLostMTRbyNet);
 }
 
 void StatCollector::finish()

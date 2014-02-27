@@ -48,4 +48,10 @@ simple StatCollector
         
         @signal[recv_mtr](type="int");
         @statistic[numRecvMTR](title="Number of received MsgTrackResult"; source="recv_mtr"; record=last);
+        
+        @signal[lost_mtr_link](type="int");
+        @statistic[numLostMTRbyLink](title="Number of lost MsgTrackResult by link layer"; source="lost_mtr_link"; record=last);
+        
+        @signal[lost_mtr_net](type="int");
+        @statistic[numLostMTRbyNet](title="Number of lost MsgTrackResult by network layer"; source="lost_mtr_net"; record=last);
 }

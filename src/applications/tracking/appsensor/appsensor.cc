@@ -320,23 +320,27 @@ void AppSensor::trackTargets()
     }
 
     if (isCH) {
-        getParentModule()->bubble("CH");
-        // Create a tracking result message
-        MsgTrackResult *msgTrackResult = new MsgTrackResult();
-        msgTrackResult->setTpList(tpList);
-        /* Set message size
-         * Each TargetPos contains target ID + x + y will have size of 1 + 4 + 4 bytes */
-        msgTrackResult->setMsgSize(msgTrackResult->getMsgSize() + 9 * tpList.size());
-        msgTrackResult->setByteLength(msgTrackResult->getMsgSize());
-        // Turn on strobe flag for this message
-        msgTrackResult->setStrobeFlag(true);
-        // Set time stamp
-        msgTrackResult->setTsSense(tsSense);
-        // Send result to base station
-        send(msgTrackResult, "netGate$o");
+        if (tpList.size() > 0) {
+            getParentModule()->bubble("CH");
+            // Create a tracking result message
+            MsgTrackResult *msgTrackResult = new MsgTrackResult();
+            msgTrackResult->setTpList(tpList);
+            /* Set message size
+             * Each TargetPos contains target ID + x + y will have size of 1 + 4 + 4 bytes */
+            msgTrackResult->setMsgSize(msgTrackResult->getMsgSize() + 9 * tpList.size());
+            msgTrackResult->setByteLength(msgTrackResult->getMsgSize());
+            // Turn on strobe flag for this message
+            msgTrackResult->setStrobeFlag(true);
+            // Set time stamp
+            msgTrackResult->setTsSense(tsSense);
+            // Send result to base station
+            send(msgTrackResult, "netGate$o");
 
-        // Record number of created MsgTrackResult (aka DATA_TO_BS)
-        sc->incCreatedMTR();
+            // Record number of created MsgTrackResult (aka DATA_TO_BS)
+            sc->incCreatedMTR();
+        } else {
+            getParentModule()->bubble("CH: lose track");
+        }
     } else {
         getParentModule()->bubble("Non-CH");
     }

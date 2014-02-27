@@ -47,10 +47,15 @@ void NetEMRP::handleMessage(cMessage *msg)
             if (bsAddr > 0 || rnAddr > 0) {
                 sendMsgDown((MessageCR*) msg->getContextPointer());
             } else {
-                // Delete message that failed to be sent
-                delete (MessageCR*) msg->getContextPointer();
                 // TODO Report failure
                 EV << "Error: Cannot send data to BS now\n";
+
+                // TODO For counting number of lost payload to BS by net layer
+                StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
+                sc->incLostMTRbyNet();
+
+                // Delete message that failed to be sent
+                delete (MessageCR*) msg->getContextPointer();
             }
             delete msg;
         } else if (msg == waitEnergyInfoTimeout) {
@@ -118,6 +123,11 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
         StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
         sc->incLostPacket();
         EV << "NetEMRP::recvPacket: out of date packet\n";
+
+        // TODO For counting number of lost payload to BS by net layer
+        if (pkt->getPkType() == PK_PAYLOAD_TO_BS) {
+            sc->incLostMTRbyNet();
+        }
 
         delete pkt;
         return;
@@ -192,6 +202,9 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
                 rnAddr = 0;
                 updateRelayEnergy(NULL);
                 delete pkt;
+
+                // TODO For counting number of lost payload to BS by net layer
+                sc->incLostMTRbyNet();
             } else {
                 // Plan a timer for deadline of updating energy info
                 if (!waitEnergyInfoTimeout->isScheduled()) {
@@ -234,6 +247,12 @@ void NetEMRP::sendPacket(PacketCR *pkt)
     } else {
         EV << "NetEMRP: Hop limit exceeded\n";
         sc->incLostPacket(); // Count packet loss
+
+        // TODO For counting number of lost payload to BS by net layer
+        if (pkt->getPkType() == PK_PAYLOAD_TO_BS) {
+            sc->incLostMTRbyNet();
+        }
+
         delete pkt;
     }
 }

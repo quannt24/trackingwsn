@@ -45,7 +45,7 @@
     <datasets name="Message count">
       <items xsi:type="scave:Add" filterPattern="numRecvPacket:last or numLostPacket:last"/>
       <items xsi:type="scave:Add" filterPattern="numRecvFrame:last or numLostFrame:last"/>
-      <items xsi:type="scave:Add" filterPattern="numCreatedMTR:last or numRecvMTR:last"/>
+      <items xsi:type="scave:Add" filterPattern="numCreatedMTR:last or numRecvMTR:last or numLostMTRbyLink:last or numLostMTRbyNet:last"/>
       <items xsi:type="scave:ComputeScalar" scalarName="PacketLossPercent" valueExpr="'numLostPacket:last' / ('numRecvPacket:last' + 'numLostPacket:last') * 100" moduleExpr="" groupByExpr=""/>
       <items xsi:type="scave:ComputeScalar" scalarName="FrameDeliveryPercent" valueExpr="'numRecvFrame:last' / ('numRecvFrame:last' + 'numLostFrame:last') * 100" moduleExpr="" groupByExpr=""/>
       <items xsi:type="scave:ComputeScalar" scalarName="MTRDeliveredPercent" valueExpr="'numRecvMTR:last' / 'numCreatedMTR:last' * 100" moduleExpr="" groupByExpr=""/>

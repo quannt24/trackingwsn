@@ -265,6 +265,7 @@ $O/linklayer/link802154/link802154.o: linklayer/link802154/link802154.cc \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \
+	networklayer/packetcr_m.h \
 	util/channelutil.h \
 	util/statcollector.h \
 	wsnexception.h

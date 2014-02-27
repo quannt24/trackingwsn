@@ -16,19 +16,11 @@
 #ifndef __TRACKINGWSN_LINK802154_H_
 #define __TRACKINGWSN_LINK802154_H_
 
+#include "link.h"
 #include "frame802154_m.h"
 #include "packet802154_m.h"
 #include <omnetpp.h>
 
-// Radio modes
-#define RADIO_FULL_OFF -1
-#define RADIO_OFF 0
-#define RADIO_ON 1
-
-// Max numbers of connected nodes
-#define MAX_CONNECTIONS 25
-// Broadcast address
-#define BROADCAST_ADDR -1
 
 /**
  * Phy/Link layer using IEEE 802.15.4, CSMA-CA, X-MAC

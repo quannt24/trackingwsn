@@ -17,7 +17,7 @@
 #include "packetemrp_m.h"
 #include "messagecr_m.h"
 #include "messagetracking_m.h"
-#include "link802154.h"
+#include "link.h"
 #include "energy.h"
 #include "mobility.h"
 #include "worldutil.h"

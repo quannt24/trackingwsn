@@ -218,6 +218,7 @@ $O/applications/tracking/appbasestation/appbasestation.o: applications/tracking/
 	applications/tracking/estimator/targetpos.h \
 	applications/tracking/messagetracking_m.h \
 	applications/tracking/targetposvectorset.h \
+	linklayer/link.h \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \
@@ -232,6 +233,7 @@ $O/applications/tracking/appsensor/appsensor.o: applications/tracking/appsensor/
 	applications/tracking/meacoll.h \
 	applications/tracking/messagetracking_m.h \
 	energy/energy.h \
+	linklayer/link.h \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \
@@ -262,6 +264,7 @@ $O/linklayer/link802154/frame802154_m.o: linklayer/link802154/frame802154_m.cc \
 $O/linklayer/link802154/link802154.o: linklayer/link802154/link802154.cc \
 	applications/app/app.h \
 	energy/energy.h \
+	linklayer/link.h \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \
@@ -272,6 +275,7 @@ $O/linklayer/link802154/link802154.o: linklayer/link802154/link802154.cc \
 $O/linklayer/link802154/packet802154_m.o: linklayer/link802154/packet802154_m.cc \
 	linklayer/link802154/packet802154_m.h
 $O/linklayer/linkxtmac/linkxtmac.o: linklayer/linkxtmac/linkxtmac.cc \
+	linklayer/link.h \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \
@@ -303,8 +307,7 @@ $O/networklayer/emrp/netemrp.o: networklayer/emrp/netemrp.cc \
 	applications/tracking/estimator/targetpos.h \
 	applications/tracking/messagetracking_m.h \
 	energy/energy.h \
-	linklayer/link802154/frame802154_m.h \
-	linklayer/link802154/link802154.h \
+	linklayer/link.h \
 	linklayer/link802154/packet802154_m.h \
 	mobility/mobility.h \
 	msgkind.h \
@@ -322,6 +325,7 @@ $O/networklayer/emrp/packetemrp_m.o: networklayer/emrp/packetemrp_m.cc \
 	networklayer/packetcr_m.h
 $O/networklayer/net/net.o: networklayer/net/net.cc \
 	applications/app/app.h \
+	linklayer/link.h \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \
@@ -364,6 +368,7 @@ $O/sensors/ass/sensedresult_m.o: sensors/ass/sensedresult_m.cc \
 	sensors/ass/measurement.h \
 	sensors/ass/sensedresult_m.h
 $O/util/channelutil.o: util/channelutil.cc \
+	linklayer/link.h \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \
@@ -379,6 +384,7 @@ $O/util/statcollector.o: util/statcollector.cc \
 	mobility/mobility.h \
 	util/statcollector.h
 $O/util/worldutil.o: util/worldutil.cc \
+	linklayer/link.h \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \

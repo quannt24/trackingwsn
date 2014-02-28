@@ -24,6 +24,24 @@
  */
 class LinkXTMAC : public Link802154
 {
+    protected:
+        virtual void handleMessage(cMessage *msg);
+
+        virtual void queueFrame(Frame802154 *frame);
+        virtual void recvFrame(Frame802154 *frame);
+
+        // X-MAC
+        virtual void prepareSending();
+        virtual void prepareStrobe();
+        virtual void sendStrobeAck(Frame802154 *strobe);
+        virtual void finishSending();
+
+    public:
+        int getRadioMode() { return radioMode; };
+        /* Set radio mode with a duty cycling flag. If the flag is true, it's considered this
+         * function is called by duty cycling and a sleep timer is set if mode is on. When mode is
+         * off, a listen timer is always set. Default value for the flag is false for normal use. */
+        void setRadioMode(int mode, bool dutyCycling = false);
 };
 
 #endif

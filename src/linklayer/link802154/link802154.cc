@@ -30,13 +30,13 @@ void Link802154::initialize()
     // Address is also module id of link module. This address is only available when initializing
     // stage of this module finishes.
     macAddress = this->getId();
-    WATCH(radioMode);
 }
 
 void Link802154::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
         if (msg == strobeTimer) {
+            prepareStrobe();
             startSending();
         } else if (msg == backoffTimer) {
             // End of back-off period, perform CCa
@@ -46,6 +46,7 @@ void Link802154::handleMessage(cMessage *msg)
             performCCA();
         } else if (msg == releaseChannelTimer) {
             releaseChannel();
+            finishSending();
         } else if (msg == rxConsumeTimer) {
             // Calculate consumed energy for completed period
             double period = par("rxConsumingPeriod");
@@ -68,6 +69,17 @@ void Link802154::handleMessage(cMessage *msg)
                 // Packet from upper layer, assemble frame and add to sending queue
                 queueFrame(createFrame((Packet802154*) msg));
             } else {
+                // Count lost payload frame
+                StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
+                sc->incLostFrame();
+                sc->incLostPacket();
+
+                // TODO For counting number of lost payload to BS by link layer
+                PacketCR *pkt = check_and_cast<PacketCR*>(msg);
+                if (pkt->getPkType() == PK_PAYLOAD_TO_BS) {
+                    sc->incLostMTRbyLink();
+                }
+
                 delete msg;
                 EV << "Error: Cannot send packet when radio is off\n";
             }
@@ -424,7 +436,8 @@ void Link802154::prepareSending()
                 && pkt != NULL && pkt->getStrobeFlag()) {
             // Prepare strobes
             nStrobe = (int) ceil(par("sR").doubleValue() / par("strobePeriod").doubleValue());
-            EV<< "Link802154: Sending " << nStrobe << " strobes\n";
+            EV << "Link802154: Sending " << nStrobe << " strobes\n";
+            prepareStrobe();
         } else {
             nStrobe = 0;
         }
@@ -433,52 +446,25 @@ void Link802154::prepareSending()
 }
 
 /*
- * Start sending frame in queue (payload) or strobe.
+ * Prepare strobe frame (if necessary) and push it to sending queue.
  */
-void Link802154::startSending()
+void Link802154::prepareStrobe()
 {
-    // Check if something being sent
-    if (strobeTimer->isScheduled() || backoffTimer->isScheduled() || ccaTimer->isScheduled()
-            || releaseChannelTimer->isScheduled()) {
-        return;
-    }
+    if (nStrobe < 0) return;
+    if (outQueue.isEmpty()) return;
 
-    if (!outQueue.isEmpty()) {
-        if (nStrobe > 0) {
-            sendStrobe();
-        } else {
-            sendPayload();
-        }
-    }
-}
+    Frame802154 *payload = check_and_cast<Frame802154*>(outQueue.front());
+    if (payload->getType() != FR_PAYLOAD) return;
 
-void Link802154::sendStrobe()
-{
-    if (!outQueue.isEmpty()) {
-        EV<< "Link802154: Sending strobe " << nStrobe << " \n";
+    Frame802154 *strobe = new Frame802154();
+    strobe->setType(FR_STROBE);
+    strobe->setSrcAddr(macAddress);
+    strobe->setDesAddr(payload->getDesAddr());
+    strobe->setByteLength(
+            par("fldFrameControl").longValue() + par("fldSequenceId").longValue() + par("fldDesAddr").longValue()
+                    + par("fldSrcAddr").longValue() + par("fldFooter").longValue() + par("phyHeaderSize").longValue());
 
-        Frame802154 *payloadFrame = check_and_cast<Frame802154*>(outQueue.front());
-        Frame802154 *strobe = new Frame802154();
-        strobe->setType(FR_STROBE);
-        strobe->setSrcAddr(macAddress);
-        strobe->setDesAddr(payloadFrame->getDesAddr());
-        strobe->setByteLength(
-                par("fldFrameControl").longValue() + par("fldSequenceId").longValue() + par("fldDesAddr").longValue()
-                + par("fldSrcAddr").longValue() + par("fldFooter").longValue() + par("phyHeaderSize").longValue());
-
-        outFrame = strobe;
-        startCsma();
-    }
-}
-
-void Link802154::sendPayload()
-{
-    if (!outQueue.isEmpty()) {
-        //EV << "Link802154: Sending payload\n";
-        //getParentModule()->bubble("Sending payload");
-        outFrame = check_and_cast<Frame802154*>(outQueue.pop());
-        startCsma();
-    }
+    outQueue.insertBefore(payload, strobe);
 }
 
 /*
@@ -509,8 +495,13 @@ void Link802154::finishSending()
 {
     if (nStrobe > 0) {
         nStrobe--;
-        // Set timer for sending next strobe
-        scheduleAt(simTime() + par("strobePeriod").doubleValue(), strobeTimer);
+        if (nStrobe > 0) {
+            // Set timer for sending next strobe
+            scheduleAt(simTime() + par("strobePeriod").doubleValue(), strobeTimer);
+        } else {
+            // Last strobe is sent, send payload whatever, immediately
+            startSending();
+        }
     } else {
         // Send next payload
         prepareSending();
@@ -520,6 +511,23 @@ void Link802154::finishSending()
 /* =========================================================================
  * CSMA/CA sending procedures
  * ========================================================================= */
+
+/*
+ * Start sending frame in head of outQueue
+ */
+void Link802154::startSending()
+{
+    // Check if something being sent
+    if (strobeTimer->isScheduled() || backoffTimer->isScheduled() || ccaTimer->isScheduled()
+            || releaseChannelTimer->isScheduled()) {
+        return;
+    }
+
+    if (!outQueue.isEmpty()) {
+        outFrame = check_and_cast<Frame802154*>(outQueue.pop());
+        startCsma();
+    }
+}
 
 /*
  * Prepare transmitted frame and initialize CSMA/CA.
@@ -652,7 +660,6 @@ void Link802154::releaseChannel()
     ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("cu");
     cu->releaseChannel(this);
     EV << "Link802154::releaseChannel\n";
-    finishSending();
 }
 
 /* =========================================================================

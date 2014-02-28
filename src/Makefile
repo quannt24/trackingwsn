@@ -275,11 +275,15 @@ $O/linklayer/link802154/link802154.o: linklayer/link802154/link802154.cc \
 $O/linklayer/link802154/packet802154_m.o: linklayer/link802154/packet802154_m.cc \
 	linklayer/link802154/packet802154_m.h
 $O/linklayer/linkxtmac/linkxtmac.o: linklayer/linkxtmac/linkxtmac.cc \
+	applications/app/app.h \
 	linklayer/link.h \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \
-	linklayer/linkxtmac/linkxtmac.h
+	linklayer/linkxtmac/linkxtmac.h \
+	networklayer/packetcr_m.h \
+	util/channelutil.h \
+	util/statcollector.h
 $O/mobility/mobility.o: mobility/mobility.cc \
 	mobility/mobility.h
 $O/networklayer/messagecr_m.o: networklayer/messagecr_m.cc \

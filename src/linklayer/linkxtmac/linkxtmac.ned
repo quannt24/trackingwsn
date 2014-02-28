@@ -22,4 +22,6 @@ import trackingwsn.linklayer.link802154.Link802154;
 //
 simple LinkXTMAC extends Link802154
 {
+    parameters:
+        @class("LinkXTMAC");
 }

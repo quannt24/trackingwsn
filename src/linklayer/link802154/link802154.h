@@ -23,11 +23,11 @@
 
 
 /**
- * Phy/Link layer using IEEE 802.15.4, CSMA-CA, X-MAC
+ * Phy/Link layer using IEEE 802.15.4, CSMA-CA
  */
 class Link802154 : public cSimpleModule
 {
-    private:
+    protected:
         int radioMode;
         int macAddress; // Address of link layer
         int numAdjNode; // Number of connected nodes (adjacent nodes), which is <= MAX_CONNECTIONS
@@ -53,21 +53,23 @@ class Link802154 : public cSimpleModule
         Frame802154 *outFrame; // Frame going to be transmitted
         Frame802154 *txFrame; // Frame being sent by CSMA
 
-        Frame802154* createFrame(Packet802154 *packet);
-        void queueFrame(Frame802154 *frame);
-        void sendFrame(Frame802154 *frame, simtime_t propagationDelay, simtime_t duration, Link802154 *desNode,
-                const char *inputGateName, int gateIndex = -1);
-        void recvFrame(Frame802154 *frame);
+        virtual void initialize();
+        virtual void handleMessage(cMessage *msg);
+
+        virtual Frame802154* createFrame(Packet802154 *packet);
+        virtual void queueFrame(Frame802154 *frame);
+        virtual void sendFrame(Frame802154 *frame, simtime_t propagationDelay, simtime_t duration,
+                Link802154 *desNode, const char *inputGateName, int gateIndex = -1);
+        virtual void recvFrame(Frame802154 *frame);
 
         // X-MAC
-        void prepareSending();
-        void startSending();
-        void sendStrobe();
-        void sendPayload();
-        void sendStrobeAck(Frame802154 *strobe);
-        void finishSending();
+        virtual void prepareSending();
+        virtual void prepareStrobe();
+        virtual void sendStrobeAck(Frame802154 *strobe);
+        virtual void finishSending();
 
         // Unslotted CSMA/CA
+        void startSending();
         void startCsma();
         void backoff();
         void performCCA();
@@ -85,18 +87,14 @@ class Link802154 : public cSimpleModule
         /* Stop all timer and clean up memory when run out of energy */
         void poweroff();
 
-    protected:
-        virtual void initialize();
-        virtual void handleMessage(cMessage *msg);
-
     public:
         Link802154();
         ~Link802154();
-        int getRadioMode() { return radioMode; };
+        virtual int getRadioMode() { return radioMode; };
         /* Set radio mode with a duty cycling flag. If the flag is true, it's considered this
          * function is called by duty cycling and a sleep timer is set if mode is on. When mode is
          * off, a listen timer is always set. Default value for the flag is false for normal use. */
-        void setRadioMode(int mode, bool dutyCycling = false);
+        virtual void setRadioMode(int mode, bool dutyCycling = false);
         int getAddr();
         bool isFullConn();
         int addAdjNode(int addr);

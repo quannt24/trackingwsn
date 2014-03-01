@@ -22,6 +22,8 @@ INCLUDE_PATH = \
     -Iapplications/tracking/appbasestation \
     -Iapplications/tracking/appsensor \
     -Iapplications/tracking/estimator \
+    -Ibase \
+    -Ibase/layers \
     -Ienergy \
     -Ientities \
     -Ilinklayer \
@@ -176,6 +178,8 @@ clean:
 	$(Q)-rm -f applications/tracking/appbasestation/*_m.cc applications/tracking/appbasestation/*_m.h
 	$(Q)-rm -f applications/tracking/appsensor/*_m.cc applications/tracking/appsensor/*_m.h
 	$(Q)-rm -f applications/tracking/estimator/*_m.cc applications/tracking/estimator/*_m.h
+	$(Q)-rm -f base/*_m.cc base/*_m.h
+	$(Q)-rm -f base/layers/*_m.cc base/layers/*_m.h
 	$(Q)-rm -f energy/*_m.cc energy/*_m.h
 	$(Q)-rm -f entities/*_m.cc entities/*_m.h
 	$(Q)-rm -f linklayer/*_m.cc linklayer/*_m.h
@@ -197,7 +201,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc applications/app/*.cc applications/tracking/*.cc applications/tracking/appbasestation/*.cc applications/tracking/appsensor/*.cc applications/tracking/estimator/*.cc energy/*.cc entities/*.cc linklayer/*.cc linklayer/link802154/*.cc linklayer/linkxtmac/*.cc mobility/*.cc networklayer/*.cc networklayer/arpees/*.cc networklayer/emrp/*.cc networklayer/net/*.cc networks/*.cc sensors/*.cc sensors/asg/*.cc sensors/ass/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc applications/app/*.cc applications/tracking/*.cc applications/tracking/appbasestation/*.cc applications/tracking/appsensor/*.cc applications/tracking/estimator/*.cc base/*.cc base/layers/*.cc energy/*.cc entities/*.cc linklayer/*.cc linklayer/link802154/*.cc linklayer/linkxtmac/*.cc mobility/*.cc networklayer/*.cc networklayer/arpees/*.cc networklayer/emrp/*.cc networklayer/net/*.cc networks/*.cc sensors/*.cc sensors/asg/*.cc sensors/ass/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/applications/app/app.o: applications/app/app.cc \
@@ -228,8 +232,8 @@ $O/applications/tracking/appsensor/appsensor.o: applications/tracking/appsensor/
 	applications/tracking/estimator/targetpos.h \
 	applications/tracking/meacoll.h \
 	applications/tracking/messagetracking_m.h \
+	base/layers/link.h \
 	energy/energy.h \
-	linklayer/link.h \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \
@@ -258,8 +262,8 @@ $O/linklayer/link802154/frame802154_m.o: linklayer/link802154/frame802154_m.cc \
 	linklayer/link802154/frame802154_m.h
 $O/linklayer/link802154/link802154.o: linklayer/link802154/link802154.cc \
 	applications/app/app.h \
+	base/layers/link.h \
 	energy/energy.h \
-	linklayer/link.h \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \
@@ -271,7 +275,7 @@ $O/linklayer/link802154/packet802154_m.o: linklayer/link802154/packet802154_m.cc
 	linklayer/link802154/packet802154_m.h
 $O/linklayer/linkxtmac/linkxtmac.o: linklayer/linkxtmac/linkxtmac.cc \
 	applications/app/app.h \
-	linklayer/link.h \
+	base/layers/link.h \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \
@@ -305,8 +309,10 @@ $O/networklayer/arpees/packetarpees_m.o: networklayer/arpees/packetarpees_m.cc \
 $O/networklayer/emrp/netemrp.o: networklayer/emrp/netemrp.cc \
 	applications/tracking/estimator/targetpos.h \
 	applications/tracking/messagetracking_m.h \
+	base/layers/link.h \
 	energy/energy.h \
-	linklayer/link.h \
+	linklayer/link802154/frame802154_m.h \
+	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \
 	mobility/mobility.h \
 	msgkind.h \
@@ -323,7 +329,7 @@ $O/networklayer/emrp/packetemrp_m.o: networklayer/emrp/packetemrp_m.cc \
 	networklayer/emrp/packetemrp_m.h \
 	networklayer/packetcr_m.h
 $O/networklayer/net/net.o: networklayer/net/net.cc \
-	linklayer/link.h \
+	base/layers/link.h \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \
@@ -366,7 +372,7 @@ $O/sensors/ass/sensedresult_m.o: sensors/ass/sensedresult_m.cc \
 	sensors/ass/measurement.h \
 	sensors/ass/sensedresult_m.h
 $O/util/channelutil.o: util/channelutil.cc \
-	linklayer/link.h \
+	base/layers/link.h \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \
@@ -382,7 +388,7 @@ $O/util/statcollector.o: util/statcollector.cc \
 	mobility/mobility.h \
 	util/statcollector.h
 $O/util/worldutil.o: util/worldutil.cc \
-	linklayer/link.h \
+	base/layers/link.h \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \
 	linklayer/link802154/packet802154_m.h \

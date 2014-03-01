@@ -18,6 +18,7 @@
 #include "messagecr_m.h"
 #include "messagetracking_m.h"
 #include "link.h"
+#include "link802154.h"
 #include "energy.h"
 #include "mobility.h"
 #include "worldutil.h"
@@ -30,14 +31,22 @@ void NetEMRP::initialize()
 {
     // Set timer for initialize EMRP first time
     if (!par("isBaseStation").boolValue()) {
-        scheduleAt(uniform(0, par("initInterval")), initTimer);
+        scheduleAt(uniform(0, par("initInterval").doubleValue()), initTimer);
     }
+    scheduleAt(0, radioOnTimer);
 }
 
 void NetEMRP::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
-        if (msg == initTimer) {
+        if (msg == radioOnTimer) {
+            Link802154 *link = check_and_cast<Link802154*>(getModuleByPath("^.link"));
+            if (par("isBaseStation").boolValue()) {
+                link->forceRadioOn(-1);
+            } else {
+                link->forceRadioOn(par("initInterval").doubleValue());
+            }
+        } else if (msg == initTimer) {
             requestRelay(true);
         } else if (msg->getKind() == RES_RELAY) {
             // This message has a packet passed in context pointer
@@ -87,12 +96,14 @@ NetEMRP::NetEMRP()
     enerBn = 0;
     dBnBs = 0;
 
+    radioOnTimer = new cMessage("RadioOnTimer");
     initTimer = new cMessage("InitEmrpTimer");
     waitEnergyInfoTimeout = new cMessage("WaitEnergyInfoTimeout");
 }
 
 NetEMRP::~NetEMRP()
 {
+    cancelAndDelete(radioOnTimer);
     cancelAndDelete(initTimer);
     cancelAndDelete(waitEnergyInfoTimeout);
 }
@@ -205,13 +216,13 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
                 // TODO For counting number of lost payload to BS by net layer
                 sc->incLostMTRbyNet();
             } else {
+                // Send back a report about energy (like a ACK)
+                sendEnergyInfo(sender, pkt->getBitLength());
+
                 // Plan a timer for deadline of updating energy info
                 if (!waitEnergyInfoTimeout->isScheduled()) {
                     scheduleAt(simTime() + par("waitEnergyInfoTimeout").doubleValue(), waitEnergyInfoTimeout);
                 }
-
-                // Send back a report about energy (like a ACK)
-                sendEnergyInfo(sender, pkt->getBitLength());
 
                 // Forward to base station
                 pkt->setSrcMacAddr(getMacAddr());

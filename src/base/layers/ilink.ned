@@ -38,12 +38,13 @@ moduleinterface ILink
         
         // Energy consumption
         // =====================================
-        // Current draw in tx state
-        double txDraw @unit(mA);
-        // Current draw in rx state
-        double rxDraw @unit(mA);
-        // Current draw in sleep state
-        double sleepDraw @unit(mA);
+        // Transmission range threshold. This parameter depends on environment and affects energy
+        // to transmit data.
+        double txRTh @unit(m);
+        // Energy for encode/decode signal for 1 bit
+        double e_elec; // Unit J/bit
+        // Energy for amplifying signal for 1 bit when txRange < txRTh
+        double e_fs; // Unit J/bit/m2
         // Time period for calculating energy consumed by transceiver listening
         // (for simulating continuously power consumtion)
         double rxConsumingPeriod;

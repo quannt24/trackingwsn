@@ -54,11 +54,6 @@ class Link802154 : public cSimpleModule
 
         /* Set radio mode. Support: RADIO_FULL_OFF, RADIO_ON */
         virtual void setRadioMode(int mode);
-        /* Force transceiver to stay in specific mode for a time duration.
-         * Pass 'duration' = -1 for permanent.
-         * Derived link classes should override this function for their specific use.
-         * Default behavior is empty. */
-        virtual void forceRadioMode(int mode, double duration) {};
         /* Stop all timer and clean up memory when run out of energy */
         virtual void poweroff();
         /* Update display */
@@ -98,6 +93,11 @@ class Link802154 : public cSimpleModule
         bool isFullConn();
         int addAdjNode(int addr);
         int getRadioMode() { return radioMode; };
+        /* Force transceiver to stay on for a time duration.
+         * Pass 'duration' = -1 for permanent.
+         * Derived link classes should override this function for their specific use.
+         * Default behavior is empty. */
+        virtual void forceRadioOn(double duration) {};
 };
 
 #endif

@@ -41,6 +41,7 @@ class NetEMRP : public Net
         double dBnBs;
         double dBn;
 
+        cMessage *radioOnTimer; // Self timer for forcing radio on
         cMessage *initTimer; // Self message for initializing EMRP procedure
         cMessage *waitEnergyInfoTimeout; // Timer, Please refer to "waitEnergyInfoTimeout" parameter
 

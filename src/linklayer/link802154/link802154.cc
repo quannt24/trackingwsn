@@ -26,7 +26,7 @@
 Define_Module(Link802154);
 
 /* =========================================================================
- * Public functions
+ * Protected functions
  * ========================================================================= */
 void Link802154::initialize()
 {
@@ -36,6 +36,7 @@ void Link802154::initialize()
 
     // Turn radio on
     setRadioMode(RADIO_ON);
+    WATCH(radioMode);
 }
 
 void Link802154::handleMessage(cMessage *msg)

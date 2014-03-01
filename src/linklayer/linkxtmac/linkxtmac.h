@@ -29,11 +29,14 @@ class LinkXTMAC : public Link802154
 {
     private:
         // Duty cycling
-        bool inactive;
+        bool isActive;
+        bool forcedOn;
         int nStrobe;
         cMessage *strobeTimer;
         cMessage *dcListenTimer; // Start listening for strobes
         cMessage *dcSleepTimer; // Stop listening for strobes
+
+        void setActive();
 
     protected:
         virtual void handleMessage(cMessage *msg);
@@ -41,13 +44,8 @@ class LinkXTMAC : public Link802154
         virtual void queueFrame(Frame802154 *frame);
         virtual void recvFrame(Frame802154 *frame);
 
-        /* Set radio mode with a duty cycling flag. If the flag is true, it's considered this
-         * function is called by duty cycling and a sleep timer is set if mode is on. When mode is
-         * off, a listen timer is always set. Default value for the flag is false for normal use. */
-        void setRadioMode(int mode, bool dutyCycling = false);
-        /* Force transceiver to stay in specific mode for a time duration.
-         * Pass 'duration' = -1 for permanent. */
-        virtual void forceRadioMode(int mode, double duration);
+        /* Set radio mode. Support: RADIO_FULL_OFF, RADIO_ON, RADIO_OFF */
+        void setRadioMode(int mode);
         /* Stop all timer and clean up memory when run out of energy */
         virtual void poweroff();
         /* Update display */
@@ -63,6 +61,9 @@ class LinkXTMAC : public Link802154
         LinkXTMAC();
         virtual ~LinkXTMAC();
         int getRadioMode() { return radioMode; };
+        /* Force transceiver to stay in on for a time duration.
+         * Pass 'duration' = -1 for permanent. */
+        virtual void forceRadioOn(double duration);
 };
 
 #endif

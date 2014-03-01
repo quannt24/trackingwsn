@@ -21,6 +21,33 @@
 
 Define_Module(LinkXTMAC);
 
+
+/* =========================================================================
+ * Private functions
+ * ========================================================================= */
+
+/* Stay active for a short time */
+void LinkXTMAC::setActive()
+{
+    if (radioMode == RADIO_OFF) {
+        // Turn radio on
+        setRadioMode(RADIO_ON);
+    }
+
+    isActive = true;
+    if (!forcedOn) {
+        // If not in forced on period
+        cancelEvent(dcSleepTimer);
+        scheduleAt(simTime() + par("activeTime"), dcSleepTimer);
+    }
+
+    updateDisplay();
+}
+
+/* =========================================================================
+ * Protected functions
+ * ========================================================================= */
+
 void LinkXTMAC::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
@@ -45,21 +72,27 @@ void LinkXTMAC::handleMessage(cMessage *msg)
             scheduleAt(simTime() + period, rxConsumeTimer);
         } else if (msg == dcListenTimer) {
             // In radio duty cycling, turn on radio for short period
-            setRadioMode(RADIO_ON, true);
+            setRadioMode(RADIO_ON);
             //getParentModule()->bubble("Radio ON");
         } else if (msg == dcSleepTimer) {
             // In radio duty cycling
-            setRadioMode(RADIO_OFF, true);
+            if (isActive) {
+                isActive = false;
+                forcedOn = false;
+                updateDisplay();
+            }
+            setRadioMode(RADIO_OFF);
             //getParentModule()->bubble("Radio OFF");
         }
     } else {
         if (msg->getArrivalGate() == gate("netGate$i")) {
-            if (radioMode == RADIO_ON) {
-                // Packet from upper layer, assemble frame and add to sending queue
-                queueFrame(createFrame((Packet802154*) msg));
-            } else {
+            if (radioMode == RADIO_FULL_OFF) {
                 delete msg;
                 EV << "Error: Cannot send packet when radio is off\n";
+            } else {
+                setActive();
+                // Packet from upper layer, assemble frame and add to sending queue
+                queueFrame(createFrame((Packet802154*) msg));
             }
         } else if (msg->getArrivalGate() == gate("radioIn")) {
             Frame802154 *frame = check_and_cast<Frame802154*>(msg);
@@ -68,26 +101,10 @@ void LinkXTMAC::handleMessage(cMessage *msg)
     }
 }
 
-LinkXTMAC::LinkXTMAC()
-{
-    inactive = false;
-    nStrobe = 0;
-    strobeTimer = new cMessage("StrobeTimer");
-    dcListenTimer = new cMessage("DcListenTimer");
-    dcSleepTimer = new cMessage("DcSleepTimer");
-}
-
-LinkXTMAC::~LinkXTMAC()
-{
-    cancelAndDelete(strobeTimer);
-    cancelAndDelete(dcListenTimer);
-    cancelAndDelete(dcSleepTimer);
-}
-
 /* Set radio mode with a duty cycling flag. If the flag is true, it's considered this
  * function is called by duty cycling and a sleep timer is set if mode is on. When mode is
  * off, a listen timer is always set. Default value for the flag is false for normal use. */
-void LinkXTMAC::setRadioMode(int mode, bool dutyCycling)
+void LinkXTMAC::setRadioMode(int mode)
 {
     Enter_Method("setRadioMode");
 
@@ -105,9 +122,7 @@ void LinkXTMAC::setRadioMode(int mode, bool dutyCycling)
             cancelEvent(dcSleepTimer);
             cancelEvent(dcListenTimer);
             // If called by duty cycling, plan a sleep timer
-            if (par("enableXmac").boolValue() && dutyCycling) {
-                scheduleAt(simTime() + par("lR").doubleValue(), dcSleepTimer);
-            }
+            scheduleAt(simTime() + par("lR").doubleValue(), dcSleepTimer);
         } else if (mode == RADIO_OFF) {
             cancelEvent(strobeTimer);
             cancelEvent(dcSleepTimer);
@@ -144,10 +159,8 @@ void LinkXTMAC::setRadioMode(int mode, bool dutyCycling)
             }
 
             // Plan a listen timer
-            if (par("enableXmac").boolValue()) {
-                cancelEvent(dcListenTimer);
-                scheduleAt(simTime() + par("sR").doubleValue(), dcListenTimer);
-            }
+            cancelEvent(dcListenTimer);
+            scheduleAt(simTime() + par("sR").doubleValue(), dcListenTimer);
         } else if (mode == RADIO_FULL_OFF) {
             EV << "Radio full off\n";
             if (rxConsumeTimer->isScheduled()) {
@@ -160,6 +173,37 @@ void LinkXTMAC::setRadioMode(int mode, bool dutyCycling)
             }
             poweroff();
         }
+    }
+}
+
+void LinkXTMAC::poweroff()
+{
+    nStrobe = 0;
+    cancelEvent(strobeTimer);
+    cancelEvent(dcSleepTimer);
+    cancelEvent(dcListenTimer);
+
+    Link802154::poweroff();
+
+    updateDisplay();
+}
+
+void LinkXTMAC::updateDisplay()
+{
+    cDisplayString &ds = getParentModule()->getDisplayString();
+
+    // Set color according to radio mode
+    switch (radioMode) {
+        case RADIO_FULL_OFF:
+            ds.setTagArg("i", 1, "black");
+            break;
+        case RADIO_ON:
+            if (isActive) {
+                ds.setTagArg("i", 1, "green");
+            } else {
+                ds.setTagArg("i", 1, "yellow");
+            }
+            break;
     }
 }
 
@@ -244,26 +288,24 @@ void LinkXTMAC::recvFrame(Frame802154* frame)
     }
 
     if (frame->getType() == FR_PAYLOAD) {
+        setActive(); // Change to active state
         // Forward to upper layer
         send(frame->decapsulate(), "netGate$o");
-
         // Count received frame
         sc->incRecvFrame();
         delete frame;
     } else if (frame->getType() == FR_STROBE) {
         getParentModule()->bubble("Get strobe");
         if (frame->getDesAddr() == macAddress) {
-            // TODO
-            // App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
-            // app->notifyEvent();
+            setActive(); // Change to active state
             sendStrobeAck(frame);
         } else if (frame->getDesAddr() == BROADCAST_ADDR) {
-            // TODO
-            // App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
-            // app->notifyEvent();
+            setActive(); // Change to active state
         }
         delete frame;
     } else if (frame->getType() == FR_STROBE_ACK) {
+        setActive(); // Change to active state
+
         //EV << "Link802154: Receive strobe ACK\n";
         getParentModule()->bubble("Receive strobe ACK");
         nStrobe = 0;
@@ -302,8 +344,7 @@ void LinkXTMAC::prepareSending()
     if (!outQueue.isEmpty()) {
         Frame802154 *frame = check_and_cast<Frame802154*>(outQueue.front());
         Packet802154 *pkt = (Packet802154*) frame->getEncapsulatedPacket();
-        if (par("enableXmac").boolValue()
-                && frame->getType() == FR_PAYLOAD
+        if (frame->getType() == FR_PAYLOAD
                 && pkt != NULL && pkt->getStrobeFlag()) {
             // Prepare strobes
             nStrobe = (int) ceil(par("sR").doubleValue() / par("strobePeriod").doubleValue());
@@ -377,4 +418,40 @@ void LinkXTMAC::finishSending()
         // Send next payload
         prepareSending();
     }
+}
+
+/* =========================================================================
+ * Public functions
+ * ========================================================================= */
+
+LinkXTMAC::LinkXTMAC()
+{
+    isActive = true;
+    forcedOn = false;
+    nStrobe = 0;
+    strobeTimer = new cMessage("StrobeTimer");
+    dcListenTimer = new cMessage("DcListenTimer");
+    dcSleepTimer = new cMessage("DcSleepTimer");
+}
+
+LinkXTMAC::~LinkXTMAC()
+{
+    cancelAndDelete(strobeTimer);
+    cancelAndDelete(dcListenTimer);
+    cancelAndDelete(dcSleepTimer);
+}
+
+void LinkXTMAC::forceRadioOn(double duration)
+{
+    Enter_Method("forceRadioOn");
+
+    isActive = true;
+    forcedOn = true;
+    setRadioMode(RADIO_ON);
+    cancelEvent(dcSleepTimer);
+    if (duration >= 0) {
+        scheduleAt(simTime() + duration, dcSleepTimer);
+    }
+
+    updateDisplay();
 }

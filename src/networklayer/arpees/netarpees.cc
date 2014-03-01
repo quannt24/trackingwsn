@@ -98,9 +98,6 @@ void NetARPEES::recvPacket(PacketARPEES* pkt)
         sc->incRecvPacket();
     }
 
-    // Notify application that event occurs
-    notifyApp();
-
     if (pkt->getHopLimit() < 0) {
         // Count packet loss
         sc->incLostPacket();

@@ -23,12 +23,14 @@
 
 
 /**
- * Phy/Link layer using IEEE 802.15.4, CSMA-CA
+ * Phy/Link layer using IEEE 802.15.4, CSMA/CA.
+ * Supported radio modes: RADIO_FULL_OFF, RADIO_ON.
  */
 class Link802154 : public cSimpleModule
 {
     protected:
         int radioMode;
+
         int macAddress; // Address of link layer
         int numAdjNode; // Number of connected nodes (adjacent nodes), which is <= MAX_CONNECTIONS
         int adjNode[MAX_CONNECTIONS]; // Adjacent nodes' addresses
@@ -37,12 +39,6 @@ class Link802154 : public cSimpleModule
 
         // Timer for calculating power consumed by transceiver listening
         cMessage *rxConsumeTimer;
-
-        // Duty cycling
-        int nStrobe;
-        cMessage *strobeTimer;
-        cMessage *dcListenTimer; // Start listening for strobes
-        cMessage *dcSleepTimer; // Stop listening for strobes
 
         // Unslotted CSMA/CA variables
         int BE; // Back-off exponent
@@ -56,48 +52,52 @@ class Link802154 : public cSimpleModule
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
 
+        /* Set radio mode. Support: RADIO_FULL_OFF, RADIO_ON */
+        virtual void setRadioMode(int mode);
+        /* Force transceiver to stay in specific mode for a time duration.
+         * Pass 'duration' = -1 for permanent.
+         * Derived link classes should override this function for their specific use.
+         * Default behavior is empty. */
+        virtual void forceRadioMode(int mode, double duration) {};
+        /* Stop all timer and clean up memory when run out of energy */
+        virtual void poweroff();
+        /* Update display */
+        virtual void updateDisplay();
+
+        /* Receive packet from network layer */
+        virtual void recvPacket(Packet802154 *pkt);
         virtual Frame802154* createFrame(Packet802154 *packet);
         virtual void queueFrame(Frame802154 *frame);
         virtual void sendFrame(Frame802154 *frame, simtime_t propagationDelay, simtime_t duration,
                 Link802154 *desNode, const char *inputGateName, int gateIndex = -1);
         virtual void recvFrame(Frame802154 *frame);
+        /* Simulate incoming frame loss.
+         * If the frame is lost, its pointer should not be used anymore.
+         * Return true when the frame is lost, false otherwise. */
+        virtual bool simInFrameLoss(Frame802154 *frame);
 
-        // X-MAC
-        virtual void prepareSending();
-        virtual void prepareStrobe();
-        virtual void sendStrobeAck(Frame802154 *strobe);
-        virtual void finishSending();
+        /* Calculate and draw energy from energy module for transmitting.
+         * Return true when have enough energy, false when short of energy. */
+        bool useEnergyTx(int nbits);
+        /* Calculate and draw energy for listening
+         * @param onTime Time interval that transceiver is turned on for listening signal */
+        void useEnergyRx(double onTime);
 
-        // Unslotted CSMA/CA
-        void startSending();
+        // Unslotted CSMA/CA sending procedures
+        virtual void startSending();
         void startCsma();
         void backoff();
         void performCCA();
         void transmit();
         void releaseChannel();
 
-        /*
-         * Calculate and draw energy from energy module for transmitting.
-         * Return true when have enough energy, false when short of energy
-         */
-        bool useEnergyTx(int nbits);
-        /* Calculate and draw energy for listening
-         * @param onTime Time interval that transceiver is turned on for listening signal */
-        void useEnergyRx(double onTime);
-        /* Stop all timer and clean up memory when run out of energy */
-        void poweroff();
-
     public:
         Link802154();
-        ~Link802154();
-        virtual int getRadioMode() { return radioMode; };
-        /* Set radio mode with a duty cycling flag. If the flag is true, it's considered this
-         * function is called by duty cycling and a sleep timer is set if mode is on. When mode is
-         * off, a listen timer is always set. Default value for the flag is false for normal use. */
-        virtual void setRadioMode(int mode, bool dutyCycling = false);
+        virtual ~Link802154();
         int getAddr();
         bool isFullConn();
         int addAdjNode(int addr);
+        int getRadioMode() { return radioMode; };
 };
 
 #endif

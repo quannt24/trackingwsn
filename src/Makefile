@@ -218,10 +218,6 @@ $O/applications/tracking/appbasestation/appbasestation.o: applications/tracking/
 	applications/tracking/estimator/targetpos.h \
 	applications/tracking/messagetracking_m.h \
 	applications/tracking/targetposvectorset.h \
-	linklayer/link.h \
-	linklayer/link802154/frame802154_m.h \
-	linklayer/link802154/link802154.h \
-	linklayer/link802154/packet802154_m.h \
 	networklayer/messagecr_m.h \
 	sensors/ass/measurement.h \
 	util/statcollector.h
@@ -257,7 +253,6 @@ $O/applications/tracking/estimator/lateration.o: applications/tracking/estimator
 $O/applications/tracking/estimator/targetpos.o: applications/tracking/estimator/targetpos.cc \
 	applications/tracking/estimator/targetpos.h
 $O/energy/energy.o: energy/energy.cc \
-	applications/app/app.h \
 	energy/energy.h
 $O/linklayer/link802154/frame802154_m.o: linklayer/link802154/frame802154_m.cc \
 	linklayer/link802154/frame802154_m.h
@@ -328,7 +323,6 @@ $O/networklayer/emrp/packetemrp_m.o: networklayer/emrp/packetemrp_m.cc \
 	networklayer/emrp/packetemrp_m.h \
 	networklayer/packetcr_m.h
 $O/networklayer/net/net.o: networklayer/net/net.cc \
-	applications/app/app.h \
 	linklayer/link.h \
 	linklayer/link802154/frame802154_m.h \
 	linklayer/link802154/link802154.h \

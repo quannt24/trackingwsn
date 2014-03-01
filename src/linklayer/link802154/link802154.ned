@@ -15,7 +15,7 @@
 
 package trackingwsn.linklayer.link802154;
 
-import trackingwsn.linklayer.ILink;
+import trackingwsn.base.layers.ILink;
 
 //
 // Phy/Link layer using IEEE 802.15.4

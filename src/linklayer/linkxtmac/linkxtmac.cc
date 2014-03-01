@@ -63,29 +63,25 @@ void LinkXTMAC::handleMessage(cMessage *msg)
             }
         } else if (msg->getArrivalGate() == gate("radioIn")) {
             Frame802154 *frame = check_and_cast<Frame802154*>(msg);
-            if (radioMode == RADIO_ON) {
-                // Frame from other node
-                recvFrame(frame);
-            } else {
-                // Just drop frame if radio is off
-                //getParentModule()->bubble("Radio OFF");
-                if (frame->getType() == FR_PAYLOAD) {
-                    // Count lost payload frame
-                    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
-                    sc->incLostFrame();
-                    sc->incLostPacket();
-
-                    // TODO For counting number of lost payload to BS by link layer
-                    PacketCR *pkt = check_and_cast<PacketCR*>(frame->decapsulate());
-                    if (pkt->getPkType() == PK_PAYLOAD_TO_BS) {
-                        sc->incLostMTRbyLink();
-                    }
-                    delete pkt;
-                }
-                delete msg;
-            }
+            recvFrame(frame);
         }
     }
+}
+
+LinkXTMAC::LinkXTMAC()
+{
+    inactive = false;
+    nStrobe = 0;
+    strobeTimer = new cMessage("StrobeTimer");
+    dcListenTimer = new cMessage("DcListenTimer");
+    dcSleepTimer = new cMessage("DcSleepTimer");
+}
+
+LinkXTMAC::~LinkXTMAC()
+{
+    cancelAndDelete(strobeTimer);
+    cancelAndDelete(dcListenTimer);
+    cancelAndDelete(dcSleepTimer);
 }
 
 /* Set radio mode with a duty cycling flag. If the flag is true, it's considered this
@@ -184,6 +180,26 @@ void LinkXTMAC::recvFrame(Frame802154* frame)
     ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("cu");
     StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
 
+    /* Frame loss because radio is off */
+    if (radioMode != RADIO_ON) {
+        getParentModule()->bubble("radio off");
+        // Just drop frame if radio is off
+        if (frame->getType() == FR_PAYLOAD) {
+            // Count lost payload frame
+            sc->incLostFrame();
+            sc->incLostPacket();
+
+            // Count number of lost payload to BS by link layer
+            PacketCR *pkt = check_and_cast<PacketCR*>(frame->decapsulate());
+            if (pkt->getPkType() == PK_PAYLOAD_TO_BS) {
+                sc->incLostMTRbyLink();
+            }
+            delete pkt;
+        }
+        delete frame;
+        return;
+    }
+
     /* Frame loss when collision still occurs at time when the frame is received completely. */
     if (cu->hasCollision(this)) {
         getParentModule()->bubble("collision");
@@ -237,12 +253,14 @@ void LinkXTMAC::recvFrame(Frame802154* frame)
     } else if (frame->getType() == FR_STROBE) {
         getParentModule()->bubble("Get strobe");
         if (frame->getDesAddr() == macAddress) {
-            App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
-            app->notifyEvent();
+            // TODO
+            // App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
+            // app->notifyEvent();
             sendStrobeAck(frame);
         } else if (frame->getDesAddr() == BROADCAST_ADDR) {
-            App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
-            app->notifyEvent();
+            // TODO
+            // App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
+            // app->notifyEvent();
         }
         delete frame;
     } else if (frame->getType() == FR_STROBE_ACK) {

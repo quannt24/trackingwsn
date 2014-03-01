@@ -22,16 +22,6 @@
 #include "meacoll.h"
 #include <omnetpp.h>
 
-/*
- * Working modes of sensor
- * WORK_MODE_OFF: Sensor will not do anything (mode for out of energy)
- * WORK_MODE_SLEEP: Cannot sense for target or send/receive packets but can be waken up
- * WORK_MODE_ACTIVE: Full features mode
- */
-#define WORK_MODE_OFF 0
-#define WORK_MODE_SLEEP 1
-#define WORK_MODE_ACTIVE 2
-
 /**
  * Sensor's Application Layer
  */
@@ -41,8 +31,6 @@ class AppSensor : public App
         int workMode;
 
         bool syncSense;
-        cMessage *activeTimer; // Timer for entering active mode
-        cMessage *sleepTimer; // Timer for entering sleep mode
         cMessage *senseTimer; // Self message for start sensing
         cMessage *reportTimer; // Timer for reporting measurement
         cMessage *collTimer; // Timer for collecting measurements
@@ -59,11 +47,6 @@ class AppSensor : public App
         /* Promote this node to CH (if appropriate). Then estimate targets' positions (if is CH). */
         void trackTargets();
 
-        /* Set working mode
-         * @param mode Can be WORK_MODE_OFF, WORK_MODE_SLEEP or WORK_MODE_ACTIVE */
-        void setWorkMode(int mode);
-        void updateDisplay();
-
     protected:
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
@@ -71,9 +54,6 @@ class AppSensor : public App
     public:
         AppSensor();
         ~AppSensor();
-        virtual void notifyEvent();
-        virtual void poweroff();
-        virtual bool isWorking();
 };
 
 #endif

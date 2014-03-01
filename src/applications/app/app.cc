@@ -24,16 +24,3 @@ void App::initialize()
 void App::handleMessage(cMessage *msg)
 {
 }
-
-void App::notifyEvent()
-{
-}
-
-void App::poweroff()
-{
-}
-
-bool App::isWorking()
-{
-    return true;
-}

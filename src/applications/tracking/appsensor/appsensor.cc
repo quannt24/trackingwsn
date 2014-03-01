@@ -28,26 +28,16 @@ Define_Module(AppSensor);
 
 void AppSensor::initialize()
 {
-    // At start, all nodes are active
-    setWorkMode(WORK_MODE_ACTIVE);
-    /* Modify sleep time so that sleep time of sensor nodes will be uniformly distributed over
-     * next 'idleTime' period to prevent "all sleepy nodes" phenomena. */
-    cancelEvent(sleepTimer);
-    if (par("enableSleep").boolValue()) {
-        scheduleAt(getParentModule()->getSubmodule("net")->par("initInterval").doubleValue()
-                + uniform(0, par("idleTime").doubleValue()),
-                sleepTimer);
+    // Start sensing, simulate unsynchronized sensing
+    if (!senseTimer->isScheduled()) {
+        scheduleAt(simTime() + uniform(0, par("senseInterval").doubleValue()), senseTimer);
     }
 }
 
 void AppSensor::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
-        if (msg == activeTimer) {
-            setWorkMode(WORK_MODE_ACTIVE);
-        } else if (msg == sleepTimer) {
-            setWorkMode(WORK_MODE_SLEEP);
-        } else if (msg == senseTimer) {
+        if (msg == senseTimer) {
             cMessage *ssStartMsg = new cMessage("ssStartMsg", SS_START);
             send(ssStartMsg, "ssGate$o");
             tsSense = simTime(); // Punch time stamp for sense action
@@ -73,7 +63,6 @@ void AppSensor::handleMessage(cMessage *msg)
         } else if (msg->getArrivalGate() == gate("netGate$i")) {
             MsgTracking *m = check_and_cast<MsgTracking*>(msg);
             recvMessage(m);
-            notifyEvent();
         }
     }
 }
@@ -82,8 +71,6 @@ AppSensor::AppSensor()
 {
     syncSense = false;
     // Create self messages for timers
-    activeTimer = new cMessage("ActiveTimer");
-    sleepTimer = new cMessage("SleepTimer");
     senseTimer = new cMessage("SenseTimer");
     reportTimer = new cMessage("ReportTimer");
     collTimer = new cMessage("CollTimer");
@@ -94,37 +81,10 @@ AppSensor::AppSensor()
 
 AppSensor::~AppSensor()
 {
-    cancelAndDelete(activeTimer);
-    cancelAndDelete(sleepTimer);
     cancelAndDelete(senseTimer);
     cancelAndDelete(reportTimer);
     cancelAndDelete(collTimer);
     mc.clear(); // Clear collection
-}
-
-void AppSensor::notifyEvent()
-{
-    Enter_Method("notifyEvent");
-    EV << "AppSensor: Event notify\n";
-    /* Check if it is currently network initial period; if not, extend active time.
-     * In network initial interval, all nodes should be active then sleep time should be
-     * uniformly distributed over next 'idleTime' period so that "all sleepy nodes" does
-     * not occur. */
-    if (simTime() > getParentModule()->getSubmodule("net")->par("initInterval").doubleValue()) {
-        // Extend active time when having event
-        setWorkMode(WORK_MODE_ACTIVE);
-    }
-}
-
-void AppSensor::poweroff()
-{
-    Enter_Method("poweroff");
-    setWorkMode(WORK_MODE_OFF);
-}
-
-bool AppSensor::isWorking()
-{
-    return workMode != WORK_MODE_OFF;
 }
 
 void AppSensor::sendSenseResult()
@@ -160,9 +120,6 @@ void AppSensor::recvSenseResult(SensedResult *result)
         EV << "Nothing sensed\n";
         syncSense = false; // Come back to unsynchronized state
     } else {
-        // Self notify for event so that the node can wake up if target was sensed
-        notifyEvent();
-
         if (!syncSense) {
             EV << "Synchronizing sensing\n";
             MsgSyncRequest *notify = new MsgSyncRequest("SyncRequest");
@@ -343,74 +300,5 @@ void AppSensor::trackTargets()
         }
     } else {
         getParentModule()->bubble("Non-CH");
-    }
-}
-
-void AppSensor::setWorkMode(int mode)
-{
-    if (mode == WORK_MODE_OFF || mode == WORK_MODE_SLEEP || mode == WORK_MODE_ACTIVE) {
-        workMode = mode;
-        Link802154 *link = check_and_cast<Link802154*>(getParentModule()->getSubmodule("link"));
-
-        switch (workMode) {
-            case WORK_MODE_OFF:
-                // Turn off transceiver
-                link->setRadioMode(RADIO_FULL_OFF);
-                // Cancel all timers
-                cancelEvent(activeTimer);
-                cancelEvent(sleepTimer);
-                cancelEvent(senseTimer);
-                cancelEvent(reportTimer);
-                cancelEvent(collTimer);
-                break;
-
-            case WORK_MODE_SLEEP:
-                // Turn off transceiver
-                link->setRadioMode(RADIO_OFF);
-
-                // Plan for waking up after sleepTime
-                // If a working event occurs, wake up immediately and cancel this timer
-                cancelEvent(activeTimer);
-                scheduleAt(simTime() + par("sleepTime"), activeTimer);
-
-                // Cancel sensing timer
-                //cancelEvent(senseTimer);
-                break;
-
-            case WORK_MODE_ACTIVE:
-                // Turn on transceiver
-                link->setRadioMode(RADIO_ON);
-
-                // Plan for sleeping after idleTime
-                // If a working event occurs, cancel this timer and plan new one
-                cancelEvent(sleepTimer);
-                if (par("enableSleep").boolValue()) scheduleAt(simTime() + par("idleTime"), sleepTimer);
-
-                // Start sensing immediately
-                if (!senseTimer->isScheduled()) scheduleAt(simTime(), senseTimer);
-                break;
-        }
-        updateDisplay();
-    }
-}
-
-/*
- * Update display of sensor in simulation
- */
-void AppSensor::updateDisplay()
-{
-    cDisplayString &ds = getParentModule()->getDisplayString();
-
-    // Set color according to working mode
-    switch (workMode) {
-        case WORK_MODE_OFF:
-            ds.setTagArg("i", 1, "black");
-            break;
-        case WORK_MODE_SLEEP:
-            ds.setTagArg("i", 1, "yellow");
-            break;
-        case WORK_MODE_ACTIVE:
-            ds.setTagArg("i", 1, "green");
-            break;
     }
 }

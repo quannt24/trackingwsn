@@ -12,9 +12,9 @@
 
 
 // Radio modes
-#define RADIO_FULL_OFF -1
-#define RADIO_OFF 0
-#define RADIO_ON 1
+#define RADIO_FULL_OFF 0
+#define RADIO_OFF 1
+#define RADIO_ON 2
 
 // Max numbers of connected nodes
 #define MAX_CONNECTIONS 25

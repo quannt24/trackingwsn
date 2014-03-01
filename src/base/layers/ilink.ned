@@ -13,22 +13,13 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package trackingwsn.linklayer;
+package trackingwsn.base.layers;
 
-// Module interface for link layer
+// Base interface for every physical/link layer
 moduleinterface ILink
 {
     parameters:
-        // Transmission range threshold. This parameter depends on environment and affects energy
-        // to transmit data.
-        double txRTh @unit(m);
-        // Energy for encode/decode signal for 1 bit
-        double e_elec; // Unit J/bit
-        // Energy for amplifying signal for 1 bit when txRange < txRTh
-        double e_fs; // Unit J/bit/m2
-        // Time period for calculating energy consumed by transceiver listening
-        // (for simulating continuously power consumtion)
-        double rxConsumingPeriod;
+        @display("i=block/layer");
         
         // Transmission range
         double txRange @unit(m);
@@ -37,13 +28,25 @@ moduleinterface ILink
         // Random frame lost probability (0 ~ 1)
         double ranFrameLossProb;
         
+        // Frame configuration
+        // =====================================
         // Max size of a link layer frame in byte, not including physical layer header
         int maxFrameSize;
         // Physical layer header size in byte (if this module simulates physical layer too)
         // Physical (transmited) frame size = phyHeaderSize + link frame size
         int phyHeaderSize;
         
-        @display("i=block/layer");
+        // Energy consumption
+        // =====================================
+        // Current draw in tx state
+        double txDraw @unit(mA);
+        // Current draw in rx state
+        double rxDraw @unit(mA);
+        // Current draw in sleep state
+        double sleepDraw @unit(mA);
+        // Time period for calculating energy consumed by transceiver listening
+        // (for simulating continuously power consumtion)
+        double rxConsumingPeriod;
         
     gates:
         inout netGate; // Connect with network layer

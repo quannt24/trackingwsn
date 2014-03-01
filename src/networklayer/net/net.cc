@@ -17,7 +17,6 @@
 #include "mobility.h"
 #include "link802154.h"
 #include "worldutil.h"
-#include "app.h"
 
 Define_Module(Net);
 
@@ -54,11 +53,4 @@ int Net::getMacAddr()
         macAddr = ((Link802154*) getParentModule()->getSubmodule("link"))->getAddr();
     }
     return macAddr;
-}
-
-/* Notify application layer that some events occur */
-void Net::notifyApp()
-{
-    App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
-    app->notifyEvent();
 }

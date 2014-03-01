@@ -17,7 +17,7 @@ package trackingwsn.entities;
 
 import trackingwsn.applications.IApp;
 import trackingwsn.networklayer.INet;
-import trackingwsn.linklayer.ILink;
+import trackingwsn.base.layers.ILink;
 import trackingwsn.energy.Energy;
 
 module Node extends Entity

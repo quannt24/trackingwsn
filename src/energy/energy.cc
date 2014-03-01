@@ -14,7 +14,6 @@
 // 
 
 #include "energy.h"
-#include "app.h"
 
 Define_Module(Energy);
 
@@ -71,8 +70,8 @@ double Energy::draw(double amount)
             return amount;
         } else if (amount > cap) {
             setCapacity(0);
-            App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
-            if (app->isWorking()) app->poweroff(); // Check working state to prevent loop calls.
+            //App *app = check_and_cast<App*>(getParentModule()->getSubmodule("app"));
+            //if (app->isWorking()) app->poweroff(); // Check working state to prevent loop calls.
             return cap;
         } else {
             return 0;

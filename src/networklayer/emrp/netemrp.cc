@@ -29,7 +29,9 @@ Define_Module(NetEMRP);
 void NetEMRP::initialize()
 {
     // Set timer for initialize EMRP first time
-    scheduleAt(uniform(0, par("initInterval")), initTimer);
+    if (!par("isBaseStation").boolValue()) {
+        scheduleAt(uniform(0, par("initInterval")), initTimer);
+    }
 }
 
 void NetEMRP::handleMessage(cMessage *msg)
@@ -114,9 +116,6 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
             || (pkt->getPkType() == PK_PAYLOAD_TO_BS && par("isBaseStation").boolValue())) {
         sc->incRecvPacket();
     }
-
-    // Notify application that event occurs
-    notifyApp();
 
     if (pkt->getHopLimit() < 0) {
         // Count packet loss
@@ -232,8 +231,6 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
 void NetEMRP::sendPacket(PacketCR *pkt)
 {
     StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
-
-    notifyApp();
 
     /*
     std::cerr << "NetEMRP::sendPacket: "

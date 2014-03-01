@@ -14,7 +14,6 @@
 // 
 
 #include "appbasestation.h"
-#include "link802154.h"
 #include "statcollector.h"
 #include <iostream>
 #include <fstream>
@@ -52,10 +51,6 @@ void AppBaseStation::initialize()
             out.close();
         }
     }
-
-    // Turn on tranceiver
-    Link802154 *link = check_and_cast<Link802154*>(getParentModule()->getSubmodule("link"));
-    link->setRadioMode(RADIO_ON, false);
 
     // Prepare signal
     e2edelaySignal = registerSignal("e2e_delay");

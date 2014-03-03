@@ -28,6 +28,7 @@ INCLUDE_PATH = \
     -Ientities \
     -Ilinklayer \
     -Ilinklayer/link802154 \
+    -Ilinklayer/linkbmac \
     -Ilinklayer/linkxtmac \
     -Imobility \
     -Inetworklayer \
@@ -63,6 +64,7 @@ OBJS = \
     $O/applications/tracking/estimator/estimator.o \
     $O/energy/energy.o \
     $O/linklayer/link802154/link802154.o \
+    $O/linklayer/linkbmac/linkbmac.o \
     $O/linklayer/linkxtmac/linkxtmac.o \
     $O/mobility/mobility.o \
     $O/networklayer/arpees/netarpees.o \
@@ -184,6 +186,7 @@ clean:
 	$(Q)-rm -f entities/*_m.cc entities/*_m.h
 	$(Q)-rm -f linklayer/*_m.cc linklayer/*_m.h
 	$(Q)-rm -f linklayer/link802154/*_m.cc linklayer/link802154/*_m.h
+	$(Q)-rm -f linklayer/linkbmac/*_m.cc linklayer/linkbmac/*_m.h
 	$(Q)-rm -f linklayer/linkxtmac/*_m.cc linklayer/linkxtmac/*_m.h
 	$(Q)-rm -f mobility/*_m.cc mobility/*_m.h
 	$(Q)-rm -f networklayer/*_m.cc networklayer/*_m.h
@@ -201,7 +204,7 @@ cleanall: clean
 
 depend:
 	$(qecho) Creating dependencies...
-	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc applications/app/*.cc applications/tracking/*.cc applications/tracking/appbasestation/*.cc applications/tracking/appsensor/*.cc applications/tracking/estimator/*.cc base/*.cc base/layers/*.cc energy/*.cc entities/*.cc linklayer/*.cc linklayer/link802154/*.cc linklayer/linkxtmac/*.cc mobility/*.cc networklayer/*.cc networklayer/arpees/*.cc networklayer/emrp/*.cc networklayer/net/*.cc networks/*.cc sensors/*.cc sensors/asg/*.cc sensors/ass/*.cc util/*.cc
+	$(Q)$(MAKEDEPEND) $(INCLUDE_PATH) -f Makefile -P\$$O/ -- $(MSG_CC_FILES)  ./*.cc applications/*.cc applications/app/*.cc applications/tracking/*.cc applications/tracking/appbasestation/*.cc applications/tracking/appsensor/*.cc applications/tracking/estimator/*.cc base/*.cc base/layers/*.cc energy/*.cc entities/*.cc linklayer/*.cc linklayer/link802154/*.cc linklayer/linkbmac/*.cc linklayer/linkxtmac/*.cc mobility/*.cc networklayer/*.cc networklayer/arpees/*.cc networklayer/emrp/*.cc networklayer/net/*.cc networks/*.cc sensors/*.cc sensors/asg/*.cc sensors/ass/*.cc util/*.cc
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 $O/applications/app/app.o: applications/app/app.cc \
@@ -273,6 +276,15 @@ $O/linklayer/link802154/link802154.o: linklayer/link802154/link802154.cc \
 	wsnexception.h
 $O/linklayer/link802154/packet802154_m.o: linklayer/link802154/packet802154_m.cc \
 	linklayer/link802154/packet802154_m.h
+$O/linklayer/linkbmac/linkbmac.o: linklayer/linkbmac/linkbmac.cc \
+	base/layers/link.h \
+	linklayer/link802154/frame802154_m.h \
+	linklayer/link802154/link802154.h \
+	linklayer/link802154/packet802154_m.h \
+	linklayer/linkbmac/linkbmac.h \
+	networklayer/packetcr_m.h \
+	util/channelutil.h \
+	util/statcollector.h
 $O/linklayer/linkxtmac/linkxtmac.o: linklayer/linkxtmac/linkxtmac.cc \
 	applications/app/app.h \
 	base/layers/link.h \

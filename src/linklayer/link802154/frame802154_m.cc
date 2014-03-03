@@ -34,8 +34,8 @@ EXECUTE_ON_STARTUP(
     cEnum *e = cEnum::find("FrType");
     if (!e) enums.getInstance()->add(e = new cEnum("FrType"));
     e->insert(FR_PAYLOAD, "FR_PAYLOAD");
-    e->insert(FR_STROBE, "FR_STROBE");
-    e->insert(FR_STROBE_ACK, "FR_STROBE_ACK");
+    e->insert(FR_PREAMBLE, "FR_PREAMBLE");
+    e->insert(FR_PREAMBLE_ACK, "FR_PREAMBLE_ACK");
 );
 
 Register_Class(Frame802154);

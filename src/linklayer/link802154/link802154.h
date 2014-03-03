@@ -21,7 +21,6 @@
 #include "packet802154_m.h"
 #include <omnetpp.h>
 
-
 /**
  * Phy/Link layer using IEEE 802.15.4, CSMA/CA.
  * Supported radio modes: RADIO_FULL_OFF, RADIO_ON.

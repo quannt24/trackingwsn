@@ -18,7 +18,7 @@ package trackingwsn.linklayer.linkxtmac;
 import trackingwsn.linklayer.link802154.Link802154;
 
 //
-// Phy/Link layer IEEE 802.15.4, CSMA-CA, X-MAC. Support radio mode switching.
+// Phy/Link layer based on IEEE 802.15.4 and XT-MAC
 //
 simple LinkXTMAC extends Link802154
 {
@@ -26,12 +26,12 @@ simple LinkXTMAC extends Link802154
         @class("LinkXTMAC");
         
 		// X-MAC duty cycling
-		// Enable/Disable X-MAC. If disabled, even strobe flag of packet will be ignored.
-		bool enableXmac = default(true);
 		// Receiver
-		// Listen period, must long enough to receive one of two consecutive strobes
-		double lR @unit(s) = default(0.003s);
-		// Sleep period (radio totally off), causes delay
+		// Listen period (seconds), must long enough to receive one of two consecutive strobes
+		// TODO This period must contain delay for turning on radio (about 2.5ms, in this time,
+		// transceiver has not been able to receive)
+		double lR @unit(s) = default(0.0055s);
+		// Sleep period (radio totally off), causes delay (seconds)
 		double sR @unit(s) = default(0.1s);
 		// Sender
 		// Strobe period: time between sending 2 strobes. Must be long enough for receiving strobe

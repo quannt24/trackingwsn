@@ -1,4 +1,4 @@
-set title "Remaining energy (without X-MAC)"
+set title "Remaining energy (without XT-MAC)"
 set xlabel "Row (corresponding to y coordinate)"
 set ylabel "Column (corresponding to x coordinate)"
 set cbrange [0:3]

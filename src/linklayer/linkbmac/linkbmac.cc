@@ -13,28 +13,26 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "linkxtmac.h"
-#include "packetcr_m.h"
-#include "app.h"
-#include "channelutil.h"
+#include "linkbmac.h"
 #include "statcollector.h"
+#include "channelutil.h"
+#include "packetcr_m.h"
 
-Define_Module(LinkXTMAC);
+Define_Module(LinkBMAC);
 
 /* =========================================================================
  * Private functions
  * ========================================================================= */
 
 /* Stay active for a short time */
-void LinkXTMAC::setActive()
+void LinkBMAC::setActive()
 {
-    if (radioMode == RADIO_OFF) {
-        // Turn radio on
-        setRadioMode(RADIO_ON);
-    }
-
     isActive = true;
     if (!forcedOn) {
+        if (radioMode == RADIO_OFF) {
+            // Turn radio on
+            setRadioMode(RADIO_ON);
+        }
         // If not in forced on interval then set dcSleepTimer as normal. If in forced on interval,
         // dcSleepTimer is already set and we will not change it.
         cancelEvent(dcSleepTimer);
@@ -48,13 +46,10 @@ void LinkXTMAC::setActive()
  * Protected functions
  * ========================================================================= */
 
-void LinkXTMAC::handleMessage(cMessage *msg)
+void LinkBMAC::handleMessage(cMessage *msg)
 {
     if (msg->isSelfMessage()) {
-        if (msg == strobeTimer) {
-            prepareStrobe();
-            startSending();
-        } else if (msg == backoffTimer) {
+        if (msg == backoffTimer) {
             // End of back-off period, perform CCa
             scheduleAt(simTime() + par("ccaDur").doubleValue(), ccaTimer); // Simulation
         } else if (msg == ccaTimer) {
@@ -62,7 +57,8 @@ void LinkXTMAC::handleMessage(cMessage *msg)
             performCCA();
         } else if (msg == releaseChannelTimer) {
             releaseChannel();
-            finishSending();
+            // TODO LIFS
+            startSending();
         } else if (msg == rxConsumeTimer) {
             // Calculate consumed energy for completed period
             double period = par("rxConsumingPeriod");
@@ -73,6 +69,11 @@ void LinkXTMAC::handleMessage(cMessage *msg)
         } else if (msg == dcListenTimer) {
             // In radio duty cycling, turn on radio for short period
             setRadioMode(RADIO_ON);
+            // Perform a CCA to receive preamble (without acquiring channel)
+            ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("cu");
+            if (cu->checkChannel(this) == false) {
+                setActive(); // Change to active state
+            }
             //getParentModule()->bubble("Radio ON");
         } else if (msg == dcSleepTimer) {
             // In radio duty cycling
@@ -86,14 +87,7 @@ void LinkXTMAC::handleMessage(cMessage *msg)
         }
     } else {
         if (msg->getArrivalGate() == gate("netGate$i")) {
-            if (radioMode == RADIO_FULL_OFF) {
-                delete msg;
-                EV << "Error: Out of energy\n";
-            } else {
-                setActive();
-                // Packet from upper layer, assemble frame and add to sending queue
-                queueFrame(createFrame((Packet802154*) msg));
-            }
+            recvPacket(check_and_cast<Packet802154*>(msg));
         } else if (msg->getArrivalGate() == gate("radioIn")) {
             Frame802154 *frame = check_and_cast<Frame802154*>(msg);
             recvFrame(frame);
@@ -101,7 +95,7 @@ void LinkXTMAC::handleMessage(cMessage *msg)
     }
 }
 
-void LinkXTMAC::setRadioMode(int mode)
+void LinkBMAC::setRadioMode(int mode)
 {
     Enter_Method("setRadioMode");
 
@@ -121,12 +115,10 @@ void LinkXTMAC::setRadioMode(int mode)
             // If called by duty cycling, plan a sleep timer
             scheduleAt(simTime() + par("lR").doubleValue(), dcSleepTimer);
         } else if (mode == RADIO_OFF) {
-            cancelEvent(strobeTimer);
             cancelEvent(dcSleepTimer);
             cancelEvent(dcListenTimer);
 
             // Clear pending transmissions
-            nStrobe = 0;
             cPacket *pkt;
             while (!outQueue.isEmpty()) {
                 pkt = outQueue.pop();
@@ -173,10 +165,8 @@ void LinkXTMAC::setRadioMode(int mode)
     }
 }
 
-void LinkXTMAC::poweroff()
+void LinkBMAC::poweroff()
 {
-    nStrobe = 0;
-    cancelEvent(strobeTimer);
     cancelEvent(dcSleepTimer);
     cancelEvent(dcListenTimer);
 
@@ -185,7 +175,7 @@ void LinkXTMAC::poweroff()
     updateDisplay();
 }
 
-void LinkXTMAC::updateDisplay()
+void LinkBMAC::updateDisplay()
 {
     cDisplayString &ds = getParentModule()->getDisplayString();
 
@@ -204,153 +194,76 @@ void LinkXTMAC::updateDisplay()
     }
 }
 
+/* Receive packet from network layer */
+void LinkBMAC::recvPacket(Packet802154 *pkt)
+{
+    if (radioMode != RADIO_FULL_OFF) {
+        // Packet from upper layer, assemble frame and add to sending queue
+        setActive();
+        queueFrame(createFrame(pkt));
+        startSending();
+    } else {
+        StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
+
+        // Count lost payload frame
+        sc->incLostFrame();
+        sc->incLostPacket();
+
+        // Count number of lost payload to BS by link layer
+        PacketCR *p = check_and_cast<PacketCR*>(pkt);
+        if (p->getPkType() == PK_PAYLOAD_TO_BS) {
+            sc->incLostMTRbyLink();
+        }
+        delete pkt;
+    }
+}
+
 /*
  * Add Frame to sending queue and start a transmit timer.
  */
-void LinkXTMAC::queueFrame(Frame802154 *frame)
+void LinkBMAC::queueFrame(Frame802154 *frame)
 {
+    // Prepare preamble
+    Packet802154 *pkt = (Packet802154*) frame->getEncapsulatedPacket();
+    if (frame->getType() == FR_PAYLOAD && pkt != NULL && pkt->getStrobeFlag()) {
+        // Add preamble to head of the queue
+        Frame802154 *pre = new Frame802154();
+        pre->setType(FR_PREAMBLE);
+        pre->setDesAddr(BROADCAST_ADDR); // There is no actual address field in frame, just broadcast
+        pre->setByteLength(par("preambleByteLen").longValue());
+        outQueue.insert(pre);
+    }
+
+    // Insert payload frame to queue
     outQueue.insert(frame);
-    prepareSending();
+
+    // Check if something being sent
+    if (backoffTimer->isScheduled() || ccaTimer->isScheduled() || releaseChannelTimer->isScheduled()) {
+        return;
+    } else {
+        startSending();
+    }
 }
 
 /*
  * Receive frame from other node, forward to upper layer
  */
-void LinkXTMAC::recvFrame(Frame802154* frame)
+void LinkBMAC::recvFrame(Frame802154* frame)
 {
+    if (frame->getType() == FR_PREAMBLE) {
+        delete frame;
+        return; // Nothing to do
+    }
     if (simInFrameLoss(frame)) return; // The frame is lost
-    StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
 
     if (frame->getType() == FR_PAYLOAD) {
-        setActive(); // Change to active state
+        setActive(); // Change to or lengthen active state
         // Forward to upper layer
         send(frame->decapsulate(), "netGate$o");
         // Count received frame
+        StatCollector *sc = check_and_cast<StatCollector*>(getModuleByPath("sc"));
         sc->incRecvFrame();
         delete frame;
-    } else if (frame->getType() == FR_PREAMBLE) {
-        getParentModule()->bubble("Get strobe");
-        if (frame->getDesAddr() == macAddress) {
-            setActive(); // Change to active state
-            sendStrobeAck(frame);
-        } else if (frame->getDesAddr() == BROADCAST_ADDR) {
-            setActive(); // Change to active state
-        }
-        delete frame;
-    } else if (frame->getType() == FR_PREAMBLE_ACK) {
-        setActive(); // Change to active state
-
-        //EV << "Link802154: Receive strobe ACK\n";
-        getParentModule()->bubble("Receive strobe ACK");
-        nStrobe = 0;
-        // Cancel current strobe sending (if any)
-        cancelEvent(strobeTimer);
-        if (outFrame != NULL && outFrame->getType() == FR_PREAMBLE) {
-            delete outFrame;
-            outFrame = NULL;
-        }
-        if (txFrame != NULL && txFrame->getType() == FR_PREAMBLE) {
-            cancelEvent(backoffTimer);
-            cancelEvent(ccaTimer);
-            delete txFrame;
-            txFrame = NULL;
-        }
-        startSending();
-        delete frame;
-    }
-}
-
-/* =========================================================================
- * Duty cycling sending procedures
- * ========================================================================= */
-
-/*
- * Prepare for sending frame at head of the queue if nothing being sent.
- */
-void LinkXTMAC::prepareSending()
-{
-    // Check if something being sent
-    if (strobeTimer->isScheduled() || backoffTimer->isScheduled() || ccaTimer->isScheduled()
-            || releaseChannelTimer->isScheduled()) {
-        return;
-    }
-
-    if (!outQueue.isEmpty()) {
-        Frame802154 *frame = check_and_cast<Frame802154*>(outQueue.front());
-        Packet802154 *pkt = (Packet802154*) frame->getEncapsulatedPacket();
-        if (frame->getType() == FR_PAYLOAD
-                && pkt != NULL && pkt->getStrobeFlag()) {
-            // Prepare strobes
-            nStrobe = (int) ceil(par("sR").doubleValue() / par("strobePeriod").doubleValue());
-            EV << "Link802154: Sending " << nStrobe << " strobes\n";
-            prepareStrobe();
-        } else {
-            nStrobe = 0;
-        }
-        startSending();
-    }
-}
-
-/*
- * Prepare strobe frame (if necessary) and push it to sending queue.
- */
-void LinkXTMAC::prepareStrobe()
-{
-    if (nStrobe < 0) return;
-    if (outQueue.isEmpty()) return;
-
-    Frame802154 *payload = check_and_cast<Frame802154*>(outQueue.front());
-    if (payload->getType() != FR_PAYLOAD) return;
-
-    Frame802154 *strobe = new Frame802154();
-    strobe->setType(FR_PREAMBLE);
-    strobe->setSrcAddr(macAddress);
-    strobe->setDesAddr(payload->getDesAddr());
-    strobe->setByteLength(
-            par("fldFrameControl").longValue() + par("fldSequenceId").longValue() + par("fldDesAddr").longValue()
-                    + par("fldSrcAddr").longValue() + par("fldFooter").longValue() + par("phyHeaderSize").longValue());
-
-    outQueue.insertBefore(payload, strobe);
-}
-
-/*
- * Queue a strobe ACK to send back to the node that sent strobes.
- */
-void LinkXTMAC::sendStrobeAck(Frame802154 *strobe)
-{
-    if (strobe->getDesAddr() == macAddress || strobe->getDesAddr() == BROADCAST_ADDR) {
-        EV<< "Link802154: Sending strobe ack\n";
-        Frame802154 *ack = new Frame802154();
-        ack->setType(FR_PREAMBLE_ACK);
-        ack->setSrcAddr(macAddress);
-        ack->setDesAddr(strobe->getSrcAddr());
-        ack->setByteLength(
-                par("fldFrameControl").longValue() + par("fldSequenceId").longValue() + par("fldDesAddr").longValue()
-                + par("fldSrcAddr").longValue() + par("fldFooter").longValue() + par("phyHeaderSize").longValue());
-
-        // Add ACK to sending queue
-        queueFrame(ack);
-    }
-}
-
-/*
- * Called when finish sending a frame. Determine to send next strobe (or payload) or start over the
- * sending process (so that next frame in queue can be sent).
- */
-void LinkXTMAC::finishSending()
-{
-    if (nStrobe > 0) {
-        nStrobe--;
-        if (nStrobe > 0) {
-            // Set timer for sending next strobe
-            scheduleAt(simTime() + par("strobePeriod").doubleValue(), strobeTimer);
-        } else {
-            // Last strobe is sent, send payload whatever, immediately
-            startSending();
-        }
-    } else {
-        // Send next payload
-        prepareSending();
     }
 }
 
@@ -358,24 +271,21 @@ void LinkXTMAC::finishSending()
  * Public functions
  * ========================================================================= */
 
-LinkXTMAC::LinkXTMAC()
+LinkBMAC::LinkBMAC()
 {
     isActive = true;
     forcedOn = false;
-    nStrobe = 0;
-    strobeTimer = new cMessage("StrobeTimer");
     dcListenTimer = new cMessage("DcListenTimer");
     dcSleepTimer = new cMessage("DcSleepTimer");
 }
 
-LinkXTMAC::~LinkXTMAC()
+LinkBMAC::~LinkBMAC()
 {
-    cancelAndDelete(strobeTimer);
     cancelAndDelete(dcListenTimer);
     cancelAndDelete(dcSleepTimer);
 }
 
-void LinkXTMAC::forceRadioOn(double duration)
+void LinkBMAC::forceRadioOn(double duration)
 {
     Enter_Method("forceRadioOn");
 

@@ -18,11 +18,13 @@ package trackingwsn.linklayer.link802154;
 import trackingwsn.base.layers.ILink;
 
 //
-// Phy/Link layer using IEEE 802.15.4
+// Phy/Link layer using IEEE 802.15.4 with unslotted CSMA/CA
 //
 simple Link802154 like ILink
 {
     parameters:
+        @display("i=block/wrxtx");
+        
         // Transmission range threshold. This parameter depends on environment and affects energy to transmit data.
         double txRTh @unit(m) = default(50m);
         // Energy for encode/decode signal for 1 bit
@@ -65,8 +67,6 @@ simple Link802154 like ILink
 		double aUnitBP = 20 * symPeriod; // A unit backoff-period
 		int macMaxNB = default(4); // 0 ~ 5
 		int macMinBE = default(3); // 0 ~ 3
-		
-        @display("i=block/wrxtx");
 
     gates:
         inout netGate; // Connect with network layer

@@ -13,26 +13,23 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef __TRACKINGWSN_LINKXTMAC_H_
-#define __TRACKINGWSN_LINKXTMAC_H_
+#ifndef __TRACKINGWSN_LINKBMAC_H_
+#define __TRACKINGWSN_LINKBMAC_H_
 
+#include "link.h"
 #include "link802154.h"
 #include <omnetpp.h>
 
-
 /**
- * Phy/Link layer IEEE 802.15.4, XT-MAC (based on unslotted CSMA/CA and short preamble radio duty
- * cycling).
- * Supported radio modes: RADIO_FULL_OFF, RADIO_OFF, RADIO_ON.
+ * Phy/Link layer based on IEEE 802.15.4 and B-MAC
+ * Supported radio modes: RADIO_FULL_OFF, RADIO_ON, RADIO_OFF.
  */
-class LinkXTMAC : public Link802154
+class LinkBMAC : public Link802154
 {
     private:
         // Duty cycling
         bool isActive;
         bool forcedOn;
-        int nStrobe;
-        cMessage *strobeTimer;
         cMessage *dcListenTimer; // Start listening for strobes
         cMessage *dcSleepTimer; // Stop listening for strobes
 
@@ -48,18 +45,14 @@ class LinkXTMAC : public Link802154
         /* Update display */
         virtual void updateDisplay();
 
+        /* Receive packet from network layer */
+        virtual void recvPacket(Packet802154 *pkt);
         virtual void queueFrame(Frame802154 *frame);
         virtual void recvFrame(Frame802154 *frame);
 
-        // Duty cycling
-        void prepareSending();
-        void prepareStrobe();
-        void sendStrobeAck(Frame802154 *strobe);
-        void finishSending();
-
     public:
-        LinkXTMAC();
-        virtual ~LinkXTMAC();
+        LinkBMAC();
+        virtual ~LinkBMAC();
         /* Force transceiver to stay in on for a time duration.
          * Pass 'duration' = -1 for permanent. */
         virtual void forceRadioOn(double duration);

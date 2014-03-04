@@ -37,7 +37,7 @@ enum RoutingType {
  * packet MessageCR {
  *     int routingType; 
  *     int desMacAddr; 
- *     bool strobeFlag = false; 
+ *     bool preambleFlag = false; 
  *     int msgSize = 10;
  * }
  * </pre>
@@ -47,7 +47,7 @@ class MessageCR : public ::cPacket
   protected:
     int routingType_var;
     int desMacAddr_var;
-    bool strobeFlag_var;
+    bool preambleFlag_var;
     int msgSize_var;
 
   private:
@@ -71,8 +71,8 @@ class MessageCR : public ::cPacket
     virtual void setRoutingType(int routingType);
     virtual int getDesMacAddr() const;
     virtual void setDesMacAddr(int desMacAddr);
-    virtual bool getStrobeFlag() const;
-    virtual void setStrobeFlag(bool strobeFlag);
+    virtual bool getPreambleFlag() const;
+    virtual void setPreambleFlag(bool preambleFlag);
     virtual int getMsgSize() const;
     virtual void setMsgSize(int msgSize);
 };

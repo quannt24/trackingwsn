@@ -73,6 +73,7 @@ void LinkBMAC::handleMessage(cMessage *msg)
             ChannelUtil *cu = (ChannelUtil*) simulation.getModuleByPath("cu");
             if (cu->checkChannel(this) == false) {
                 setActive(); // Change to active state
+                getParentModule()->bubble("Waken up");
             }
             //getParentModule()->bubble("Radio ON");
         } else if (msg == dcSleepTimer) {
@@ -225,7 +226,7 @@ void LinkBMAC::queueFrame(Frame802154 *frame)
 {
     // Prepare preamble
     Packet802154 *pkt = (Packet802154*) frame->getEncapsulatedPacket();
-    if (frame->getType() == FR_PAYLOAD && pkt != NULL && pkt->getStrobeFlag()) {
+    if (frame->getType() == FR_PAYLOAD && pkt != NULL && pkt->getPreambleFlag()) {
         // Add preamble to head of the queue
         Frame802154 *pre = new Frame802154();
         pre->setType(FR_PREAMBLE);

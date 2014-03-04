@@ -30,8 +30,8 @@ packet Packet802154 {
     int srcMacAddr;
     // Destination/Next-hop MAC address. (8 bytes)
     int desMacAddr;
-    // Flag for sending with strobes
-    bool strobeFlag = false;
+    // Flag for sending with preamble
+    bool preambleFlag = false;
     
     // Total size: 18 bytes
     int pkSize = 18;

@@ -40,7 +40,7 @@ enum TxType {
  *     
  *     int desMacAddr;
  *     
- *     bool strobeFlag = false;
+ *     bool preambleFlag = false;
  *     
  *     
  *     int pkSize = 18;
@@ -53,7 +53,7 @@ class Packet802154 : public ::cPacket
     int txType_var;
     int srcMacAddr_var;
     int desMacAddr_var;
-    bool strobeFlag_var;
+    bool preambleFlag_var;
     int pkSize_var;
 
   private:
@@ -79,8 +79,8 @@ class Packet802154 : public ::cPacket
     virtual void setSrcMacAddr(int srcMacAddr);
     virtual int getDesMacAddr() const;
     virtual void setDesMacAddr(int desMacAddr);
-    virtual bool getStrobeFlag() const;
-    virtual void setStrobeFlag(bool strobeFlag);
+    virtual bool getPreambleFlag() const;
+    virtual void setPreambleFlag(bool preambleFlag);
     virtual int getPkSize() const;
     virtual void setPkSize(int pkSize);
 };

@@ -29,7 +29,6 @@ simple AppSensor extends App
         // Report measurement period (should shorter than collMeaPeriod
         double repMeaPeriod = default(0.04);
 
-        bool enableSleep = default(true); // If false, node will stay awake all time
         double idleTime = default(5); // Idle time before sensor goes to sleep
         double sleepTime = default(30); // Max sleep time
 

@@ -26,6 +26,6 @@ enum RoutingType {
 packet MessageCR {
     int routingType; // Routing type
     int desMacAddr; // Destination MAC address, use when msgType is MSG_TO_AN
-    bool strobeFlag = false; // Flag for sending with strobes
+    bool preambleFlag = false; // Flag for sending with preamble
     int msgSize = 10;
 }

@@ -287,7 +287,7 @@ void AppSensor::trackTargets()
             msgTrackResult->setMsgSize(msgTrackResult->getMsgSize() + 9 * tpList.size());
             msgTrackResult->setByteLength(msgTrackResult->getMsgSize());
             // Turn on strobe flag for this message
-            msgTrackResult->setStrobeFlag(true);
+            msgTrackResult->setPreambleFlag(true);
             // Set time stamp
             msgTrackResult->setTsSense(tsSense);
             // Send result to base station

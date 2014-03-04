@@ -44,7 +44,7 @@ Packet802154::Packet802154(const char *name, int kind) : cPacket(name,kind)
     this->txType_var = 0;
     this->srcMacAddr_var = 0;
     this->desMacAddr_var = 0;
-    this->strobeFlag_var = false;
+    this->preambleFlag_var = false;
     this->pkSize_var = 18;
 }
 
@@ -70,7 +70,7 @@ void Packet802154::copy(const Packet802154& other)
     this->txType_var = other.txType_var;
     this->srcMacAddr_var = other.srcMacAddr_var;
     this->desMacAddr_var = other.desMacAddr_var;
-    this->strobeFlag_var = other.strobeFlag_var;
+    this->preambleFlag_var = other.preambleFlag_var;
     this->pkSize_var = other.pkSize_var;
 }
 
@@ -80,7 +80,7 @@ void Packet802154::parsimPack(cCommBuffer *b)
     doPacking(b,this->txType_var);
     doPacking(b,this->srcMacAddr_var);
     doPacking(b,this->desMacAddr_var);
-    doPacking(b,this->strobeFlag_var);
+    doPacking(b,this->preambleFlag_var);
     doPacking(b,this->pkSize_var);
 }
 
@@ -90,7 +90,7 @@ void Packet802154::parsimUnpack(cCommBuffer *b)
     doUnpacking(b,this->txType_var);
     doUnpacking(b,this->srcMacAddr_var);
     doUnpacking(b,this->desMacAddr_var);
-    doUnpacking(b,this->strobeFlag_var);
+    doUnpacking(b,this->preambleFlag_var);
     doUnpacking(b,this->pkSize_var);
 }
 
@@ -124,14 +124,14 @@ void Packet802154::setDesMacAddr(int desMacAddr)
     this->desMacAddr_var = desMacAddr;
 }
 
-bool Packet802154::getStrobeFlag() const
+bool Packet802154::getPreambleFlag() const
 {
-    return strobeFlag_var;
+    return preambleFlag_var;
 }
 
-void Packet802154::setStrobeFlag(bool strobeFlag)
+void Packet802154::setPreambleFlag(bool preambleFlag)
 {
-    this->strobeFlag_var = strobeFlag;
+    this->preambleFlag_var = preambleFlag;
 }
 
 int Packet802154::getPkSize() const
@@ -224,7 +224,7 @@ const char *Packet802154Descriptor::getFieldName(void *object, int field) const
         "txType",
         "srcMacAddr",
         "desMacAddr",
-        "strobeFlag",
+        "preambleFlag",
         "pkSize",
     };
     return (field>=0 && field<5) ? fieldNames[field] : NULL;
@@ -237,7 +237,7 @@ int Packet802154Descriptor::findField(void *object, const char *fieldName) const
     if (fieldName[0]=='t' && strcmp(fieldName, "txType")==0) return base+0;
     if (fieldName[0]=='s' && strcmp(fieldName, "srcMacAddr")==0) return base+1;
     if (fieldName[0]=='d' && strcmp(fieldName, "desMacAddr")==0) return base+2;
-    if (fieldName[0]=='s' && strcmp(fieldName, "strobeFlag")==0) return base+3;
+    if (fieldName[0]=='p' && strcmp(fieldName, "preambleFlag")==0) return base+3;
     if (fieldName[0]=='p' && strcmp(fieldName, "pkSize")==0) return base+4;
     return basedesc ? basedesc->findField(object, fieldName) : -1;
 }
@@ -303,7 +303,7 @@ std::string Packet802154Descriptor::getFieldAsString(void *object, int field, in
         case 0: return long2string(pp->getTxType());
         case 1: return long2string(pp->getSrcMacAddr());
         case 2: return long2string(pp->getDesMacAddr());
-        case 3: return bool2string(pp->getStrobeFlag());
+        case 3: return bool2string(pp->getPreambleFlag());
         case 4: return long2string(pp->getPkSize());
         default: return "";
     }
@@ -322,7 +322,7 @@ bool Packet802154Descriptor::setFieldAsString(void *object, int field, int i, co
         case 0: pp->setTxType(string2long(value)); return true;
         case 1: pp->setSrcMacAddr(string2long(value)); return true;
         case 2: pp->setDesMacAddr(string2long(value)); return true;
-        case 3: pp->setStrobeFlag(string2bool(value)); return true;
+        case 3: pp->setPreambleFlag(string2bool(value)); return true;
         case 4: pp->setPkSize(string2long(value)); return true;
         default: return false;
     }

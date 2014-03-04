@@ -227,7 +227,7 @@ void NetEMRP::recvPacket(PacketEMRP *pkt)
                 // Forward to base station
                 pkt->setSrcMacAddr(getMacAddr());
                 if (bsAddr > 0) {
-                    pkt->setStrobeFlag(false);
+                    pkt->setPreambleFlag(false);
                     pkt->setDesMacAddr(bsAddr);
                 } else {
                     pkt->setDesMacAddr(rnAddr);
@@ -541,9 +541,9 @@ void NetEMRP::sendMsgDown(MessageCR *msg)
     pkt->setSrcMacAddr(getMacAddr());
 
     if (msg->getRoutingType() == RT_TO_BS && bsAddr > 0) {
-        pkt->setStrobeFlag(false);
+        pkt->setPreambleFlag(false); // No need to use preamble when sending to BS
     } else {
-        pkt->setStrobeFlag(msg->getStrobeFlag());
+        pkt->setPreambleFlag(msg->getPreambleFlag());
     }
 
     pkt->setByteLength(pkt->getPkSize());

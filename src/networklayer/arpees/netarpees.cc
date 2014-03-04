@@ -196,13 +196,14 @@ PacketARPEES* NetARPEES::createPacket(MessageCR *msg)
     } else if (msg->getRoutingType() == RT_TO_BS) {
         pkt->setTxType(TX_PPP);
         pkt->setPkType(PK_PAYLOAD_TO_BS);
+        // No need to set desMacAddr here, it will be set later
     } else if (msg->getRoutingType() == RT_BROADCAST) {
         pkt->setTxType(TX_BROADCAST);
         pkt->setPkType(PK_PAYLOAD_TO_AN);
         // No need to set desMacAddr here
     }
     pkt->setSrcMacAddr(getMacAddr());
-    pkt->setStrobeFlag(msg->getStrobeFlag());
+    pkt->setPreambleFlag(msg->getPreambleFlag());
 
     pkt->setByteLength(pkt->getPkSize());
     pkt->encapsulate(msg); // Packet length will be increased by message length
@@ -225,6 +226,7 @@ void NetARPEES::sendQueuedPackets()
         if (pkt->getPkType() == PK_PAYLOAD_TO_BS) {
             if (bsAddr > 0) {
                 pkt->setDesMacAddr(bsAddr);
+                pkt->setPreambleFlag(false); // No need to use preamble when sending to BS
             } else if (rnAddr > 0) {
                 pkt->setDesMacAddr(rnAddr);
             } else {

@@ -6,7 +6,7 @@
 *.jpg
 .tkenvrc
 out/
-results/
+/results/
 src/TrackingWSN
 simulations/.tkenvlog
 simulations/results/*.vec

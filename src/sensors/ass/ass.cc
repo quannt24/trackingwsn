@@ -27,7 +27,7 @@ Define_Module(Ass);
 void Ass::initialize()
 {
     // TODO Configure noise
-    noise = new GaussianNoise(0, simulation.getModuleByPath("target[0]")->par("range").doubleValue() / 25);
+    noise = new GaussianNoise(0, simulation.getModuleByPath("target[0]")->par("range").doubleValue() / 20);
     nSensedTarget = 0;
     nMeasurement = 0;
 }

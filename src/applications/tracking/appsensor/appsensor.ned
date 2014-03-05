@@ -28,6 +28,10 @@ simple AppSensor extends App
         double collMeaPeriod = default(0.05);
         // Report measurement period (should shorter than collMeaPeriod
         double repMeaPeriod = default(0.04);
+        // Time point for CH broadcasts a synchronization beacon, relative to senseInterval.
+        // This point should be near the end of senseInterval and long enough for beacon arrives
+        // before next sensing cycle.
+        double chBeaconTime = default(0.4);
 
         @class("AppSensor");
         @display("i=block/app");

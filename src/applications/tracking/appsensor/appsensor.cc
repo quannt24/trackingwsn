@@ -50,6 +50,13 @@ void AppSensor::handleMessage(cMessage *msg)
         } else if (msg == collTimer) {
             // Finish measurement collection. Evaluate result.
             trackTargets();
+        } else if (msg == chBeaconTimer) {
+            // Broadcast a beacon
+            getParentModule()->bubble("Beacon");
+            MsgCHBeacon *beacon = new MsgCHBeacon("CHBeacon");
+            beacon->setByteLength(beacon->getMsgSize());
+            send(beacon, "netGate$o");
+            syncSense = true;
         }
     } else {
         if (msg->getArrivalGate() == gate("ssGate$i")) {
@@ -74,6 +81,7 @@ AppSensor::AppSensor()
     senseTimer = new cMessage("SenseTimer");
     reportTimer = new cMessage("ReportTimer");
     collTimer = new cMessage("CollTimer");
+    chBeaconTimer = new cMessage("CHBeaconTimer");
 
     // Sense time stamp
     tsSense = 0;
@@ -84,6 +92,7 @@ AppSensor::~AppSensor()
     cancelAndDelete(senseTimer);
     cancelAndDelete(reportTimer);
     cancelAndDelete(collTimer);
+    cancelAndDelete(chBeaconTimer);
     mc.clear(); // Clear collection
 }
 
@@ -123,7 +132,6 @@ void AppSensor::recvSenseResult(SensedResult *result)
         if (!syncSense) {
             EV << "Synchronizing sensing\n";
             MsgSyncRequest *syncReq = new MsgSyncRequest("SyncRequest");
-            //syncReq->setPreambleFlag(false); // TODO Test
             syncReq->setByteLength(syncReq->getMsgSize());
             send(syncReq, "netGate$o");
             syncSense = true;
@@ -173,7 +181,7 @@ void AppSensor::recvSenseResult(SensedResult *result)
 void AppSensor::recvMessage(MsgTracking *msg)
 {
     if (msg->getMsgType() == MSG_SYNC_REQUEST) {
-        EV<< "Synchronized sensing by notify\n";
+        EV<< "Synchronize sensing cycle by syncReq\n";
         syncSense = true;
 
         // If in sense delay period, cancel the sensing
@@ -183,27 +191,52 @@ void AppSensor::recvMessage(MsgTracking *msg)
 
         // Reset sensing timer with synchronized value
         // Adjusted time is calculated based on: senseInterval, senseDelay,
-        // txTime (with estimated packet size about 58 bytes) and duty cycling sleep interval (if any)
-        Link802154 *link = check_and_cast<Link802154*>(getParentModule()->getSubmodule("link"));
+        // txTime (with estimated packet size about 58 bytes)
+        Link802154 *link = check_and_cast<Link802154*>(getModuleByPath("^.link"));
         double addTime = par("senseInterval").doubleValue()
                         - getModuleByPath("^.ass")->par("responseDelay").doubleValue()
                         - 60 * 8 / link->par("bitRate").doubleValue();
         cancelEvent(senseTimer);
         scheduleAt(simTime() + addTime, senseTimer);
     } else if (msg->getMsgType() == MSG_SENSE_RESULT) {
-        MsgSenseResult *msr = check_and_cast<MsgSenseResult*>(msg);
-        std::list<Measurement> ml = msr->getMeaList();
+        // Collect sense results if in collectInterval
+        if (collTimer->isScheduled()) {
+            MsgSenseResult *msr = check_and_cast<MsgSenseResult*>(msg);
+            std::list<Measurement> ml = msr->getMeaList();
 
-        // Add sender information to Measurement objects then add them to collection
-        for (std::list<Measurement>::iterator it=ml.begin(); it != ml.end(); ++it) {
-            // NOTE: THIS PORTION OF CODE IS NOT REDUNDANT. It demonstrates the working mechanism.
-            (*it).setNodePosX(msr->getNodePosX());
-            (*it).setNodePosY(msr->getNodePosY());
-            (*it).setNodeEnergy(msr->getNodeEnergy());
+            // Add sender information to Measurement objects then add them to collection
+            for (std::list<Measurement>::iterator it=ml.begin(); it != ml.end(); ++it) {
+                // NOTE: THIS PORTION OF CODE IS NOT REDUNDANT. It demonstrates the working mechanism.
+                (*it).setNodePosX(msr->getNodePosX());
+                (*it).setNodePosY(msr->getNodePosY());
+                (*it).setNodeEnergy(msr->getNodeEnergy());
 
-            // Add Measurement object to collection
-            mc.addMeasurement(*it);
+                // Add Measurement object to collection
+                mc.addMeasurement(*it);
+            }
         }
+    } else if (msg->getMsgType() == MSG_CH_BEACON) {
+        // Synchronize with CH
+        EV<< "Synchronize sensing cycle by beacon\n";
+        syncSense = true;
+
+        // If in sense delay period, cancel the sensing
+        cMessage *cancelSense = new cMessage();
+        cancelSense->setKind(SS_CANCEL);
+        send(cancelSense, "ssGate$o");
+        // Cancel unfinished tasks (if any)
+        cancelEvent(reportTimer);
+        cancelEvent(collTimer);
+
+        // Reset sensing timer with synchronized value
+        // Adjusted time is calculated based on: senseInterval, chBeaconTime,
+        // txTime (with estimated packet size about 58 bytes)
+        Link802154 *link = check_and_cast<Link802154*>(getModuleByPath("^.link"));
+        double addTime = par("senseInterval").doubleValue()
+        - par("chBeaconTime").doubleValue()
+        - 60 * 8 / link->par("bitRate").doubleValue();
+        cancelEvent(senseTimer);
+        scheduleAt(simTime() + addTime, senseTimer);
     }
 
     delete msg;
@@ -303,6 +336,11 @@ void AppSensor::trackTargets()
         } else {
             getParentModule()->bubble("CH: lose track");
         }
+        // TODO Plan a timer to broadcast a beacon for synchronizing sensing
+        if (chBeaconTimer->isScheduled()) cancelEvent(chBeaconTimer);
+        scheduleAt(senseTimer->getArrivalTime()
+                - par("senseInterval").doubleValue()
+                + par("chBeaconTime").doubleValue(), chBeaconTimer);
     } else {
         getParentModule()->bubble("Non-CH");
     }

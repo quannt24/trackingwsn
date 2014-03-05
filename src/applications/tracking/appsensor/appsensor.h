@@ -34,6 +34,7 @@ class AppSensor : public App
         cMessage *senseTimer; // Self message for start sensing
         cMessage *reportTimer; // Timer for reporting measurement
         cMessage *collTimer; // Timer for collecting measurements
+        cMessage *chBeaconTimer; // Timer for CH broadcasts beacon
         std::list<Measurement> meaList; // Measurement list of recent sensing
         MeaColl mc; // Measurement collection
         simtime_t tsSense; // Time stamp for receiving sense result from sensor

@@ -36,6 +36,7 @@ EXECUTE_ON_STARTUP(
     e->insert(MSG_SYNC_REQUEST, "MSG_SYNC_REQUEST");
     e->insert(MSG_SENSE_RESULT, "MSG_SENSE_RESULT");
     e->insert(MSG_TRACK_RESULT, "MSG_TRACK_RESULT");
+    e->insert(MSG_CH_BEACON, "MSG_CH_BEACON");
 );
 
 Register_Class(MsgTracking);
@@ -1186,6 +1187,263 @@ void *MsgTrackResultDescriptor::getFieldStructPointer(void *object, int field, i
     MsgTrackResult *pp = (MsgTrackResult *)object; (void)pp;
     switch (field) {
         case 2: return (void *)(&pp->getTpList()); break;
+        default: return NULL;
+    }
+}
+
+Register_Class(MsgCHBeacon);
+
+MsgCHBeacon::MsgCHBeacon(const char *name, int kind) : MsgTracking(name,kind)
+{
+    this->routingType_var = RT_BROADCAST;
+    this->msgType_var = MSG_CH_BEACON;
+}
+
+MsgCHBeacon::MsgCHBeacon(const MsgCHBeacon& other) : MsgTracking(other)
+{
+    copy(other);
+}
+
+MsgCHBeacon::~MsgCHBeacon()
+{
+}
+
+MsgCHBeacon& MsgCHBeacon::operator=(const MsgCHBeacon& other)
+{
+    if (this==&other) return *this;
+    MsgTracking::operator=(other);
+    copy(other);
+    return *this;
+}
+
+void MsgCHBeacon::copy(const MsgCHBeacon& other)
+{
+    this->routingType_var = other.routingType_var;
+    this->msgType_var = other.msgType_var;
+}
+
+void MsgCHBeacon::parsimPack(cCommBuffer *b)
+{
+    MsgTracking::parsimPack(b);
+    doPacking(b,this->routingType_var);
+    doPacking(b,this->msgType_var);
+}
+
+void MsgCHBeacon::parsimUnpack(cCommBuffer *b)
+{
+    MsgTracking::parsimUnpack(b);
+    doUnpacking(b,this->routingType_var);
+    doUnpacking(b,this->msgType_var);
+}
+
+int MsgCHBeacon::getRoutingType() const
+{
+    return routingType_var;
+}
+
+void MsgCHBeacon::setRoutingType(int routingType)
+{
+    this->routingType_var = routingType;
+}
+
+int MsgCHBeacon::getMsgType() const
+{
+    return msgType_var;
+}
+
+void MsgCHBeacon::setMsgType(int msgType)
+{
+    this->msgType_var = msgType;
+}
+
+class MsgCHBeaconDescriptor : public cClassDescriptor
+{
+  public:
+    MsgCHBeaconDescriptor();
+    virtual ~MsgCHBeaconDescriptor();
+
+    virtual bool doesSupport(cObject *obj) const;
+    virtual const char *getProperty(const char *propertyname) const;
+    virtual int getFieldCount(void *object) const;
+    virtual const char *getFieldName(void *object, int field) const;
+    virtual int findField(void *object, const char *fieldName) const;
+    virtual unsigned int getFieldTypeFlags(void *object, int field) const;
+    virtual const char *getFieldTypeString(void *object, int field) const;
+    virtual const char *getFieldProperty(void *object, int field, const char *propertyname) const;
+    virtual int getArraySize(void *object, int field) const;
+
+    virtual std::string getFieldAsString(void *object, int field, int i) const;
+    virtual bool setFieldAsString(void *object, int field, int i, const char *value) const;
+
+    virtual const char *getFieldStructName(void *object, int field) const;
+    virtual void *getFieldStructPointer(void *object, int field, int i) const;
+};
+
+Register_ClassDescriptor(MsgCHBeaconDescriptor);
+
+MsgCHBeaconDescriptor::MsgCHBeaconDescriptor() : cClassDescriptor("MsgCHBeacon", "MsgTracking")
+{
+}
+
+MsgCHBeaconDescriptor::~MsgCHBeaconDescriptor()
+{
+}
+
+bool MsgCHBeaconDescriptor::doesSupport(cObject *obj) const
+{
+    return dynamic_cast<MsgCHBeacon *>(obj)!=NULL;
+}
+
+const char *MsgCHBeaconDescriptor::getProperty(const char *propertyname) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? basedesc->getProperty(propertyname) : NULL;
+}
+
+int MsgCHBeaconDescriptor::getFieldCount(void *object) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    return basedesc ? 2+basedesc->getFieldCount(object) : 2;
+}
+
+unsigned int MsgCHBeaconDescriptor::getFieldTypeFlags(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldTypeFlags(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static unsigned int fieldTypeFlags[] = {
+        FD_ISEDITABLE,
+        FD_ISEDITABLE,
+    };
+    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
+}
+
+const char *MsgCHBeaconDescriptor::getFieldName(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldName(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldNames[] = {
+        "routingType",
+        "msgType",
+    };
+    return (field>=0 && field<2) ? fieldNames[field] : NULL;
+}
+
+int MsgCHBeaconDescriptor::findField(void *object, const char *fieldName) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    int base = basedesc ? basedesc->getFieldCount(object) : 0;
+    if (fieldName[0]=='r' && strcmp(fieldName, "routingType")==0) return base+0;
+    if (fieldName[0]=='m' && strcmp(fieldName, "msgType")==0) return base+1;
+    return basedesc ? basedesc->findField(object, fieldName) : -1;
+}
+
+const char *MsgCHBeaconDescriptor::getFieldTypeString(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldTypeString(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldTypeStrings[] = {
+        "int",
+        "int",
+    };
+    return (field>=0 && field<2) ? fieldTypeStrings[field] : NULL;
+}
+
+const char *MsgCHBeaconDescriptor::getFieldProperty(void *object, int field, const char *propertyname) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldProperty(object, field, propertyname);
+        field -= basedesc->getFieldCount(object);
+    }
+    switch (field) {
+        default: return NULL;
+    }
+}
+
+int MsgCHBeaconDescriptor::getArraySize(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getArraySize(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    MsgCHBeacon *pp = (MsgCHBeacon *)object; (void)pp;
+    switch (field) {
+        default: return 0;
+    }
+}
+
+std::string MsgCHBeaconDescriptor::getFieldAsString(void *object, int field, int i) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldAsString(object,field,i);
+        field -= basedesc->getFieldCount(object);
+    }
+    MsgCHBeacon *pp = (MsgCHBeacon *)object; (void)pp;
+    switch (field) {
+        case 0: return long2string(pp->getRoutingType());
+        case 1: return long2string(pp->getMsgType());
+        default: return "";
+    }
+}
+
+bool MsgCHBeaconDescriptor::setFieldAsString(void *object, int field, int i, const char *value) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->setFieldAsString(object,field,i,value);
+        field -= basedesc->getFieldCount(object);
+    }
+    MsgCHBeacon *pp = (MsgCHBeacon *)object; (void)pp;
+    switch (field) {
+        case 0: pp->setRoutingType(string2long(value)); return true;
+        case 1: pp->setMsgType(string2long(value)); return true;
+        default: return false;
+    }
+}
+
+const char *MsgCHBeaconDescriptor::getFieldStructName(void *object, int field) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldStructName(object, field);
+        field -= basedesc->getFieldCount(object);
+    }
+    static const char *fieldStructNames[] = {
+        NULL,
+        NULL,
+    };
+    return (field>=0 && field<2) ? fieldStructNames[field] : NULL;
+}
+
+void *MsgCHBeaconDescriptor::getFieldStructPointer(void *object, int field, int i) const
+{
+    cClassDescriptor *basedesc = getBaseClassDescriptor();
+    if (basedesc) {
+        if (field < basedesc->getFieldCount(object))
+            return basedesc->getFieldStructPointer(object, field, i);
+        field -= basedesc->getFieldCount(object);
+    }
+    MsgCHBeacon *pp = (MsgCHBeacon *)object; (void)pp;
+    switch (field) {
         default: return NULL;
     }
 }

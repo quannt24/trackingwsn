@@ -29,6 +29,7 @@ enum MessageType {
     MSG_SYNC_REQUEST = 0; // Nofity other nodes to synchronize sensing
     MSG_SENSE_RESULT = 1; // Raw measurements
     MSG_TRACK_RESULT = 2; // Tracked postions of targets
+    MSG_CH_BEACON = 3; // CH's beacon for synchronizing sensing cycle
 };
 
 // Application level message for tracking. Extend MessageCR defined by network layer.
@@ -70,4 +71,11 @@ packet MsgTrackResult extends MsgTracking {
     
     // Sense time stamp
     simtime_t tsSense;
+}
+
+// CH's beacon for synchronizing sensing cycle
+packet MsgCHBeacon extends MsgTracking {
+    int routingType = RT_BROADCAST;
+    int msgType = MSG_CH_BEACON;
+    // Use default size
 }

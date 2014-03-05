@@ -30,13 +30,15 @@
  *     MSG_SYNC_REQUEST = 0; 
  *     MSG_SENSE_RESULT = 1; 
  *     MSG_TRACK_RESULT = 2; 
+ *     MSG_CH_BEACON = 3; 
  * };
  * </pre>
  */
 enum MessageType {
     MSG_SYNC_REQUEST = 0,
     MSG_SENSE_RESULT = 1,
-    MSG_TRACK_RESULT = 2
+    MSG_TRACK_RESULT = 2,
+    MSG_CH_BEACON = 3
 };
 
 /**
@@ -239,6 +241,48 @@ class MsgTrackResult : public ::MsgTracking
 
 inline void doPacking(cCommBuffer *b, MsgTrackResult& obj) {obj.parsimPack(b);}
 inline void doUnpacking(cCommBuffer *b, MsgTrackResult& obj) {obj.parsimUnpack(b);}
+
+/**
+ * Class generated from <tt>applications/tracking/messagetracking.msg</tt> by opp_msgc.
+ * <pre>
+ * packet MsgCHBeacon extends MsgTracking {
+ *     int routingType = RT_BROADCAST;
+ *     int msgType = MSG_CH_BEACON;
+ *     
+ * }
+ * </pre>
+ */
+class MsgCHBeacon : public ::MsgTracking
+{
+  protected:
+    int routingType_var;
+    int msgType_var;
+
+  private:
+    void copy(const MsgCHBeacon& other);
+
+  protected:
+    // protected and unimplemented operator==(), to prevent accidental usage
+    bool operator==(const MsgCHBeacon&);
+
+  public:
+    MsgCHBeacon(const char *name=NULL, int kind=0);
+    MsgCHBeacon(const MsgCHBeacon& other);
+    virtual ~MsgCHBeacon();
+    MsgCHBeacon& operator=(const MsgCHBeacon& other);
+    virtual MsgCHBeacon *dup() const {return new MsgCHBeacon(*this);}
+    virtual void parsimPack(cCommBuffer *b);
+    virtual void parsimUnpack(cCommBuffer *b);
+
+    // field getter/setter methods
+    virtual int getRoutingType() const;
+    virtual void setRoutingType(int routingType);
+    virtual int getMsgType() const;
+    virtual void setMsgType(int msgType);
+};
+
+inline void doPacking(cCommBuffer *b, MsgCHBeacon& obj) {obj.parsimPack(b);}
+inline void doUnpacking(cCommBuffer *b, MsgCHBeacon& obj) {obj.parsimUnpack(b);}
 
 
 #endif // _MESSAGETRACKING_M_H_

@@ -54,4 +54,7 @@ simple StatCollector
         
         @signal[lost_mtr_net](type="int");
         @statistic[numLostMTRbyNet](title="Number of lost MsgTrackResult by network layer"; source="lost_mtr_net"; record=last);
+        
+        @signal[num_meas_ch](type="int");
+        @statistic[numMeasCH](title="Number of measurement used by CH"; source="num_meas_ch"; record=vector,histogram);
 }

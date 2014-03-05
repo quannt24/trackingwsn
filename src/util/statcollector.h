@@ -45,6 +45,7 @@ class StatCollector : public cSimpleModule
         simsignal_t sigRecvMTR;
         simsignal_t sigLostMTRbyLink;
         simsignal_t sigLostMTRbyNet;
+        simsignal_t sigNumMeasCH; // Record number of measurement used by CH
 
         /**
          * Record remaining energy of sensor nodes
@@ -78,6 +79,8 @@ class StatCollector : public cSimpleModule
         void incLostMTRbyLink();
         /* Increase number of lost MsgTrackResult by network layer */
         void incLostMTRbyNet();
+        /* Record number of measurement used by CH */
+        void recNumMeasCH(int numMeas);
 
         void finish();
 };

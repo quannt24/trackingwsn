@@ -66,7 +66,7 @@ simple Link802154 like ILink
 		int aMaxBE = default(5);
 		double aUnitBP = 20 * symPeriod; // A unit backoff-period
 		int macMaxNB = default(4); // 0 ~ 5
-		int macMinBE = default(3); // 0 ~ 3
+		int macMinBE = default(2); // 0 ~ 3
 
     gates:
         inout netGate; // Connect with network layer

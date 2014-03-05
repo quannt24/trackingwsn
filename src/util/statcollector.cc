@@ -42,6 +42,8 @@ void StatCollector::initialize()
     sigLostMTRbyLink = registerSignal("lost_mtr_link");
     // For record number of MsgTrackResult lost by network layer
     sigLostMTRbyNet = registerSignal("lost_mtr_net");
+    // Record number of measurement used by CH
+    sigNumMeasCH = registerSignal("num_meas_ch");
 
     // Record total sensor energy for first time
     pollTotalSensorEnergy();
@@ -155,6 +157,12 @@ void StatCollector::incLostMTRbyNet()
     Enter_Method("incLostMTRbyNet");
     numLostMTRbyNet++;
     emit(sigLostMTRbyNet, numLostMTRbyNet);
+}
+
+void StatCollector::recNumMeasCH(int numMeas)
+{
+    Enter_Method("recNumMeasCH");
+    emit(sigNumMeasCH, numMeas);
 }
 
 void StatCollector::finish()

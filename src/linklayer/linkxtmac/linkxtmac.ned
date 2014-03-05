@@ -30,14 +30,14 @@ simple LinkXTMAC extends Link802154
 		// Listen period (seconds), must long enough to receive one of two consecutive strobes
 		// TODO This period must contain delay for turning on radio (about 2.5ms, in this time,
 		// transceiver has not been able to receive)
-		double lR @unit(s) = default(0.0055s);
+		double lR @unit(s) = default(0.005s);
 		// Sleep period (radio totally off), causes delay (seconds)
 		double sR @unit(s) = default(0.1s);
 		// Sender
 		// Strobe period: time between sending 2 strobes. Must be long enough for receiving strobe
 		// ACK and short enough so that current strobe and next strobe fit in one listen period (lR)
-		// Transmit 27 bytes over 250kbps channel takes 0.000864s ~> 0.001s
-		double strobePeriod @unit(s) = default(0.002s);
+		// Transmit 27 bytes over 250kbps channel takes about 0.002s
+		double strobePeriod @unit(s) = default(0.003s);
         // Active time length
         double activeTime @unit(s) = default(2s);
 }

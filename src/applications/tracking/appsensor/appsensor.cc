@@ -122,11 +122,12 @@ void AppSensor::recvSenseResult(SensedResult *result)
     } else {
         if (!syncSense) {
             EV << "Synchronizing sensing\n";
-            MsgSyncRequest *notify = new MsgSyncRequest("SyncRequest");
-            notify->setByteLength(notify->getMsgSize());
-            send(notify, "netGate$o");
+            MsgSyncRequest *syncReq = new MsgSyncRequest("SyncRequest");
+            //syncReq->setPreambleFlag(false); // TODO Test
+            syncReq->setByteLength(syncReq->getMsgSize());
+            send(syncReq, "netGate$o");
             syncSense = true;
-            getParentModule()->bubble("Notifying");
+            getParentModule()->bubble("SyncReq");
             // Do nothing except change to synchronized state
         } else {
             // Add sensed measurement to collection
@@ -181,10 +182,12 @@ void AppSensor::recvMessage(MsgTracking *msg)
         send(cancelSense, "ssGate$o");
 
         // Reset sensing timer with synchronized value
+        // Adjusted time is calculated based on: senseInterval, senseDelay,
+        // txTime (with estimated packet size about 58 bytes) and duty cycling sleep interval (if any)
         Link802154 *link = check_and_cast<Link802154*>(getParentModule()->getSubmodule("link"));
         double addTime = par("senseInterval").doubleValue()
-                        - getParentModule()->getSubmodule("ass")->par("responseDelay").doubleValue()
-                        - (link->par("maxFrameSize").doubleValue() + link->par("phyHeaderSize").doubleValue()) / link->par("bitRate").doubleValue();
+                        - getModuleByPath("^.ass")->par("responseDelay").doubleValue()
+                        - 60 * 8 / link->par("bitRate").doubleValue();
         cancelEvent(senseTimer);
         scheduleAt(simTime() + addTime, senseTimer);
     } else if (msg->getMsgType() == MSG_SENSE_RESULT) {
@@ -261,6 +264,8 @@ void AppSensor::trackTargets()
             isCH = true; // This node is CH of at least one target
             // Estimate targets' positions
             tp = est->estimate((*ite).meaList);
+            // Record number of measurement used
+            sc->recNumMeasCH((*ite).meaList.size());
 
             // If estimate complete successfully
             if (tp != NULL) {

@@ -9,16 +9,25 @@
       <items xsi:type="scave:Add" filterPattern="tracked_tid*" type="VECTOR"/>
       <items xsi:type="scave:Add" filterPattern="id*" type="VECTOR"/>
     </datasets>
-    <datasets name="Estimation error">
-      <items xsi:type="scave:Add" filterPattern="estimationError:vector" type="VECTOR"/>
-      <items xsi:type="scave:LineChart" name="Estimation error" lineNameFormat="${configname}">
-        <properties name="Graph.Title" value="Estimation error"/>
-        <properties name="X.Axis.Title" value="Time (s)"/>
-        <properties name="Y.Axis.Title" value="Error (m)"/>
-        <properties name="Line.Type" value="Dots"/>
+    <datasets name="Estimation">
+      <items xsi:type="scave:Group" name="Error">
+        <items xsi:type="scave:Add" filterPattern="estimationError:vector" type="VECTOR"/>
+        <items xsi:type="scave:LineChart" name="Estimation error" lineNameFormat="${configname}">
+          <properties name="Graph.Title" value="Estimation error"/>
+          <properties name="X.Axis.Title" value="Time (s)"/>
+          <properties name="Y.Axis.Title" value="Error (m)"/>
+          <properties name="Line.Type" value="Dots"/>
+        </items>
+        <items xsi:type="scave:ComputeScalar" scalarName="mean_error" valueExpr="mean('estimationError:vector')" moduleExpr="" groupByExpr=""/>
+        <items xsi:type="scave:ComputeScalar" scalarName="max_error" valueExpr="max('estimationError:vector')" moduleExpr="" groupByExpr=""/>
       </items>
-      <items xsi:type="scave:ComputeScalar" scalarName="mean_error" valueExpr="mean('estimationError:vector')" moduleExpr="" groupByExpr=""/>
-      <items xsi:type="scave:ComputeScalar" scalarName="max_error" valueExpr="max('estimationError:vector')" moduleExpr="" groupByExpr=""/>
+      <items xsi:type="scave:Group" name="Measurement">
+        <items xsi:type="scave:Add" filterPattern="numMeasCH:vector" type="VECTOR"/>
+        <items xsi:type="scave:Add" filterPattern="numMeasCH:histogram" type="HISTOGRAM"/>
+        <items xsi:type="scave:HistogramChart" name="Number of measurements used by CH">
+          <properties name="Graph.Title" value="Number of measurements used by CH"/>
+        </items>
+      </items>
     </datasets>
     <datasets name="Efficiency">
       <items xsi:type="scave:Group" name="Energy">
@@ -52,7 +61,7 @@
     </datasets>
   </datasets>
   <chartSheets>
-    <chartSheets name="default"/>
-    <chartSheets name="Efficiency" charts="//@datasets/@datasets.1/@items.1 //@datasets/@datasets.2/@items.0/@items.1 //@datasets/@datasets.2/@items.1/@items.1"/>
+    <chartSheets name="default" charts="//@datasets/@datasets.1/@items.1/@items.2"/>
+    <chartSheets name="Efficiency" charts="//@datasets/@datasets.1/@items.0/@items.1 //@datasets/@datasets.2/@items.0/@items.1 //@datasets/@datasets.2/@items.1/@items.1"/>
   </chartSheets>
 </scave:Analysis>

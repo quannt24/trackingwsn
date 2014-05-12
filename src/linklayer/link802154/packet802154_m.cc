@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from linklayer/link802154/packet802154.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from linklayer/link802154/packet802154.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "packet802154_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -39,7 +41,7 @@ EXECUTE_ON_STARTUP(
 
 Register_Class(Packet802154);
 
-Packet802154::Packet802154(const char *name, int kind) : cPacket(name,kind)
+Packet802154::Packet802154(const char *name, int kind) : ::cPacket(name,kind)
 {
     this->txType_var = 0;
     this->srcMacAddr_var = 0;
@@ -48,7 +50,7 @@ Packet802154::Packet802154(const char *name, int kind) : cPacket(name,kind)
     this->pkSize_var = 18;
 }
 
-Packet802154::Packet802154(const Packet802154& other) : cPacket(other)
+Packet802154::Packet802154(const Packet802154& other) : ::cPacket(other)
 {
     copy(other);
 }
@@ -60,7 +62,7 @@ Packet802154::~Packet802154()
 Packet802154& Packet802154::operator=(const Packet802154& other)
 {
     if (this==&other) return *this;
-    cPacket::operator=(other);
+    ::cPacket::operator=(other);
     copy(other);
     return *this;
 }
@@ -76,7 +78,7 @@ void Packet802154::copy(const Packet802154& other)
 
 void Packet802154::parsimPack(cCommBuffer *b)
 {
-    cPacket::parsimPack(b);
+    ::cPacket::parsimPack(b);
     doPacking(b,this->txType_var);
     doPacking(b,this->srcMacAddr_var);
     doPacking(b,this->desMacAddr_var);
@@ -86,7 +88,7 @@ void Packet802154::parsimPack(cCommBuffer *b)
 
 void Packet802154::parsimUnpack(cCommBuffer *b)
 {
-    cPacket::parsimUnpack(b);
+    ::cPacket::parsimUnpack(b);
     doUnpacking(b,this->txType_var);
     doUnpacking(b,this->srcMacAddr_var);
     doUnpacking(b,this->desMacAddr_var);

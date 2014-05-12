@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from sensors/sensereq.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from sensors/sensereq.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "sensereq_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -32,11 +34,11 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 Register_Class(SenseReq);
 
-SenseReq::SenseReq(const char *name, int kind) : cMessage(name,kind)
+SenseReq::SenseReq(const char *name, int kind) : ::cMessage(name,kind)
 {
 }
 
-SenseReq::SenseReq(const SenseReq& other) : cMessage(other)
+SenseReq::SenseReq(const SenseReq& other) : ::cMessage(other)
 {
     copy(other);
 }
@@ -48,7 +50,7 @@ SenseReq::~SenseReq()
 SenseReq& SenseReq::operator=(const SenseReq& other)
 {
     if (this==&other) return *this;
-    cMessage::operator=(other);
+    ::cMessage::operator=(other);
     copy(other);
     return *this;
 }
@@ -61,14 +63,14 @@ void SenseReq::copy(const SenseReq& other)
 
 void SenseReq::parsimPack(cCommBuffer *b)
 {
-    cMessage::parsimPack(b);
+    ::cMessage::parsimPack(b);
     doPacking(b,this->srcAss_var);
     doPacking(b,this->srcMob_var);
 }
 
 void SenseReq::parsimUnpack(cCommBuffer *b)
 {
-    cMessage::parsimUnpack(b);
+    ::cMessage::parsimUnpack(b);
     doUnpacking(b,this->srcAss_var);
     doUnpacking(b,this->srcMob_var);
 }

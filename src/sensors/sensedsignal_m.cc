@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from sensors/sensedsignal.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from sensors/sensedsignal.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "sensedsignal_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -32,7 +34,7 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 Register_Class(SensedSignal);
 
-SensedSignal::SensedSignal(const char *name, int kind) : cMessage(name,kind)
+SensedSignal::SensedSignal(const char *name, int kind) : ::cMessage(name,kind)
 {
     this->tarId_var = 0;
     this->signal_var = 0;
@@ -41,7 +43,7 @@ SensedSignal::SensedSignal(const char *name, int kind) : cMessage(name,kind)
     this->y_var = 0;
 }
 
-SensedSignal::SensedSignal(const SensedSignal& other) : cMessage(other)
+SensedSignal::SensedSignal(const SensedSignal& other) : ::cMessage(other)
 {
     copy(other);
 }
@@ -53,7 +55,7 @@ SensedSignal::~SensedSignal()
 SensedSignal& SensedSignal::operator=(const SensedSignal& other)
 {
     if (this==&other) return *this;
-    cMessage::operator=(other);
+    ::cMessage::operator=(other);
     copy(other);
     return *this;
 }
@@ -69,7 +71,7 @@ void SensedSignal::copy(const SensedSignal& other)
 
 void SensedSignal::parsimPack(cCommBuffer *b)
 {
-    cMessage::parsimPack(b);
+    ::cMessage::parsimPack(b);
     doPacking(b,this->tarId_var);
     doPacking(b,this->signal_var);
     doPacking(b,this->distance_var);
@@ -79,7 +81,7 @@ void SensedSignal::parsimPack(cCommBuffer *b)
 
 void SensedSignal::parsimUnpack(cCommBuffer *b)
 {
-    cMessage::parsimUnpack(b);
+    ::cMessage::parsimUnpack(b);
     doUnpacking(b,this->tarId_var);
     doUnpacking(b,this->signal_var);
     doUnpacking(b,this->distance_var);

@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from networklayer/messagecr.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from networklayer/messagecr.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "messagecr_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -40,7 +42,7 @@ EXECUTE_ON_STARTUP(
 
 Register_Class(MessageCR);
 
-MessageCR::MessageCR(const char *name, int kind) : cPacket(name,kind)
+MessageCR::MessageCR(const char *name, int kind) : ::cPacket(name,kind)
 {
     this->routingType_var = 0;
     this->desMacAddr_var = 0;
@@ -48,7 +50,7 @@ MessageCR::MessageCR(const char *name, int kind) : cPacket(name,kind)
     this->msgSize_var = 10;
 }
 
-MessageCR::MessageCR(const MessageCR& other) : cPacket(other)
+MessageCR::MessageCR(const MessageCR& other) : ::cPacket(other)
 {
     copy(other);
 }
@@ -60,7 +62,7 @@ MessageCR::~MessageCR()
 MessageCR& MessageCR::operator=(const MessageCR& other)
 {
     if (this==&other) return *this;
-    cPacket::operator=(other);
+    ::cPacket::operator=(other);
     copy(other);
     return *this;
 }
@@ -75,7 +77,7 @@ void MessageCR::copy(const MessageCR& other)
 
 void MessageCR::parsimPack(cCommBuffer *b)
 {
-    cPacket::parsimPack(b);
+    ::cPacket::parsimPack(b);
     doPacking(b,this->routingType_var);
     doPacking(b,this->desMacAddr_var);
     doPacking(b,this->preambleFlag_var);
@@ -84,7 +86,7 @@ void MessageCR::parsimPack(cCommBuffer *b)
 
 void MessageCR::parsimUnpack(cCommBuffer *b)
 {
-    cPacket::parsimUnpack(b);
+    ::cPacket::parsimUnpack(b);
     doUnpacking(b,this->routingType_var);
     doUnpacking(b,this->desMacAddr_var);
     doUnpacking(b,this->preambleFlag_var);

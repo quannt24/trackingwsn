@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from networklayer/packetcr.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from networklayer/packetcr.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "packetcr_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -42,7 +44,7 @@ EXECUTE_ON_STARTUP(
 
 Register_Class(PacketCR);
 
-PacketCR::PacketCR(const char *name, int kind) : Packet802154(name,kind)
+PacketCR::PacketCR(const char *name, int kind) : ::Packet802154(name,kind)
 {
     this->setTxType(TX_PPP);
 
@@ -51,7 +53,7 @@ PacketCR::PacketCR(const char *name, int kind) : Packet802154(name,kind)
     this->pkSize_var = 20;
 }
 
-PacketCR::PacketCR(const PacketCR& other) : Packet802154(other)
+PacketCR::PacketCR(const PacketCR& other) : ::Packet802154(other)
 {
     copy(other);
 }
@@ -63,7 +65,7 @@ PacketCR::~PacketCR()
 PacketCR& PacketCR::operator=(const PacketCR& other)
 {
     if (this==&other) return *this;
-    Packet802154::operator=(other);
+    ::Packet802154::operator=(other);
     copy(other);
     return *this;
 }
@@ -77,7 +79,7 @@ void PacketCR::copy(const PacketCR& other)
 
 void PacketCR::parsimPack(cCommBuffer *b)
 {
-    Packet802154::parsimPack(b);
+    ::Packet802154::parsimPack(b);
     doPacking(b,this->pkType_var);
     doPacking(b,this->hopLimit_var);
     doPacking(b,this->pkSize_var);
@@ -85,7 +87,7 @@ void PacketCR::parsimPack(cCommBuffer *b)
 
 void PacketCR::parsimUnpack(cCommBuffer *b)
 {
-    Packet802154::parsimUnpack(b);
+    ::Packet802154::parsimUnpack(b);
     doUnpacking(b,this->pkType_var);
     doUnpacking(b,this->hopLimit_var);
     doUnpacking(b,this->pkSize_var);

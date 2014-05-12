@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from linklayer/link802154/frame802154.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from linklayer/link802154/frame802154.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "frame802154_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -40,14 +42,14 @@ EXECUTE_ON_STARTUP(
 
 Register_Class(Frame802154);
 
-Frame802154::Frame802154(const char *name, int kind) : cPacket(name,kind)
+Frame802154::Frame802154(const char *name, int kind) : ::cPacket(name,kind)
 {
     this->type_var = FR_PAYLOAD;
     this->srcAddr_var = 0;
     this->desAddr_var = 0;
 }
 
-Frame802154::Frame802154(const Frame802154& other) : cPacket(other)
+Frame802154::Frame802154(const Frame802154& other) : ::cPacket(other)
 {
     copy(other);
 }
@@ -59,7 +61,7 @@ Frame802154::~Frame802154()
 Frame802154& Frame802154::operator=(const Frame802154& other)
 {
     if (this==&other) return *this;
-    cPacket::operator=(other);
+    ::cPacket::operator=(other);
     copy(other);
     return *this;
 }
@@ -73,7 +75,7 @@ void Frame802154::copy(const Frame802154& other)
 
 void Frame802154::parsimPack(cCommBuffer *b)
 {
-    cPacket::parsimPack(b);
+    ::cPacket::parsimPack(b);
     doPacking(b,this->type_var);
     doPacking(b,this->srcAddr_var);
     doPacking(b,this->desAddr_var);
@@ -81,7 +83,7 @@ void Frame802154::parsimPack(cCommBuffer *b)
 
 void Frame802154::parsimUnpack(cCommBuffer *b)
 {
-    cPacket::parsimUnpack(b);
+    ::cPacket::parsimUnpack(b);
     doUnpacking(b,this->type_var);
     doUnpacking(b,this->srcAddr_var);
     doUnpacking(b,this->desAddr_var);

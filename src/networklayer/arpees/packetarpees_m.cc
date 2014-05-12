@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from networklayer/arpees/packetarpees.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from networklayer/arpees/packetarpees.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "packetarpees_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -32,11 +34,11 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 Register_Class(PacketARPEES);
 
-PacketARPEES::PacketARPEES(const char *name, int kind) : PacketCR(name,kind)
+PacketARPEES::PacketARPEES(const char *name, int kind) : ::PacketCR(name,kind)
 {
 }
 
-PacketARPEES::PacketARPEES(const PacketARPEES& other) : PacketCR(other)
+PacketARPEES::PacketARPEES(const PacketARPEES& other) : ::PacketCR(other)
 {
     copy(other);
 }
@@ -48,7 +50,7 @@ PacketARPEES::~PacketARPEES()
 PacketARPEES& PacketARPEES::operator=(const PacketARPEES& other)
 {
     if (this==&other) return *this;
-    PacketCR::operator=(other);
+    ::PacketCR::operator=(other);
     copy(other);
     return *this;
 }
@@ -59,12 +61,12 @@ void PacketARPEES::copy(const PacketARPEES& other)
 
 void PacketARPEES::parsimPack(cCommBuffer *b)
 {
-    PacketCR::parsimPack(b);
+    ::PacketCR::parsimPack(b);
 }
 
 void PacketARPEES::parsimUnpack(cCommBuffer *b)
 {
-    PacketCR::parsimUnpack(b);
+    ::PacketCR::parsimUnpack(b);
 }
 
 class PacketARPEESDescriptor : public cClassDescriptor
@@ -238,13 +240,13 @@ void *PacketARPEESDescriptor::getFieldStructPointer(void *object, int field, int
 
 Register_Class(PacketARPEES_RelayReq);
 
-PacketARPEES_RelayReq::PacketARPEES_RelayReq(const char *name, int kind) : PacketARPEES(name,kind)
+PacketARPEES_RelayReq::PacketARPEES_RelayReq(const char *name, int kind) : ::PacketARPEES(name,kind)
 {
     this->setTxType(TX_BROADCAST);
     this->setPkType(PK_REQ_RELAY);
 }
 
-PacketARPEES_RelayReq::PacketARPEES_RelayReq(const PacketARPEES_RelayReq& other) : PacketARPEES(other)
+PacketARPEES_RelayReq::PacketARPEES_RelayReq(const PacketARPEES_RelayReq& other) : ::PacketARPEES(other)
 {
     copy(other);
 }
@@ -256,7 +258,7 @@ PacketARPEES_RelayReq::~PacketARPEES_RelayReq()
 PacketARPEES_RelayReq& PacketARPEES_RelayReq::operator=(const PacketARPEES_RelayReq& other)
 {
     if (this==&other) return *this;
-    PacketARPEES::operator=(other);
+    ::PacketARPEES::operator=(other);
     copy(other);
     return *this;
 }
@@ -267,12 +269,12 @@ void PacketARPEES_RelayReq::copy(const PacketARPEES_RelayReq& other)
 
 void PacketARPEES_RelayReq::parsimPack(cCommBuffer *b)
 {
-    PacketARPEES::parsimPack(b);
+    ::PacketARPEES::parsimPack(b);
 }
 
 void PacketARPEES_RelayReq::parsimUnpack(cCommBuffer *b)
 {
-    PacketARPEES::parsimUnpack(b);
+    ::PacketARPEES::parsimUnpack(b);
 }
 
 class PacketARPEES_RelayReqDescriptor : public cClassDescriptor
@@ -446,7 +448,7 @@ void *PacketARPEES_RelayReqDescriptor::getFieldStructPointer(void *object, int f
 
 Register_Class(PacketARPEES_RelayInfo);
 
-PacketARPEES_RelayInfo::PacketARPEES_RelayInfo(const char *name, int kind) : PacketARPEES(name,kind)
+PacketARPEES_RelayInfo::PacketARPEES_RelayInfo(const char *name, int kind) : ::PacketARPEES(name,kind)
 {
     this->setPkType(PK_RELAY_INFO);
     this->setPkSize(37);
@@ -458,7 +460,7 @@ PacketARPEES_RelayInfo::PacketARPEES_RelayInfo(const char *name, int kind) : Pac
     this->dBS_var = 0;
 }
 
-PacketARPEES_RelayInfo::PacketARPEES_RelayInfo(const PacketARPEES_RelayInfo& other) : PacketARPEES(other)
+PacketARPEES_RelayInfo::PacketARPEES_RelayInfo(const PacketARPEES_RelayInfo& other) : ::PacketARPEES(other)
 {
     copy(other);
 }
@@ -470,7 +472,7 @@ PacketARPEES_RelayInfo::~PacketARPEES_RelayInfo()
 PacketARPEES_RelayInfo& PacketARPEES_RelayInfo::operator=(const PacketARPEES_RelayInfo& other)
 {
     if (this==&other) return *this;
-    PacketARPEES::operator=(other);
+    ::PacketARPEES::operator=(other);
     copy(other);
     return *this;
 }
@@ -486,7 +488,7 @@ void PacketARPEES_RelayInfo::copy(const PacketARPEES_RelayInfo& other)
 
 void PacketARPEES_RelayInfo::parsimPack(cCommBuffer *b)
 {
-    PacketARPEES::parsimPack(b);
+    ::PacketARPEES::parsimPack(b);
     doPacking(b,this->bsFlag_var);
     doPacking(b,this->energy_var);
     doPacking(b,this->posX_var);
@@ -496,7 +498,7 @@ void PacketARPEES_RelayInfo::parsimPack(cCommBuffer *b)
 
 void PacketARPEES_RelayInfo::parsimUnpack(cCommBuffer *b)
 {
-    PacketARPEES::parsimUnpack(b);
+    ::PacketARPEES::parsimUnpack(b);
     doUnpacking(b,this->bsFlag_var);
     doUnpacking(b,this->energy_var);
     doUnpacking(b,this->posX_var);

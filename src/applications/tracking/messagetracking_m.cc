@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from applications/tracking/messagetracking.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from applications/tracking/messagetracking.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "messagetracking_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -41,13 +43,13 @@ EXECUTE_ON_STARTUP(
 
 Register_Class(MsgTracking);
 
-MsgTracking::MsgTracking(const char *name, int kind) : MessageCR(name,kind)
+MsgTracking::MsgTracking(const char *name, int kind) : ::MessageCR(name,kind)
 {
     this->msgType_var = 0;
     this->msgSize_var = 11;
 }
 
-MsgTracking::MsgTracking(const MsgTracking& other) : MessageCR(other)
+MsgTracking::MsgTracking(const MsgTracking& other) : ::MessageCR(other)
 {
     copy(other);
 }
@@ -59,7 +61,7 @@ MsgTracking::~MsgTracking()
 MsgTracking& MsgTracking::operator=(const MsgTracking& other)
 {
     if (this==&other) return *this;
-    MessageCR::operator=(other);
+    ::MessageCR::operator=(other);
     copy(other);
     return *this;
 }
@@ -72,14 +74,14 @@ void MsgTracking::copy(const MsgTracking& other)
 
 void MsgTracking::parsimPack(cCommBuffer *b)
 {
-    MessageCR::parsimPack(b);
+    ::MessageCR::parsimPack(b);
     doPacking(b,this->msgType_var);
     doPacking(b,this->msgSize_var);
 }
 
 void MsgTracking::parsimUnpack(cCommBuffer *b)
 {
-    MessageCR::parsimUnpack(b);
+    ::MessageCR::parsimUnpack(b);
     doUnpacking(b,this->msgType_var);
     doUnpacking(b,this->msgSize_var);
 }
@@ -298,13 +300,13 @@ void *MsgTrackingDescriptor::getFieldStructPointer(void *object, int field, int 
 
 Register_Class(MsgSyncRequest);
 
-MsgSyncRequest::MsgSyncRequest(const char *name, int kind) : MsgTracking(name,kind)
+MsgSyncRequest::MsgSyncRequest(const char *name, int kind) : ::MsgTracking(name,kind)
 {
     this->routingType_var = RT_BROADCAST;
     this->msgType_var = MSG_SYNC_REQUEST;
 }
 
-MsgSyncRequest::MsgSyncRequest(const MsgSyncRequest& other) : MsgTracking(other)
+MsgSyncRequest::MsgSyncRequest(const MsgSyncRequest& other) : ::MsgTracking(other)
 {
     copy(other);
 }
@@ -316,7 +318,7 @@ MsgSyncRequest::~MsgSyncRequest()
 MsgSyncRequest& MsgSyncRequest::operator=(const MsgSyncRequest& other)
 {
     if (this==&other) return *this;
-    MsgTracking::operator=(other);
+    ::MsgTracking::operator=(other);
     copy(other);
     return *this;
 }
@@ -329,14 +331,14 @@ void MsgSyncRequest::copy(const MsgSyncRequest& other)
 
 void MsgSyncRequest::parsimPack(cCommBuffer *b)
 {
-    MsgTracking::parsimPack(b);
+    ::MsgTracking::parsimPack(b);
     doPacking(b,this->routingType_var);
     doPacking(b,this->msgType_var);
 }
 
 void MsgSyncRequest::parsimUnpack(cCommBuffer *b)
 {
-    MsgTracking::parsimUnpack(b);
+    ::MsgTracking::parsimUnpack(b);
     doUnpacking(b,this->routingType_var);
     doUnpacking(b,this->msgType_var);
 }
@@ -555,7 +557,7 @@ void *MsgSyncRequestDescriptor::getFieldStructPointer(void *object, int field, i
 
 Register_Class(MsgSenseResult);
 
-MsgSenseResult::MsgSenseResult(const char *name, int kind) : MsgTracking(name,kind)
+MsgSenseResult::MsgSenseResult(const char *name, int kind) : ::MsgTracking(name,kind)
 {
     this->routingType_var = RT_BROADCAST;
     this->msgType_var = MSG_SENSE_RESULT;
@@ -564,7 +566,7 @@ MsgSenseResult::MsgSenseResult(const char *name, int kind) : MsgTracking(name,ki
     this->nodeEnergy_var = 0;
 }
 
-MsgSenseResult::MsgSenseResult(const MsgSenseResult& other) : MsgTracking(other)
+MsgSenseResult::MsgSenseResult(const MsgSenseResult& other) : ::MsgTracking(other)
 {
     copy(other);
 }
@@ -576,7 +578,7 @@ MsgSenseResult::~MsgSenseResult()
 MsgSenseResult& MsgSenseResult::operator=(const MsgSenseResult& other)
 {
     if (this==&other) return *this;
-    MsgTracking::operator=(other);
+    ::MsgTracking::operator=(other);
     copy(other);
     return *this;
 }
@@ -593,7 +595,7 @@ void MsgSenseResult::copy(const MsgSenseResult& other)
 
 void MsgSenseResult::parsimPack(cCommBuffer *b)
 {
-    MsgTracking::parsimPack(b);
+    ::MsgTracking::parsimPack(b);
     doPacking(b,this->routingType_var);
     doPacking(b,this->msgType_var);
     doPacking(b,this->meaList_var);
@@ -604,7 +606,7 @@ void MsgSenseResult::parsimPack(cCommBuffer *b)
 
 void MsgSenseResult::parsimUnpack(cCommBuffer *b)
 {
-    MsgTracking::parsimUnpack(b);
+    ::MsgTracking::parsimUnpack(b);
     doUnpacking(b,this->routingType_var);
     doUnpacking(b,this->msgType_var);
     doUnpacking(b,this->meaList_var);
@@ -895,14 +897,14 @@ void *MsgSenseResultDescriptor::getFieldStructPointer(void *object, int field, i
 
 Register_Class(MsgTrackResult);
 
-MsgTrackResult::MsgTrackResult(const char *name, int kind) : MsgTracking(name,kind)
+MsgTrackResult::MsgTrackResult(const char *name, int kind) : ::MsgTracking(name,kind)
 {
     this->routingType_var = RT_TO_BS;
     this->msgType_var = MSG_TRACK_RESULT;
     this->tsSense_var = 0;
 }
 
-MsgTrackResult::MsgTrackResult(const MsgTrackResult& other) : MsgTracking(other)
+MsgTrackResult::MsgTrackResult(const MsgTrackResult& other) : ::MsgTracking(other)
 {
     copy(other);
 }
@@ -914,7 +916,7 @@ MsgTrackResult::~MsgTrackResult()
 MsgTrackResult& MsgTrackResult::operator=(const MsgTrackResult& other)
 {
     if (this==&other) return *this;
-    MsgTracking::operator=(other);
+    ::MsgTracking::operator=(other);
     copy(other);
     return *this;
 }
@@ -929,7 +931,7 @@ void MsgTrackResult::copy(const MsgTrackResult& other)
 
 void MsgTrackResult::parsimPack(cCommBuffer *b)
 {
-    MsgTracking::parsimPack(b);
+    ::MsgTracking::parsimPack(b);
     doPacking(b,this->routingType_var);
     doPacking(b,this->msgType_var);
     doPacking(b,this->tpList_var);
@@ -938,7 +940,7 @@ void MsgTrackResult::parsimPack(cCommBuffer *b)
 
 void MsgTrackResult::parsimUnpack(cCommBuffer *b)
 {
-    MsgTracking::parsimUnpack(b);
+    ::MsgTracking::parsimUnpack(b);
     doUnpacking(b,this->routingType_var);
     doUnpacking(b,this->msgType_var);
     doUnpacking(b,this->tpList_var);
@@ -1193,13 +1195,13 @@ void *MsgTrackResultDescriptor::getFieldStructPointer(void *object, int field, i
 
 Register_Class(MsgCHBeacon);
 
-MsgCHBeacon::MsgCHBeacon(const char *name, int kind) : MsgTracking(name,kind)
+MsgCHBeacon::MsgCHBeacon(const char *name, int kind) : ::MsgTracking(name,kind)
 {
     this->routingType_var = RT_BROADCAST;
     this->msgType_var = MSG_CH_BEACON;
 }
 
-MsgCHBeacon::MsgCHBeacon(const MsgCHBeacon& other) : MsgTracking(other)
+MsgCHBeacon::MsgCHBeacon(const MsgCHBeacon& other) : ::MsgTracking(other)
 {
     copy(other);
 }
@@ -1211,7 +1213,7 @@ MsgCHBeacon::~MsgCHBeacon()
 MsgCHBeacon& MsgCHBeacon::operator=(const MsgCHBeacon& other)
 {
     if (this==&other) return *this;
-    MsgTracking::operator=(other);
+    ::MsgTracking::operator=(other);
     copy(other);
     return *this;
 }
@@ -1224,14 +1226,14 @@ void MsgCHBeacon::copy(const MsgCHBeacon& other)
 
 void MsgCHBeacon::parsimPack(cCommBuffer *b)
 {
-    MsgTracking::parsimPack(b);
+    ::MsgTracking::parsimPack(b);
     doPacking(b,this->routingType_var);
     doPacking(b,this->msgType_var);
 }
 
 void MsgCHBeacon::parsimUnpack(cCommBuffer *b)
 {
-    MsgTracking::parsimUnpack(b);
+    ::MsgTracking::parsimUnpack(b);
     doUnpacking(b,this->routingType_var);
     doUnpacking(b,this->msgType_var);
 }

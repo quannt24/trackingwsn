@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from networklayer/emrp/packetemrp.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from networklayer/emrp/packetemrp.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "packetemrp_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -32,11 +34,11 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 Register_Class(PacketEMRP);
 
-PacketEMRP::PacketEMRP(const char *name, int kind) : PacketCR(name,kind)
+PacketEMRP::PacketEMRP(const char *name, int kind) : ::PacketCR(name,kind)
 {
 }
 
-PacketEMRP::PacketEMRP(const PacketEMRP& other) : PacketCR(other)
+PacketEMRP::PacketEMRP(const PacketEMRP& other) : ::PacketCR(other)
 {
     copy(other);
 }
@@ -48,7 +50,7 @@ PacketEMRP::~PacketEMRP()
 PacketEMRP& PacketEMRP::operator=(const PacketEMRP& other)
 {
     if (this==&other) return *this;
-    PacketCR::operator=(other);
+    ::PacketCR::operator=(other);
     copy(other);
     return *this;
 }
@@ -59,12 +61,12 @@ void PacketEMRP::copy(const PacketEMRP& other)
 
 void PacketEMRP::parsimPack(cCommBuffer *b)
 {
-    PacketCR::parsimPack(b);
+    ::PacketCR::parsimPack(b);
 }
 
 void PacketEMRP::parsimUnpack(cCommBuffer *b)
 {
-    PacketCR::parsimUnpack(b);
+    ::PacketCR::parsimUnpack(b);
 }
 
 class PacketEMRPDescriptor : public cClassDescriptor
@@ -238,7 +240,7 @@ void *PacketEMRPDescriptor::getFieldStructPointer(void *object, int field, int i
 
 Register_Class(PacketEMRP_RelayInfo);
 
-PacketEMRP_RelayInfo::PacketEMRP_RelayInfo(const char *name, int kind) : PacketEMRP(name,kind)
+PacketEMRP_RelayInfo::PacketEMRP_RelayInfo(const char *name, int kind) : ::PacketEMRP(name,kind)
 {
     this->setPkType(PK_RELAY_INFO);
     this->setPkSize(37);
@@ -250,7 +252,7 @@ PacketEMRP_RelayInfo::PacketEMRP_RelayInfo(const char *name, int kind) : PacketE
     this->dBS_var = 0;
 }
 
-PacketEMRP_RelayInfo::PacketEMRP_RelayInfo(const PacketEMRP_RelayInfo& other) : PacketEMRP(other)
+PacketEMRP_RelayInfo::PacketEMRP_RelayInfo(const PacketEMRP_RelayInfo& other) : ::PacketEMRP(other)
 {
     copy(other);
 }
@@ -262,7 +264,7 @@ PacketEMRP_RelayInfo::~PacketEMRP_RelayInfo()
 PacketEMRP_RelayInfo& PacketEMRP_RelayInfo::operator=(const PacketEMRP_RelayInfo& other)
 {
     if (this==&other) return *this;
-    PacketEMRP::operator=(other);
+    ::PacketEMRP::operator=(other);
     copy(other);
     return *this;
 }
@@ -278,7 +280,7 @@ void PacketEMRP_RelayInfo::copy(const PacketEMRP_RelayInfo& other)
 
 void PacketEMRP_RelayInfo::parsimPack(cCommBuffer *b)
 {
-    PacketEMRP::parsimPack(b);
+    ::PacketEMRP::parsimPack(b);
     doPacking(b,this->bsFlag_var);
     doPacking(b,this->energy_var);
     doPacking(b,this->posX_var);
@@ -288,7 +290,7 @@ void PacketEMRP_RelayInfo::parsimPack(cCommBuffer *b)
 
 void PacketEMRP_RelayInfo::parsimUnpack(cCommBuffer *b)
 {
-    PacketEMRP::parsimUnpack(b);
+    ::PacketEMRP::parsimUnpack(b);
     doUnpacking(b,this->bsFlag_var);
     doUnpacking(b,this->energy_var);
     doUnpacking(b,this->posX_var);
@@ -561,7 +563,7 @@ void *PacketEMRP_RelayInfoDescriptor::getFieldStructPointer(void *object, int fi
 
 Register_Class(PacketEMRP_EnergyInfo);
 
-PacketEMRP_EnergyInfo::PacketEMRP_EnergyInfo(const char *name, int kind) : PacketEMRP(name,kind)
+PacketEMRP_EnergyInfo::PacketEMRP_EnergyInfo(const char *name, int kind) : ::PacketEMRP(name,kind)
 {
     this->setPkType(PK_ENERGY_INFO);
     this->setPkSize(24);
@@ -569,7 +571,7 @@ PacketEMRP_EnergyInfo::PacketEMRP_EnergyInfo(const char *name, int kind) : Packe
     this->remainEnergy_var = 0;
 }
 
-PacketEMRP_EnergyInfo::PacketEMRP_EnergyInfo(const PacketEMRP_EnergyInfo& other) : PacketEMRP(other)
+PacketEMRP_EnergyInfo::PacketEMRP_EnergyInfo(const PacketEMRP_EnergyInfo& other) : ::PacketEMRP(other)
 {
     copy(other);
 }
@@ -581,7 +583,7 @@ PacketEMRP_EnergyInfo::~PacketEMRP_EnergyInfo()
 PacketEMRP_EnergyInfo& PacketEMRP_EnergyInfo::operator=(const PacketEMRP_EnergyInfo& other)
 {
     if (this==&other) return *this;
-    PacketEMRP::operator=(other);
+    ::PacketEMRP::operator=(other);
     copy(other);
     return *this;
 }
@@ -593,13 +595,13 @@ void PacketEMRP_EnergyInfo::copy(const PacketEMRP_EnergyInfo& other)
 
 void PacketEMRP_EnergyInfo::parsimPack(cCommBuffer *b)
 {
-    PacketEMRP::parsimPack(b);
+    ::PacketEMRP::parsimPack(b);
     doPacking(b,this->remainEnergy_var);
 }
 
 void PacketEMRP_EnergyInfo::parsimUnpack(cCommBuffer *b)
 {
-    PacketEMRP::parsimUnpack(b);
+    ::PacketEMRP::parsimUnpack(b);
     doUnpacking(b,this->remainEnergy_var);
 }
 

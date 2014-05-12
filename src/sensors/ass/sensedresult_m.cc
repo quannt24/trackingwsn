@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by opp_msgc 4.3 from sensors/ass/sensedresult.msg.
+// Generated file, do not edit! Created by opp_msgc 4.4 from sensors/ass/sensedresult.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -11,6 +11,8 @@
 #include <iostream>
 #include <sstream>
 #include "sensedresult_m.h"
+
+USING_NAMESPACE
 
 // Template rule which fires if a struct or class doesn't have operator<<
 template<typename T>
@@ -32,11 +34,11 @@ void doUnpacking(cCommBuffer *, T& t) {
 
 Register_Class(SensedResult);
 
-SensedResult::SensedResult(const char *name, int kind) : cMessage(name,kind)
+SensedResult::SensedResult(const char *name, int kind) : ::cMessage(name,kind)
 {
 }
 
-SensedResult::SensedResult(const SensedResult& other) : cMessage(other)
+SensedResult::SensedResult(const SensedResult& other) : ::cMessage(other)
 {
     copy(other);
 }
@@ -48,7 +50,7 @@ SensedResult::~SensedResult()
 SensedResult& SensedResult::operator=(const SensedResult& other)
 {
     if (this==&other) return *this;
-    cMessage::operator=(other);
+    ::cMessage::operator=(other);
     copy(other);
     return *this;
 }
@@ -60,13 +62,13 @@ void SensedResult::copy(const SensedResult& other)
 
 void SensedResult::parsimPack(cCommBuffer *b)
 {
-    cMessage::parsimPack(b);
+    ::cMessage::parsimPack(b);
     doPacking(b,this->meaList_var);
 }
 
 void SensedResult::parsimUnpack(cCommBuffer *b)
 {
-    cMessage::parsimUnpack(b);
+    ::cMessage::parsimUnpack(b);
     doUnpacking(b,this->meaList_var);
 }
 

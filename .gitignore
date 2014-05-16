@@ -14,3 +14,4 @@ simulations/results/*.vci
 simulations/results/*.sca
 simulations/results/*.data
 simulations/results/*.eps
+simulations/results/*.csv
